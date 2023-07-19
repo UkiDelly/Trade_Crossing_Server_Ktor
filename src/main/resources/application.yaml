@@ -5,7 +5,9 @@ ktor:
   deployment:
     port: 8080
     rootPath: /api/v1
+
 jwt:
   domain: "https://jwt-provider-domain/"
   audience: "jwt-audience"
   realm: "ktor sample app"
+  secret: "Dae Hyeon's first Ktor Project"
