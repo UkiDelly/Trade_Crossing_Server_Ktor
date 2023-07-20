@@ -5,6 +5,8 @@ import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import ukidelly.utils.DateUtil
+import java.time.LocalDateTime
 
 
 fun Application.configureSecurity() {
@@ -26,7 +28,16 @@ fun Application.configureSecurity() {
                     .build()
             )
             validate { credential ->
-                if (credential.payload.audience.contains(jwtAudience)) JWTPrincipal(credential.payload) else null
+
+                val date = LocalDateTime.now()
+                val validToken = date.isBefore(DateUtil.convertDateToLocalDate(credential.expiresAt!!))
+
+                if (!validToken) {
+                    return@validate null
+
+                }
+                val userId = credential.payload.getClaim("userId").asString()
+                JWTPrincipal(credential.payload)
             }
         }
 
