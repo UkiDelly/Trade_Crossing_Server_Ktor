@@ -11,3 +11,7 @@ jwt:
   audience: "jwt-audience"
   realm: "ktor sample app"
   secret: "Dae Hyeon's first Ktor Project"
+
+mongodb:
+  connectionUrl: "mongodb+srv://Ukidelly:x4X9KqHU6QWYGgH7@tradecrossingcluster.jzg8oac.mongodb.net/"
+  database: "trade_crossing"
