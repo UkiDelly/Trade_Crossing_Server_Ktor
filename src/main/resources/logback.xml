@@ -1,12 +1,20 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <!--            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
+            <!--            <pattern>[%d{hh:mm:ss a}] [%-5level] [%highlight(%logger{36}){FATAL=red, ERROR=red, WARN=yellow}] - %msg%n-->
+            <!--            </pattern>-->
+
+            <pattern>[%d{hh:mm:ss a}] [%highlight(%level){TRACE=blue, DEBUG=green, INFO=white, WARN=yellow, ERROR=red}] [%highlight(%logger{35}){FATAL=red, ERROR=RED, WARN=yellow}] - %msg%n</pattern>
         </encoder>
     </appender>
-    <root level="trace">
+    <root level="TRACE">
         <appender-ref ref="STDOUT"/>
     </root>
+
+    <!-- debug 모드일때만 로그 출력   -->
     <logger name="org.eclipse.jetty" level="INFO"/>
     <logger name="io.netty" level="INFO"/>
+    <logger name="org.mongodb.driver" level="WARN"/>
+    <logger name="io.ktor.server.routing" level="TRACE"/>
 </configuration>
