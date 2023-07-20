@@ -17,7 +17,7 @@ data class User(
     @BsonId
     @Contextual
     @Serializable(with = ObjectIdSerializer::class)
-    val _id: ObjectId = ObjectId.get(),
+    val id: ObjectId = ObjectId.get(),
     val snsId: String,
     val email: String,
     val userName: String,
@@ -32,7 +32,7 @@ data class User(
     fun toDocument(): Document {
         return Document(
             mapOf(
-                "_id" to _id,
+                "_id" to id,
                 "snsId" to snsId,
                 "email" to email,
                 "userName" to userName,
@@ -49,7 +49,7 @@ data class User(
     companion object {
         fun fromDocument(document: Document): User {
             return User(
-                _id = document.getObjectId("_id"),
+                id = document.getObjectId("_id"),
                 snsId = document.getString("snsId"),
                 email = document.getString("email"),
                 userName = document.getString("userName"),
