@@ -1,17 +1,14 @@
 package ukidelly.plugins
 
-import io.ktor.server.plugins.callloging.*
-import org.slf4j.event.*
-import io.ktor.server.request.*
 import io.ktor.server.application.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import io.ktor.server.plugins.callloging.*
+import io.ktor.server.request.*
+import org.slf4j.event.Level
 
 fun Application.configureMonitoring() {
     install(CallLogging) {
         level = Level.INFO
-        filter { call -> call.request.path().startsWith("/") }
+        filter { call -> call.request.path().startsWith("/api/v1") }
 //        format { call ->
 //
 //            val requestPath = call.request.path()
