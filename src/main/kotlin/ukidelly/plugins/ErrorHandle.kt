@@ -9,7 +9,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.SerializationException
 import org.slf4j.LoggerFactory
-import ukidelly.domain.system.ResponseModel
+import ukidelly.domain.system.ErrorResponseModel
 import ukidelly.utils.toSnakeCase
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -34,8 +34,8 @@ fun Application.errorHandle() {
                 // 필드가 누락되었을 때
                 findException<MissingFieldException>(exception) != null -> {
                     val cause = findException<MissingFieldException>(exception)!!
-                    val responseModel = ResponseModel(
-                        data = cause.missingFields.let {
+                    val responseModel = ErrorResponseModel(
+                        error = cause.missingFields.let {
                             it.map { field -> field.toSnakeCase() }
 
                         },
@@ -48,8 +48,8 @@ fun Application.errorHandle() {
                 // 쿼리 파라미터가 누락되었을 때
                 findException<MissingRequestParameterException>(exception) != null -> {
                     val cause = findException<MissingRequestParameterException>(exception)!!
-                    val responseModel = ResponseModel(
-                        data = cause.parameterName,
+                    val responseModel = ErrorResponseModel(
+                        error = cause.parameterName,
                         message = "해당 쿼리 파라미터가 누락되었습니다."
                     )
                     call.respond(HttpStatusCode.BadRequest, responseModel)
@@ -62,19 +62,17 @@ fun Application.errorHandle() {
                     // find the word between '' in the message
                     val regex = Regex("'(.*?)'")
                     val matchResult = regex.find(cause.message!!)!!
-                    val message = "${matchResult.value}를 찾을 수 없습니다."
-
-                    val responseModel = ResponseModel(
-                        data = null,
-                        message = message
+                    val responseModel = ErrorResponseModel(
+                        error = matchResult.value,
+                        message = "잘못된 값입니다"
                     )
                     call.respond(HttpStatusCode.BadRequest, responseModel)
                 }
 
                 findException<IllegalArgumentException>(exception) != null -> {
                     val cause = findException<IllegalArgumentException>(exception)!!
-                    val responseModel = ResponseModel(
-                        data = null,
+                    val responseModel = ErrorResponseModel(
+                        error = null,
                         message = cause.message!!
                     )
                     call.respond(HttpStatusCode.Unauthorized, responseModel)
@@ -84,7 +82,7 @@ fun Application.errorHandle() {
                 // 잘못된 요청이 들어왔을 때
                 else -> call.respond(
                     HttpStatusCode.BadRequest,
-                    ResponseModel(data = null, message = "잘못된 요청입니다.")
+                    ErrorResponseModel(error = null, message = "잘못된 요청입니다.")
                 )
             }
 
