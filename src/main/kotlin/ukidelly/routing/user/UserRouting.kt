@@ -2,112 +2,78 @@ package ukidelly.routing.user
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
+import com.mongodb.MongoException
 import com.mongodb.client.MongoClients
-import com.mongodb.client.model.Filters.and
-import com.mongodb.client.model.Filters.eq
-import com.mongodb.connection.ConnectionPoolSettings
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
-import org.litote.kmongo.findOne
+import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 import ukidelly.domain.system.ResponseModel
 import ukidelly.domain.system.Token
-import ukidelly.domain.user.LoginMethod
-import ukidelly.domain.user.User
 import ukidelly.domain.user.UserLoginRequest
 import ukidelly.domain.user.UserLoginResponse
+import ukidelly.domain.user.UserRegisterRequest
+import ukidelly.repository.UserRepository
+import ukidelly.service.UserService
 import java.time.Instant
-import java.time.LocalDateTime
 
 
-fun Route.userRouting() {
+@OptIn(InternalAPI::class)
+fun Route.userRouting(mongoClientSetting: MongoClientSettings) {
 
     val logger = LoggerFactory.getLogger("UserRouting")
 
-    val connectionUrl = ConnectionString(environment!!.config.property("mongodb.connectionUrl").getString())
-    val database = environment!!.config.property("mongodb.database").getString()
-    val connectionPool = ConnectionPoolSettings.builder().applyConnectionString(connectionUrl)
-    val mongoClientSetting =
-        MongoClientSettings.builder().applyConnectionString(connectionUrl)
-            .applyToConnectionPoolSettings { connectionPool }
-            .build()
 
     val jwtAudience = environment!!.config.property("jwt.audience").getString()//"jwt-audience"
     val jwtDomain = environment!!.config.property("jwt.domain").getString() //"https://jwt-provider-domain/"
-    val jwtRealm = environment!!.config.property("jwt.realm").getString()
     val jwtSecret = environment!!.config.property("jwt.secret").getString()
 
+    val database = environment!!.config.property("mongodb.database").getString()
+    val mongoClient = MongoClients.create(mongoClientSetting)
+    val userCollection =
+        mongoClient.getDatabase(database).getCollection("user")
+
+
+    val service by inject<UserService>()
+    service.apply {
+        val repository by inject<UserRepository>()
+        setRepository(repository, userCollection)
+    }
 
     //
     get("login") {
-
-        // MongoDB 클라이언트 생성
-        val mongoClient = MongoClients.create(mongoClientSetting)
-
-
-        // user라는 이름의 collection을 가져온다.
-        val userCollection = withContext(Dispatchers.IO) {
-            val mongoDatabase = mongoClient.getDatabase(database)
-            mongoDatabase.getCollection("user")
-        }
 
         // 요청의 body를 가져와서 UserLoginRequestModel로 변환
         val request = call.receive<UserLoginRequest>()
 
         logger.debug("request: {}", request)
 
-        // 필터 생성
-        val filter = and(
-            eq("email", request.email),
-            eq("snsId", request.snsId)
-        )
-
-        // DB에서 유저 찾기
-        val userDoc = withContext(Dispatchers.IO) {
-            userCollection.findOne(filter)
-        }
-
-        // 유저가 존재 하지 않을때
-        if (userDoc == null) {
-            call.respond(status = HttpStatusCode.NotFound, "존재하지 않는 유저입니다")
+        val user = withContext(Dispatchers.IO) {
+            service.findOne(request)
+        }.also { mongoClient.close() } ?: run {
+            mongoClient.close()
+            call.respond(status = HttpStatusCode.NotFound, "존재하지 않는 유저입니다.")
             return@get
         }
 
-        val user = User.fromDocument(userDoc)
 
-        // jwt 생성
-        val now = Instant.now()
+        // 토큰 생성
+        val token = createJwtToken(
+            jwtAudience = jwtAudience,
+            jwtDomain = jwtDomain,
+            jwtSecret = jwtSecret,
+            userId = user.id.toString()
+        ) // Token(accessToken, refreshToken)
 
-
-        // add 5 minutes
-        var expiredAt = now.plusSeconds(60 * 5)
-        val accessToken = JWT.create()
-            .withIssuer(jwtDomain)
-            .withAudience(jwtAudience)
-            .withClaim("userId", user.id.toString())
-            .withExpiresAt(expiredAt)
-            .sign(Algorithm.HMAC256(jwtSecret))
-
-        expiredAt = now.plusSeconds(60 * 60 * 24 * 30)
-
-        val refreshToken = JWT.create()
-            .withIssuer(jwtDomain)
-            .withAudience(jwtAudience)
-            .withExpiresAt(expiredAt)
-            .sign(Algorithm.HMAC256(jwtSecret))
-
-        val token = Token(accessToken, refreshToken)
-
-
+        // 응답
         call.respond(
             HttpStatusCode.OK, ResponseModel(
                 UserLoginResponse(
@@ -116,39 +82,61 @@ fun Route.userRouting() {
                 ), "로그인 성공"
             )
         )
-        mongoClient.close()
+
     }
 
 
 
     post("register") {
 
-        val mongoClient = MongoClients.create(mongoClientSetting)
-        val userCollection = withContext(Dispatchers.IO) {
-            val mongoDatabase = mongoClient.getDatabase(database)
-            mongoDatabase.getCollection("user")
+
+        // 요청의 body를 가져와서 UserRegisterRequestModel로 변환
+        val request = call.receive<UserRegisterRequest>()
+
+
+        // User으로 변환
+        val user = request.toUser()
+
+        // DB에 저장 및 에러 처리
+        try {
+            withContext(Dispatchers.IO) {
+                service.register(user)
+            }
+        } catch (e: Throwable) {
+            when (e) {
+                is MongoException -> {
+                    call.respond(status = HttpStatusCode.InternalServerError, "DB 에러")
+                    return@post
+                }
+
+                is IllegalStateException -> {
+                    call.respond(status = HttpStatusCode.Conflict, "이미 존재하는 유저입니다.")
+                    return@post
+                }
+
+                else -> {
+                    logger.error(e.message)
+                    call.respond(status = HttpStatusCode.ExpectationFailed, "회원가입 실패")
+                    return@post
+                }
+            }
+        } finally {
+            mongoClient.close()
         }
 
-        val testUser = User(
-            email = "test2@google.com",
-            snsId = "test2",
-            loginMethod = LoginMethod.google,
-            userName = "test2",
-            islandName = "test2Island",
-            introduction = "test2",
-            createdAt = LocalDateTime.now().toString(),
+        // 토큰 모델 생성
+        val token = createJwtToken(
+            jwtAudience = jwtAudience,
+            jwtDomain = jwtDomain,
+            jwtSecret = jwtSecret,
+            userId = user.id.toString()
         )
 
-        userCollection.insertOne(testUser.toDocument())
+        // 로그인 시키기
+        val response = UserLoginResponse(user, token)
 
-        val r = ResponseModel(testUser, "회원가입 성공")
+        call.respond(HttpStatusCode.OK, ResponseModel(response, "회원가입 성공"))
 
-        val json = Json { encodeDefaults = true }
-
-        println(json.encodeToString(ResponseModel.serializer(User.serializer()), r))
-
-        call.respond(HttpStatusCode.OK, ResponseModel<User>(testUser, "회원가입 성공"))
-        mongoClient.close()
     }
 
     //
@@ -157,6 +145,39 @@ fun Route.userRouting() {
         post("refresh") { }
 
     }
+}
 
+
+private fun createJwtToken(
+
+    jwtDomain: String,
+    jwtAudience: String,
+    jwtSecret: String,
+    userId: String
+): Token {
+
+
+    // 현재 시간 기록
+    val now = Instant.now()
+
+    // 5분 유호 기간을 가진 accessToken 생성
+    var expiredAt = now.plusSeconds(60 * 5)
+    val accessToken = JWT.create()
+        .withIssuer(jwtDomain)
+        .withAudience(jwtAudience)
+        .withClaim("userId", userId)
+        .withExpiresAt(expiredAt)
+        .sign(Algorithm.HMAC256(jwtSecret))
+
+    // 30일 유효 기간을 가진 refreshToken 생성
+    expiredAt = now.plusSeconds(60 * 60 * 24 * 30)
+    val refreshToken = JWT.create()
+        .withIssuer(jwtDomain)
+        .withAudience(jwtAudience)
+        .withExpiresAt(expiredAt)
+        .sign(Algorithm.HMAC256(jwtSecret))
+
+    // 토큰 모델 생성
+    return Token(accessToken, refreshToken)
 
 }

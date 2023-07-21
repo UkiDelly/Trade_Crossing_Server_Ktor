@@ -3,8 +3,8 @@ package ukidelly.repository
 import org.bson.Document
 
 interface BaseRepository {
-    fun findOne(id: String, email: String): Document?
-    fun save()
-    fun updateOne()
-    fun deleteOne()
+    suspend fun findOne(id: String, email: String): Document?
+    suspend fun save(data: Document): Unit
+    suspend fun updateOne()
+    suspend fun deleteOne()
 }

@@ -29,6 +29,13 @@ data class User(
     val createdAt: String,
 ) {
 
+    init {
+
+        require(LoginMethod.entries.contains(loginMethod)) { "login_method은 google 또는 apple 중 하나여야합니다." }
+
+    }
+
+
     fun toDocument(): Document {
         return Document(
             mapOf(

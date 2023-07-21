@@ -19,9 +19,22 @@ class UserService {
     }
 
 
-    fun findOne(request: UserLoginRequest): User? {
+    suspend fun findOne(request: UserLoginRequest): User? {
         val userDoc = userRepository.findOne(request.snsId, request.email)
         return userDoc?.let { User.fromDocument(it) }
+    }
+
+    suspend fun register(user: User) {
+
+        //check if user already exists
+        val registeredUser = userRepository.findOne(user.snsId, user.email)
+
+        if (registeredUser != null) {
+            throw IllegalStateException()
+        } else {
+            userRepository.save(user.toDocument())
+        }
+
 
     }
 
