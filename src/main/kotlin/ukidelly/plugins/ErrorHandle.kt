@@ -7,6 +7,7 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.MissingFieldException
+import kotlinx.serialization.SerializationException
 import org.slf4j.LoggerFactory
 import ukidelly.domain.system.ResponseModel
 import ukidelly.utils.toSnakeCase
@@ -53,6 +54,32 @@ fun Application.errorHandle() {
                     )
                     call.respond(HttpStatusCode.BadRequest, responseModel)
                 }
+
+                //
+                findException<SerializationException>(exception) != null -> {
+                    val cause = findException<SerializationException>(exception)!!
+
+                    // find the word between '' in the message
+                    val regex = Regex("'(.*?)'")
+                    val matchResult = regex.find(cause.message!!)!!
+                    val message = "${matchResult.value}를 찾을 수 없습니다."
+
+                    val responseModel = ResponseModel(
+                        data = null,
+                        message = message
+                    )
+                    call.respond(HttpStatusCode.BadRequest, responseModel)
+                }
+
+                findException<IllegalArgumentException>(exception) != null -> {
+                    val cause = findException<IllegalArgumentException>(exception)!!
+                    val responseModel = ResponseModel(
+                        data = null,
+                        message = cause.message!!
+                    )
+                    call.respond(HttpStatusCode.Unauthorized, responseModel)
+                }
+
 
                 // 잘못된 요청이 들어왔을 때
                 else -> call.respond(
