@@ -32,14 +32,14 @@ paths:
         "404":
           description: "Not Found"
           content:
-            text/plain:
+            '*/*':
               schema:
                 type: "string"
               examples:
                 Example#1:
-                  value: "존재하지 않는 유저입니다"
+                  value: "존재하지 않는 유저입니다."
         "200":
-          description: "OK"
+          description: "OK <br> Token(accessToken, refreshToken) <br> 응답"
           content:
             '*/*':
               schema:
@@ -50,7 +50,40 @@ paths:
   /user/register:
     post:
       description: ""
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: "#/components/schemas/UserRegisterRequest"
+        required: true
       responses:
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "DB 에러"
+        "409":
+          description: "Conflict"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "이미 존재하는 유저입니다."
+        "417":
+          description: "Expectation Failed"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "회원가입 실패"
         "200":
           description: "OK"
           content:
@@ -65,4 +98,22 @@ components:
         snsId:
           type: "string"
         email:
+          type: "string"
+    UserRegisterRequest:
+      type: "object"
+      properties:
+        snsId:
+          type: "string"
+        loginMethod:
+          type: "string"
+          enum:
+          - "google"
+          - "apple"
+        email:
+          type: "string"
+        userName:
+          type: "string"
+        islandName:
+          type: "string"
+        introduction:
           type: "string"

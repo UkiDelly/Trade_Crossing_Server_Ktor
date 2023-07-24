@@ -37,7 +37,7 @@ fun Application.configureSecurity() {
 
                 }
                 val userId = credential.payload.getClaim("userId").asString()
-                JWTPrincipal(credential.payload)
+                UserIdPrincipal(userId)
             }
         }
 

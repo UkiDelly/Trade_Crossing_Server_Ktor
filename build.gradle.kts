@@ -6,7 +6,6 @@ val developmentMode: Boolean by project
 plugins {
     kotlin("jvm") version "1.9.0"
     id("io.ktor.plugin") version "2.3.2"
-//    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
     kotlin("plugin.serialization") version "1.5.0"
 
 
@@ -35,15 +34,30 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-server-config-yaml:$ktor_version")
-    implementation("org.litote.kmongo:kmongo:4.8.0")
+//    implementation("org.litote.kmongo:kmongo:4.8.0")
     implementation("io.insert-koin:koin-ktor:3.4.1")
+    implementation("org.ktorm:ktorm-core:3.6.0")
+    implementation("org.postgresql:postgresql:42.6.0")
+    implementation("io.ktor:ktor-serialization-jackson:2.3.1-eap-678")
+    implementation("io.ktor:ktor-serialization-jackson-jvm:2.3.1-eap-676")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     runtimeOnly("io.insert-koin:koin-annotations:1.2.2")
     implementation("io.insert-koin:koin-ksp-compiler:1.2.2")
     implementation("io.ktor:ktor-server-status-pages:$ktor_version")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
+//    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-host-common-jvm:2.3.2")
     implementation("io.ktor:ktor-server-status-pages-jvm:2.3.2")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.2")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+
+}
+
+//test
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

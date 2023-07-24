@@ -1,61 +1,53 @@
-@file:Suppress("EXTERNAL_SERIALIZER_USELESS")
-
 package ukidelly.plugins
 
-import io.ktor.serialization.kotlinx.json.*
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.cfg.EnumFeature
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.ser.std.StdSerializer
+import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializer
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonNamingStrategy
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.contextual
-import org.bson.types.ObjectId
 
 
-@OptIn(ExperimentalSerializationApi::class)
 fun Application.configureSerialization() {
     install(ContentNegotiation) {
 
-        json(
-            Json {
-                useAlternativeNames = true
-                prettyPrint = true
-                ignoreUnknownKeys = true
-                namingStrategy = JsonNamingStrategy.SnakeCase
-                isLenient = true
-                serializersModule = SerializersModule {
-                    contextual(ObjectIdSerializer)
+        
+        jackson {
+            findAndRegisterModules()
+            registerModule(lowerCaseEnumJacksonSerializerModule)
+            configure(SerializationFeature.INDENT_OUTPUT, true)
+            configure(SerializationFeature.WRITE_DATES_WITH_ZONE_ID, true)
+            configure(JsonGenerator.Feature.IGNORE_UNKNOWN, false)
+            configure(EnumFeature.WRITE_ENUMS_TO_LOWERCASE, true)
+            configure(EnumFeature.READ_ENUM_KEYS_USING_INDEX, true)
+            setDefaultPrettyPrinter(DefaultPrettyPrinter())
+            propertyNamingStrategy = PropertyNamingStrategies.LOWER_CAMEL_CASE
 
-                }
-            }
-        )
+
+        }
 
 
     }
 
 }
 
-
-// ObjectId를 직렬화하기 위한 Serializer
-@Serializer(forClass = ObjectId::class)
-object ObjectIdSerializer : KSerializer<ObjectId> {
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("ObjectId", PrimitiveKind.STRING)
-
-    override fun serialize(encoder: Encoder, value: ObjectId) {
-        encoder.encodeString(value.toString())
+val lowerCaseEnumJacksonSerializerModule = SimpleModule().also {
+    val lowerCaseEnumKeySerializer = object : StdSerializer<Enum<*>>(Enum::class.java) {
+        override fun serialize(value: Enum<*>?, json: JsonGenerator, provider: SerializerProvider) {
+            json.writeFieldName(value?.name?.lowercase())
+        }
     }
-
-    override fun deserialize(decoder: Decoder): ObjectId {
-
-        return ObjectId(decoder.decodeString())
+    val lowerCaseEnumValueSerializer = object : StdSerializer<Enum<*>>(Enum::class.java) {
+        override fun serialize(value: Enum<*>?, json: JsonGenerator, provider: SerializerProvider) {
+            json.writeString(value?.name?.lowercase())
+        }
     }
+    it.addKeySerializer(Enum::class.java, lowerCaseEnumKeySerializer)
+    it.addSerializer(Enum::class.java, lowerCaseEnumValueSerializer)
 }
 

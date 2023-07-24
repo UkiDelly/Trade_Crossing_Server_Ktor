@@ -1,4 +1,4 @@
-package ukidelly.domain.user
+package ukidelly.user.domain
 
 import kotlinx.serialization.Serializable
 
