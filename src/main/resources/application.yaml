@@ -5,6 +5,7 @@ ktor:
   deployment:
     port: 8080
     rootPath: /api/v1
+    watch: [ ukidelly ]
 
 jwt:
   domain: "https://jwt-provider-domain/"
