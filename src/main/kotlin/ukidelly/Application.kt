@@ -34,6 +34,10 @@ fun Application.module() {
     // Json
     configureSerialization()
 
+
+    // Request Validation
+    configureRequestValidation()
+
     // Log
     configureMonitoring()
 

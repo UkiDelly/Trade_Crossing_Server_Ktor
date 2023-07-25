@@ -35,26 +35,6 @@ fun Application.configureSerialization() {
 
     }
 
-
-//        jackson {
-//            findAndRegisterModules()
-//            registerModule(lowerCaseEnumJacksonSerializerModule)
-//            configure(SerializationFeature.INDENT_OUTPUT, true)
-//            configure(SerializationFeature.WRITE_DATES_WITH_ZONE_ID, true)
-//            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)
-//            configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, false)
-//            configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, false)
-//            configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, true)
-//            configure(JsonGenerator.Feature.IGNORE_UNKNOWN, false)
-//            configure(EnumFeature.WRITE_ENUMS_TO_LOWERCASE, true)
-//            configure(EnumFeature.READ_ENUM_KEYS_USING_INDEX, true)
-//            setDefaultPrettyPrinter(DefaultPrettyPrinter())
-//            propertyNamingStrategy = PropertyNamingStrategies.LOWER_CAMEL_CASE
-//
-//
-//        }
-//    }
-
 }
 
 

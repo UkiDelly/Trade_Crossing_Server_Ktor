@@ -1,7 +1,6 @@
 package ukidelly.modules
 
 import io.ktor.http.*
-import io.ktor.serialization.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*
 import io.ktor.server.plugins.requestvalidation.*
@@ -32,16 +31,6 @@ fun Application.configureStatusPage() {
 
 
             logger.error(exception.cause.toString())
-
-            // 파라미터가 누락되었을 때
-            findException<JsonConvertException>(exception)?.let {
-
-
-                call.respond(
-                    HttpStatusCode.BadRequest,
-                    ErrorResponseDto(error = "body 필드", message = "잘못된 값이 입력되었습니다.")
-                )
-            }
 
             //
             findException<NullPointerException>(exception)?.let {
