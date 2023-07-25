@@ -13,7 +13,7 @@ fun Application.configureJWT() {
 
     // Please read the jwt property from the config file if you are using EngineMain
     val jwtAudience = environment.config.property("jwt.audience").getString()//"jwt-audience"
-    val jwtDomain = environment.config.property("jwt.domain").getString() //"https://jwt-provider-domain/"
+    val jwtIssuer = environment.config.property("jwt.issuer").getString() //"https://jwt-provider-domain/"
     val jwtRealm = environment.config.property("jwt.realm").getString()
     val jwtSecret = environment.config.property("jwt.secret").getString()
 
@@ -24,7 +24,7 @@ fun Application.configureJWT() {
                 JWT
                     .require(Algorithm.HMAC256(jwtSecret))
                     .withAudience(jwtAudience)
-                    .withIssuer(jwtDomain)
+                    .withIssuer(jwtIssuer)
                     .build()
             )
             validate { credential ->
@@ -47,7 +47,7 @@ fun Application.configureJWT() {
                 JWT
                     .require(Algorithm.HMAC256(jwtSecret))
                     .withAudience(jwtAudience)
-                    .withIssuer(jwtDomain)
+                    .withIssuer(jwtIssuer)
                     .build()
             )
 

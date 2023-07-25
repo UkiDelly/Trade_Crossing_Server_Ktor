@@ -10,9 +10,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
+import ukidelly.api.v1.user.models.UserLoginRequest
+import ukidelly.api.v1.user.models.UserRegisterRequest
+import ukidelly.api.v1.user.models.UserResponse
 import ukidelly.api.v1.user.service.UserService
 import ukidelly.systems.models.ErrorResponseDto
 import ukidelly.systems.models.SuccessResponseDto
+import ukidelly.systems.models.Token
 
 fun Route.userRouting() {
 
@@ -41,11 +45,13 @@ fun Route.userRouting() {
 
         logger.debug("user: {}", user)
 
+        val token = Token.createToken(application.environment.config, user.userId.toString())
+
 
 
         call.respond(
             HttpStatusCode.OK,
-            SuccessResponseDto(data = user, message = "로그인 성공")
+            SuccessResponseDto(UserResponse(user, token), message = "로그인 성공")
         )
     }
 
@@ -54,12 +60,9 @@ fun Route.userRouting() {
         val registerRequest = call.receive<UserRegisterRequest>()
 
 
-        val user = withContext(Dispatchers.IO) {
-            service.login(UserLoginRequest(snsId = registerRequest.snsId, email = registerRequest.email))
-
-        }
-
-        if (user != null) {
+        val newUser = withContext(Dispatchers.IO) {
+            service.register(registerRequest)
+        } ?: run {
             call.respond(
                 HttpStatusCode.Conflict,
                 ErrorResponseDto(error = "이미 가입된 유저입니다.", message = "회원가입에 실패 했습니다.")
@@ -67,25 +70,21 @@ fun Route.userRouting() {
             return@post
         }
 
-        val newUser = withContext(Dispatchers.IO) {
-            service.register(registerRequest)
-        }
-
+        val token = Token.createToken(application.environment.config, newUser.userId.toString())
 
 
         call.respond(
             HttpStatusCode.OK,
-            SuccessResponseDto(data = "", message = "회원가입 성공")
+            SuccessResponseDto(UserResponse(newUser, token), message = "회원가입 성공")
         )
 
     }
 
     authenticate("refresh-jwt") {
 
-    }
-
-    get("/refresh") {
-        call.respond(HttpStatusCode.OK, SuccessResponseDto(data = "test", message = "테스트"))
+        get("/refresh") {
+            call.respond(HttpStatusCode.OK, SuccessResponseDto(data = "test", message = "테스트"))
+        }
     }
 
 

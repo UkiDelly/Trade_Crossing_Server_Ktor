@@ -1,4 +1,4 @@
-package ukidelly.database.models
+package ukidelly.database.models.user
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable

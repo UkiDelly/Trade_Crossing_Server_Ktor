@@ -1,7 +1,7 @@
-package ukidelly.api.v1.user
+package ukidelly.api.v1.user.models
 
 import kotlinx.serialization.Serializable
-import ukidelly.database.models.LoginType
+import ukidelly.database.models.user.LoginType
 
 @Serializable
 data class UserRegisterRequest(

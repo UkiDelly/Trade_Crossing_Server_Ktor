@@ -2,8 +2,8 @@ package ukidelly.modules
 
 import io.ktor.server.application.*
 import io.ktor.server.plugins.requestvalidation.*
-import ukidelly.api.v1.user.UserLoginRequest
-import ukidelly.api.v1.user.UserRegisterRequest
+import ukidelly.api.v1.user.models.UserLoginRequest
+import ukidelly.api.v1.user.models.UserRegisterRequest
 
 fun Application.configureRequestValidation() {
     install(RequestValidation) {

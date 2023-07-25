@@ -1,4 +1,4 @@
-package ukidelly.api.v1.user
+package ukidelly.api.v1.user.models
 
 import kotlinx.serialization.Serializable
 
