@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import ukidelly.systems.errors.InvalidJwtTokenException
 import ukidelly.utils.Utils
 import java.time.LocalDateTime
 
@@ -33,7 +34,7 @@ fun Application.configureJWT() {
                 val validToken = date.isBefore(Utils.convertDateToLocalDate(credential.expiresAt!!))
 
                 if (!validToken) {
-                    return@validate null
+                    throw InvalidJwtTokenException()
 
                 }
                 val userId = credential.payload.getClaim("userId").asString()
@@ -58,7 +59,7 @@ fun Application.configureJWT() {
                 val validToken = date.isBefore(Utils.convertDateToLocalDate(credential.expiresAt!!))
 
                 if (!validToken) {
-                    return@validate null
+                    throw InvalidJwtTokenException()
 
                 }
                 val userId = credential.payload.getClaim("userId").asString()

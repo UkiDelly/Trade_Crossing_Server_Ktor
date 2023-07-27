@@ -1,6 +1,7 @@
 package ukidelly.utils
 
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 object Utils {
@@ -10,4 +11,8 @@ object Utils {
 
     fun convertLocalDateToDate(localDate: java.time.LocalDate): Date =
         Date.from(localDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant())
+
+
+    fun convertStringToLocalDateTime(date: String): LocalDateTime =
+        LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
 }

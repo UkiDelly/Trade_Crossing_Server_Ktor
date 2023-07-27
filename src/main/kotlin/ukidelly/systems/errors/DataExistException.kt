@@ -1,3 +1,3 @@
 package ukidelly.systems.errors
 
-class DataExistException : RuntimeException()
+class InvalidJwtTokenException : RuntimeException()

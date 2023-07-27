@@ -3,9 +3,9 @@ package ukidelly.modules
 import io.ktor.server.application.*
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
+import ukidelly.api.v1.post.service.PostService
 import ukidelly.api.v1.user.service.UserService
 import ukidelly.database.DataBaseFactory
-import ukidelly.database.models.user.UserDao
 
 fun Application.configureKoin() {
 
@@ -13,13 +13,13 @@ fun Application.configureKoin() {
         single { DataBaseFactory }
     }
 
-    val userModule = module {
+    val serviceModule = module {
         single { UserService() }
-        single { UserDao() }
+        single { PostService() }
 
     }
 
     install(Koin) {
-        modules(userModule, databaseModule)
+        modules(databaseModule, serviceModule)
     }
 }

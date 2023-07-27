@@ -1,9 +1,9 @@
 package ukidelly.api.v1.user.service
 
 import org.koin.core.annotation.Module
+import ukidelly.api.v1.user.models.User
 import ukidelly.api.v1.user.models.UserLoginRequest
 import ukidelly.api.v1.user.models.UserRegisterRequest
-import ukidelly.database.models.user.User
 import ukidelly.database.models.user.UserDao
 import ukidelly.database.models.user.UserEntity
 import java.util.*
@@ -11,7 +11,7 @@ import java.util.*
 @Module
 class UserService {
 
-    val dao = UserDao()
+    private val dao = UserDao
 
     /**
      * 로그인

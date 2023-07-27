@@ -7,6 +7,7 @@ import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import org.slf4j.LoggerFactory
+import ukidelly.systems.errors.InvalidJwtTokenException
 import ukidelly.systems.models.ErrorResponseDto
 
 
@@ -14,6 +15,15 @@ fun Application.configureStatusPage() {
 
     install(StatusPages) {
         val logger = LoggerFactory.getLogger("ErrorHandle")
+
+        //
+        exception<InvalidJwtTokenException> { call, exception ->
+            logger.error(exception.cause.toString())
+            call.respond(
+                HttpStatusCode.Unauthorized,
+                ErrorResponseDto(error = "토큰", message = "유효하지 않은 토큰입니다.")
+            )
+        }
 
 
         // Request의 Body에서 필드가 누락되었을 때

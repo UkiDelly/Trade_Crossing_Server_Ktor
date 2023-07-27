@@ -1,7 +1,5 @@
 package ukidelly.database.models.user
 
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -12,22 +10,6 @@ enum class LoginType {
     google, apple;
 }
 
-
-// Entity
-// UUIDEntity를 상속받는 User 클래스를 정의합니다.
-
-@Serializable
-data class User(
-
-    @Contextual
-    val userId: UUID,
-    val snsId: String,
-    val email: String,
-    val userName: String,
-    val islandName: String,
-    val introduction: String,
-    val loginType: LoginType
-)
 
 class UserEntity(
     userId: EntityID<UUID>,

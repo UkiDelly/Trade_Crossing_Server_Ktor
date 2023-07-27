@@ -1,4 +1,4 @@
-package ukidelly.api.v1.post.domain
+package ukidelly.api.v1.post.models
 
 import kotlinx.serialization.Serializable
 
