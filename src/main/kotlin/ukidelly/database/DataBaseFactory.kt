@@ -15,8 +15,10 @@ import ukidelly.database.models.user.UserTable
 @Module
 object DataBaseFactory {
 
+    lateinit var database: Database
+
     fun init(databaseUrl: String, user: String, password: String) {
-        val database =
+        database =
             Database.connect(createHikariDataSource(databaseUrl, "org.postgresql.Driver", user, password))
 
         transaction(database) {
@@ -25,7 +27,11 @@ object DataBaseFactory {
         }
     }
 
-    suspend fun <T> dbQuery(block: suspend () -> T): T = newSuspendedTransaction(Dispatchers.IO) { block() }
+    suspend fun <T> dbQuery(block: suspend (database: Database) -> T): T = newSuspendedTransaction(Dispatchers.IO) {
+        block(
+            database
+        )
+    }
 
 
     private fun createHikariDataSource(url: String, driver: String, user: String, password: String) = HikariDataSource(

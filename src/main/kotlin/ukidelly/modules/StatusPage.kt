@@ -8,7 +8,7 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import org.slf4j.LoggerFactory
 import ukidelly.systems.errors.InvalidJwtTokenException
-import ukidelly.systems.models.ErrorResponseDto
+import ukidelly.systems.models.ResponseDto
 
 
 fun Application.configureStatusPage() {
@@ -21,7 +21,7 @@ fun Application.configureStatusPage() {
             logger.error(exception.cause.toString())
             call.respond(
                 HttpStatusCode.Unauthorized,
-                ErrorResponseDto(error = "토큰", message = "유효하지 않은 토큰입니다.")
+                ResponseDto.Error(error = "토큰", message = "유효하지 않은 토큰입니다.")
             )
         }
 
@@ -32,7 +32,7 @@ fun Application.configureStatusPage() {
 
             call.respond(
                 HttpStatusCode.NotAcceptable,
-                ErrorResponseDto(error = exception.reasons, message = "로그인에 실패했습니다.")
+                ResponseDto.Error(error = exception.reasons, message = "로그인에 실패했습니다.")
             )
 
         }
@@ -48,7 +48,7 @@ fun Application.configureStatusPage() {
 
                 call.respond(
                     HttpStatusCode.BadRequest,
-                    ErrorResponseDto(error = null, message = "null 값이 입력되었습니다.")
+                    ResponseDto.Error(error = null, message = "null 값이 입력되었습니다.")
                 )
             }
 
