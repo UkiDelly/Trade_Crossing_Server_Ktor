@@ -4,14 +4,14 @@ import org.koin.core.annotation.Module
 import ukidelly.api.v1.user.models.User
 import ukidelly.api.v1.user.models.UserLoginRequest
 import ukidelly.api.v1.user.models.UserRegisterRequest
-import ukidelly.database.models.user.UserDao
+import ukidelly.api.v1.user.repository.UserRepository
 import ukidelly.database.models.user.UserEntity
 import java.util.*
 
 @Module
 class UserService {
 
-    private val dao = UserDao
+    private val repository = UserRepository
 
     /**
      * 로그인
@@ -20,7 +20,11 @@ class UserService {
      */
     suspend fun login(loginRequest: UserLoginRequest): User? {
 
-        return dao.getUserBySnsId(loginRequest.snsId)
+        return repository.findUser(
+            snsId = loginRequest.snsId,
+            email = loginRequest.email,
+            loginType = loginRequest.loginType
+        )
     }
 
 
@@ -30,7 +34,7 @@ class UserService {
      * @return [UserEntity]? 유저 정보로, 유저가 존재하면 [null]을 반환, 존재하지 않아 가입에 성공하면 [UserEntity]를 반환
 
      */
-    suspend fun register(userRegisterRequest: UserRegisterRequest): User? = dao.addNewUser(userRegisterRequest)
+    suspend fun register(userRegisterRequest: UserRegisterRequest): User? = repository.addNewUser(userRegisterRequest)
 
 
 }
