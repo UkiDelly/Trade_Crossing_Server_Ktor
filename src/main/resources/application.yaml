@@ -8,19 +8,13 @@ ktor:
     watch: [ ukidelly ]
 
 jwt:
-  issuer: "https://jwt-provider-domain/"
-  audience: "trade-crossing"
-  realm: "ktor sample app"
-  secret: "Dae Hyeon's first Ktor Project"
-
-mongodb:
-  connectionUrl: "mongodb+srv://Ukidelly:x4X9KqHU6QWYGgH7@tradecrossingcluster.jzg8oac.mongodb.net/"
-  database: "trade_crossing"
-
+  issuer: "Trade Crossing Ktor Server"
+  audience: "Trade Crossing Application"
+  realm: "Trade Crossing Ktor Server"
+  secret: "TradeCrossingKtorServer"
 
 supabase:
   url: "jdbc:postgresql://db.ocxoixsctkhbrfxbppto.supabase.co:5432/postgres"
   username: "postgres"
-  password: "oFQurO6HLR5zvLAy"
-
+  password: "wjdrmsdud0922!"
 

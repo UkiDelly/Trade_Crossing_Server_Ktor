@@ -5,24 +5,15 @@ import ukidelly.api.v1.user.models.UserRegisterRequest
 import ukidelly.database.DataBaseFactory.dbQuery
 
 
-object UserDao {
+object UserRepository {
 
-    private fun resultRowToModel(entity: UserEntity): User = User(
-        userId = entity.id.value,
-        snsId = entity.snsId,
-        email = entity.email,
-        userName = entity.userName,
-        islandName = entity.islandName,
-        introduction = entity.introduction,
-        loginType = entity.loginType
-    )
 
     suspend fun getUserBySnsId(snsId: String): User? = dbQuery {
 
         UserEntity.find {
             UserTable.snsId eq snsId
         }.firstOrNull()?.let {
-            resultRowToModel(it)
+            it.toUser()
         }
     }
 
@@ -40,9 +31,7 @@ object UserDao {
                 islandName = registerRequest.islandName
                 introduction = registerRequest.introduction
                 loginType = registerRequest.loginType
-            }.let {
-                resultRowToModel(it)
-            }
+            }.toUser()
         }
     }
 
