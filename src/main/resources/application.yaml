@@ -1,4 +1,5 @@
 ktor:
+  development: true
   application:
     modules:
       - ukidelly.ApplicationKt.module
@@ -18,3 +19,11 @@ supabase:
   username: "postgres"
   password: "wjdrmsdud0922!"
 
+aws:
+  dev_url: "jdbc:mysql://trade-crossing-db.c0u8eohuawix.ap-northeast-2.rds.amazonaws.com:3306/trade_crossing_db_dev"
+  prod_url: "jdbc:mysql://trade-crossing-db.c0u8eohuawix.ap-northeast-2.rds.amazonaws.com:3306/trade_crossing_db"
+  user: "admin"
+  password: "wjdrmsdud0922"
+
+server:
+  mode: $MODE

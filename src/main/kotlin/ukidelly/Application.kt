@@ -4,6 +4,8 @@ import io.ktor.server.application.*
 import io.ktor.server.netty.*
 import ukidelly.database.DataBaseFactory
 import ukidelly.modules.*
+import ukidelly.systems.errors.getServerMode
+import ukidelly.systems.models.ServerMode
 
 fun main(args: Array<String>): Unit =
     EngineMain.main(args)
@@ -11,12 +13,17 @@ fun main(args: Array<String>): Unit =
 //@Suppress("unused") // application.conf references the main function. This annotation prevents the IDE from marking it as unused.
 fun Application.module() {
 
+    val serverMode = environment.config.getServerMode()
+
 
     // DB 연결
     DataBaseFactory.init(
-        environment.config.property("supabase.url").getString(),
-        environment.config.property("supabase.username").getString(),
-        environment.config.property("supabase.password").getString()
+        databaseUrl = when (serverMode) {
+            ServerMode.DEV -> environment.config.property("aws.dev_url").getString()
+            ServerMode.PROD -> environment.config.property("aws.prod_url").getString()
+        },
+        user = environment.config.property("aws.user").getString(),
+        password = environment.config.property("aws.password").getString()
     )
 
     // Koin

@@ -5,10 +5,11 @@ import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.StdOutSqlLogger
+import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.annotation.Module
-import ukidelly.database.models.post.PostTable
 import ukidelly.database.models.user.UserTable
 
 
@@ -19,18 +20,20 @@ object DataBaseFactory {
 
     fun init(databaseUrl: String, user: String, password: String) {
         database =
-            Database.connect(createHikariDataSource(databaseUrl, "org.postgresql.Driver", user, password))
+            Database.connect(
+                createHikariDataSource(databaseUrl, "com.mysql.cj.jdbc.Driver", user, password),
+            )
 
-        transaction(database) {
-            SchemaUtils.create(UserTable)
-            SchemaUtils.create(PostTable)
+        transaction {
+            addLogger(StdOutSqlLogger)
+            SchemaUtils.create(UserTable, inBatch = true)
         }
+
     }
 
     suspend fun <T> dbQuery(block: suspend (database: Database) -> T): T = newSuspendedTransaction(Dispatchers.IO) {
-        block(
-            database
-        )
+        addLogger(StdOutSqlLogger)
+        block(database)
     }
 
 
@@ -39,6 +42,7 @@ object DataBaseFactory {
             driverClassName = driver
             username = user
             setPassword(password)
+
             jdbcUrl = url
             maximumPoolSize = 3
             isAutoCommit = false
