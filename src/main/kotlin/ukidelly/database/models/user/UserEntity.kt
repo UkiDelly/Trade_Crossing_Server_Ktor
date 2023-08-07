@@ -3,12 +3,8 @@ package ukidelly.database.models.user
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.UUIDTable
+import ukidelly.api.v1.user.models.User
 import java.util.*
-
-enum class LoginType {
-    google, apple;
-}
 
 
 class UserEntity(
@@ -23,18 +19,16 @@ class UserEntity(
     var introduction by UserTable.introduction
     var loginType by UserTable.loginType
 
-}
 
-
-// Table
-object UserTable : UUIDTable("user_info", "user_id") {
-
-    val snsId = varchar("sns_id", 100)
-    val email = varchar("email", 100)
-    val userName = varchar("user_name", 100)
-    val islandName = varchar("island_name", 100)
-    val introduction = text("introduction")
-    val loginType = enumerationByName<LoginType>("login_type", 100)
+    fun toUser() = User(
+        userId = id.value,
+        snsId = snsId,
+        email = email,
+        userName = userName,
+        islandName = islandName,
+        introduction = introduction,
+        loginType = loginType
+    )
 
 }
 

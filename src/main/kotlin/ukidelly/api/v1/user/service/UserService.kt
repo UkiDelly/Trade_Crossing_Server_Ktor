@@ -2,10 +2,10 @@ package ukidelly.api.v1.user.service
 
 import org.koin.core.annotation.Module
 import ukidelly.api.v1.user.models.User
-import ukidelly.api.v1.user.models.UserLoginRequest
 import ukidelly.api.v1.user.models.UserRegisterRequest
 import ukidelly.api.v1.user.repository.UserRepository
 import ukidelly.database.models.user.UserEntity
+import ukidelly.systems.models.LoginType
 import java.util.*
 
 @Module
@@ -18,12 +18,12 @@ class UserService {
      * @param loginRequest 로그인 요청 Dto
      * @return [UserEntity?] 유저 정보
      */
-    suspend fun login(loginRequest: UserLoginRequest): User? {
+    suspend fun login(snsId: String, email: String, loginType: LoginType): User? {
 
         return repository.findUser(
-            snsId = loginRequest.snsId,
-            email = loginRequest.email,
-            loginType = loginRequest.loginType
+            snsId = snsId,
+            email = email,
+            loginType = loginType
         )
     }
 

@@ -2,6 +2,7 @@ package ukidelly.api.v1.user.repository
 
 import ukidelly.api.v1.user.models.User
 import ukidelly.api.v1.user.models.UserRegisterRequest
+import ukidelly.database.DataBaseFactory.dbQuery
 import ukidelly.database.models.user.UserEntity
 import ukidelly.database.models.user.UserTable
 import ukidelly.systems.models.LoginType
@@ -12,12 +13,15 @@ object UserRepository {
 
     suspend fun findUser(snsId: String, email: String, loginType: LoginType): User? {
 
-        return UserEntity.find {
-            UserTable.loginType eq loginType
-            UserTable.snsId eq snsId
-            UserTable.email eq email
+        return dbQuery {
 
-        }.firstOrNull()?.toUser()
+            UserEntity.find {
+                UserTable.loginType eq loginType
+                UserTable.snsId eq snsId
+                UserTable.email eq email
+
+            }.firstOrNull()?.toUser()
+        }
 
     }
 

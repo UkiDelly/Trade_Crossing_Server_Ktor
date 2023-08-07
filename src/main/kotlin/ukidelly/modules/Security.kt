@@ -2,10 +2,14 @@ package ukidelly.modules
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import io.ktor.server.response.*
 import ukidelly.systems.errors.InvalidJwtTokenException
+import ukidelly.systems.models.ResponseDto
+import ukidelly.systems.models.Token
 import ukidelly.utils.Utils
 import java.time.LocalDateTime
 
@@ -30,14 +34,14 @@ fun Application.configureJWT() {
             )
             validate { credential ->
 
-                val date = LocalDateTime.now()
-                val validToken = date.isBefore(Utils.convertDateToLocalDate(credential.expiresAt!!))
+                val now = LocalDateTime.now()
+                val validToken = now.isBefore(Utils.convertDateToLocalDate(credential.expiresAt!!))
 
-                if (!validToken) {
+                if (!validToken || credential.payload.getClaim("type").asString() != "access_token") {
                     throw InvalidJwtTokenException()
 
                 }
-                val userId = credential.payload.getClaim("userId").asString()
+                val userId = credential.payload.subject
                 UserIdPrincipal(userId)
             }
         }
@@ -52,18 +56,27 @@ fun Application.configureJWT() {
                     .build()
             )
 
+
             validate { credential ->
-//                if (credential.payload.audience.contains(jwtAudience)) JWTPrincipal(credential.payload) else null
 
-                val date = LocalDateTime.now()
-                val validToken = date.isBefore(Utils.convertDateToLocalDate(credential.expiresAt!!))
+                val now = LocalDateTime.now()
+                val validToken = now.isBefore(Utils.convertDateToLocalDate(credential.expiresAt!!))
 
-                if (!validToken) {
+                if (!validToken || credential.payload.getClaim("type").asString() != "refresh_token") {
                     throw InvalidJwtTokenException()
 
                 }
                 val userId = credential.payload.getClaim("userId").asString()
+
+
+                val token = Token.createToken(application.environment.config, userId)
+
+
+                this.respond(HttpStatusCode.OK, ResponseDto.Success(data = token, "재발급에 성공하였습니다."))
+
                 UserIdPrincipal(userId)
+
+
             }
         }
 

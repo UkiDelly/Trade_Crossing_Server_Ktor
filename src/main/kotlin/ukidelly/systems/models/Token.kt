@@ -21,7 +21,8 @@ class Token(val accessToken: String, val refreshToken: String) {
             val accessToken = JWT.create()
                 .withAudience(audience)
                 .withIssuer(issuer)
-                .withClaim("userId", userId)
+                .withSubject(userId)
+                .withClaim("type", "access_token")
                 .withExpiresAt(
                     Instant.now().plusSeconds(60 * 60 * 24).atZone(ZoneId.systemDefault()).toInstant()
                 )
@@ -30,7 +31,8 @@ class Token(val accessToken: String, val refreshToken: String) {
             val refreshToken = JWT.create()
                 .withAudience(audience)
                 .withIssuer(issuer)
-                .withClaim("userId", userId)
+                .withSubject(userId)
+                .withClaim("type", "refresh_token")
                 .withExpiresAt(Instant.now().plusSeconds(60 * 60 * 24 * 30).atZone(ZoneId.systemDefault()).toInstant())
                 .sign(Algorithm.HMAC256(secret))
 

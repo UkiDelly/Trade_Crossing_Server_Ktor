@@ -2,7 +2,7 @@ package ukidelly.api.v1.user.models
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import ukidelly.database.models.user.LoginType
+import ukidelly.systems.models.LoginType
 import java.util.*
 
 // Entity
