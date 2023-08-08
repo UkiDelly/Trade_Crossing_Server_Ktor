@@ -13,6 +13,7 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy.Builtins.SnakeCase
 import kotlinx.serialization.modules.SerializersModule
+import java.time.LocalDateTime
 import java.util.*
 
 
@@ -28,6 +29,7 @@ fun Application.configureSerialization() {
                 namingStrategy = SnakeCase
                 serializersModule = SerializersModule {
                     contextual(UUID::class, UUIDSerializerModule)
+                    contextual(LocalDateTime::class, LocalDateTimeSerializerModule)
                 }
             }
         )
@@ -52,4 +54,16 @@ object UUIDSerializerModule : KSerializer<UUID> {
         return UUID.fromString(decoder.decodeString())
     }
 
+}
+
+object LocalDateTimeSerializerModule : KSerializer<LocalDateTime> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LocalDateTime", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: LocalDateTime) {
+        encoder.encodeString(value.toString())
+    }
+
+    override fun deserialize(decoder: Decoder): LocalDateTime {
+        return LocalDateTime.parse(decoder.decodeString())
+    }
 }
