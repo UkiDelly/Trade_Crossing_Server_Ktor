@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 object PostTable : IntIdTable("post", "post_id") {
     val title = varchar("title", 255)
     val content = text("content")
-    val userId = reference("user_id", UserTable.id)
+    val userId = reference("user_id", UserTable.id, fkName = "post_user_fk")
     val category = enumerationByName<PostCategory>("category", 100)
     val currency = enumerationByName<Currency>("currency", 100)
     val price = integer("price").nullable()

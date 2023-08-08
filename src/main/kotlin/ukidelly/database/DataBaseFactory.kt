@@ -10,6 +10,9 @@ import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.annotation.Module
+import ukidelly.database.models.comment.CommentTable
+import ukidelly.database.models.like.LikeTable
+import ukidelly.database.models.post.PostTable
 import ukidelly.database.models.user.UserTable
 
 
@@ -26,7 +29,8 @@ object DataBaseFactory {
 
         transaction {
             addLogger(StdOutSqlLogger)
-            SchemaUtils.create(UserTable, inBatch = true)
+            SchemaUtils.create(UserTable, PostTable, CommentTable, LikeTable)
+
         }
 
     }
