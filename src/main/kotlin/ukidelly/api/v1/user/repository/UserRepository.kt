@@ -11,42 +11,45 @@ import ukidelly.systems.models.LoginType
 object UserRepository {
 
 
-    suspend fun findUser(snsId: String, email: String, loginType: LoginType): User? {
+	suspend fun findUser(snsId: String, email: String, loginType: LoginType): User? {
 
-        return dbQuery {
+		return dbQuery {
 
-            UserEntity.find {
-                UserTable.loginType eq loginType
-                UserTable.snsId eq snsId
-                UserTable.email eq email
+			UserEntity.find {
+				UserTable.loginType eq loginType
+				UserTable.snsId eq snsId
+				UserTable.email eq email
 
-            }.firstOrNull()?.toUser()
-        }
+			}.firstOrNull()?.toUser()
+		}
 
-    }
-
-
-    suspend fun addNewUser(registerRequest: UserRegisterRequest): User? {
-
-        val user = findUser(registerRequest.snsId, registerRequest.email, registerRequest.loginType)
+	}
 
 
-        return if (user != null) {
-            null
-        } else {
-            UserEntity.new {
-                this.snsId = registerRequest.snsId
-                this.email = registerRequest.email
-                this.userName = registerRequest.userName
-                this.islandName = registerRequest.islandName
-                this.introduction = registerRequest.introduction
-                this.loginType = registerRequest.loginType
-            }.toUser()
+	suspend fun addNewUser(registerRequest: UserRegisterRequest): User? {
 
-        }
+		val user = findUser(registerRequest.snsId, registerRequest.email, registerRequest.loginType)
 
 
-    }
+		return if (user != null) {
+			null
+		} else {
+			dbQuery {
+				UserEntity.new {
+					this.snsId = registerRequest.snsId
+					this.email = registerRequest.email
+					this.userName = registerRequest.userName
+					this.islandName = registerRequest.islandName
+					this.introduction = registerRequest.introduction
+					this.loginType = registerRequest.loginType
+					this.defaultProfile = registerRequest.profile
+				}.toUser()
+			}
+
+		}
+
+
+	}
 
 
 }

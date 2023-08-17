@@ -2,6 +2,7 @@ package ukidelly.api.v1.user.models
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import ukidelly.systems.models.DefaultProfile
 import ukidelly.systems.models.LoginType
 import java.util.*
 
@@ -11,12 +12,13 @@ import java.util.*
 @Serializable
 data class User(
 
-    @Contextual
-    val userId: UUID,
-    val snsId: String,
-    val email: String,
-    val userName: String,
-    val islandName: String,
-    val introduction: String,
-    val loginType: LoginType
+	@Contextual
+	val userId: UUID,
+	val snsId: String,
+	val email: String,
+	val profile: DefaultProfile,
+	val userName: String,
+	val islandName: String,
+	val introduction: String,
+	val loginType: LoginType
 )

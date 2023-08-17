@@ -30,6 +30,7 @@ object DataBaseFactory {
         transaction {
             addLogger(StdOutSqlLogger)
             SchemaUtils.create(UserTable, PostTable, CommentTable, LikeTable)
+            SchemaUtils.createMissingTablesAndColumns(UserTable, withLogs = true)
 
         }
 
