@@ -1,5 +1,6 @@
 package ukidelly.api.v1.user.repository
 
+import org.koin.core.annotation.Module
 import ukidelly.api.v1.user.models.User
 import ukidelly.api.v1.user.models.UserRegisterRequest
 import ukidelly.database.DataBaseFactory.dbQuery
@@ -8,7 +9,8 @@ import ukidelly.database.models.user.UserTable
 import ukidelly.systems.models.LoginType
 
 
-object UserRepository {
+@Module
+class UserRepository {
 
 
 	suspend fun findUser(snsId: String, email: String, loginType: LoginType): User? {
@@ -26,29 +28,16 @@ object UserRepository {
 	}
 
 
-	suspend fun addNewUser(registerRequest: UserRegisterRequest): User? {
-
-		val user = findUser(registerRequest.snsId, registerRequest.email, registerRequest.loginType)
-
-
-		return if (user != null) {
-			null
-		} else {
-			dbQuery {
-				UserEntity.new {
-					this.snsId = registerRequest.snsId
-					this.email = registerRequest.email
-					this.userName = registerRequest.userName
-					this.islandName = registerRequest.islandName
-					this.introduction = registerRequest.introduction
-					this.loginType = registerRequest.loginType
-					this.defaultProfile = registerRequest.profile
-				}.toUser()
-			}
-
-		}
-
-
+	suspend fun addNewUser(registerRequest: UserRegisterRequest): User = dbQuery {
+		UserEntity.new {
+			this.snsId = registerRequest.snsId
+			this.email = registerRequest.email
+			this.userName = registerRequest.userName
+			this.islandName = registerRequest.islandName
+			this.introduction = registerRequest.introduction
+			this.loginType = registerRequest.loginType
+			this.defaultProfile = registerRequest.profile
+		}.toUser()
 	}
 
 
