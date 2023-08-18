@@ -6,13 +6,12 @@ import ukidelly.modules.configureRouting
 import kotlin.test.Test
 
 class ApplicationTest {
-    @Test
-    fun testRoot() = testApplication {
-        application {
-            configureRouting()
-        }
-        client.get("/login").apply {
-
-        }
-    }
+	@Test
+	fun testRoot() = testApplication {
+		application {
+			configureRouting()
+		}
+		client.get("/login").apply {
+		}
+	}
 }
