@@ -4,50 +4,50 @@ import io.ktor.server.application.*
 import io.ktor.server.netty.*
 import ukidelly.database.DataBaseFactory
 import ukidelly.modules.*
-import ukidelly.systems.errors.getServerMode
+import ukidelly.systems.getServerMode
 import ukidelly.systems.models.ServerMode
 
 fun main(args: Array<String>): Unit =
-    EngineMain.main(args)
+	EngineMain.main(args)
 
 //@Suppress("unused") // application.conf references the main function. This annotation prevents the IDE from marking it as unused.
 fun Application.module() {
 
-    val serverMode = environment.config.getServerMode()
+	val serverMode = environment.config.getServerMode()
 
 
-    // DB 연결
-    DataBaseFactory.init(
-        databaseUrl = when (serverMode) {
-            ServerMode.DEV -> environment.config.property("aws.dev_url").getString()
-            ServerMode.PROD -> environment.config.property("aws.prod_url").getString()
-        },
-        user = environment.config.property("aws.user").getString(),
-        password = environment.config.property("aws.password").getString()
-    )
+	// DB 연결
+	DataBaseFactory.init(
+		databaseUrl = when (serverMode) {
+			ServerMode.DEV -> environment.config.property("aws.dev_url").getString()
+			ServerMode.PROD -> environment.config.property("aws.prod_url").getString()
+		},
+		user = environment.config.property("aws.user").getString(),
+		password = environment.config.property("aws.password").getString()
+	)
 
-    // Koin
-    configureKoin()
+	// Koin
+	configureKoin()
 
-    // Error 처리
-    configureStatusPage()
+	// Error 처리
+	configureStatusPage()
 
-    // JWT
-    configureJWT()
+	// JWT
+	configureJWT()
 
-    // swagger
-    configureSwaggerUI()
+	// swagger
+	configureSwaggerUI()
 
-    // Json
-    configureSerialization()
+	// Json
+	configureSerialization()
 
 
-    // Request Validation
-    configureRequestValidation()
+	// Request Validation
+	configureRequestValidation()
 
-    // Log
-    configureMonitoring()
+	// Log
+	configureMonitoring()
 
-    // Routing
-    configureRouting()
+	// Routing
+	configureRouting()
 }

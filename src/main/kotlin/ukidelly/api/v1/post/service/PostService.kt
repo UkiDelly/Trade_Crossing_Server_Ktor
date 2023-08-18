@@ -1,30 +1,33 @@
 package ukidelly.api.v1.post.service
 
 import org.koin.core.annotation.Module
+import org.koin.java.KoinJavaComponent.inject
 import ukidelly.api.v1.post.models.PostCreateRequest
-import ukidelly.api.v1.post.models.PostDetail
-import ukidelly.api.v1.post.models.PostPreview
+import ukidelly.api.v1.post.models.dto.LatestPostDto
+import ukidelly.api.v1.post.models.dto.PostDetailDto
 import ukidelly.api.v1.post.repository.PostRepository
-import ukidelly.database.models.comment.CommentDao
+import ukidelly.database.models.comment.CommentRepository
 import java.util.*
 
 
 @Module
 class PostService {
 
-    private val postRepository = PostRepository
-    private val commentDao = CommentDao
+	private val postRepository by inject<PostRepository>(clazz = PostRepository::class.java)
+	private val commentRepository = CommentRepository
 
+	suspend fun getLatestPosts(itemsPerPage: Int, page: Int): LatestPostDto {
+		val latestPosts = postRepository.findLatestPosts(itemsPerPage, page)
+		return LatestPostDto(latestPosts.first, page, latestPosts.second)
+	}
 
-    suspend fun getLatestPosts(itemsPerPage: Int, page: Int): List<PostPreview> {
-        return postRepository.findLatestPosts(itemsPerPage, page)
-    }
+	suspend fun getPost(postId: Int): PostDetailDto? {
+		val post = postRepository.getPost(postId) ?: return null
+		return PostDetailDto(post.first, post.second)
+	}
 
-    suspend fun getPost(postId: Int): PostDetail? {
-        return postRepository.getPost(postId)
-    }
-
-    suspend fun addNewPost(newPost: PostCreateRequest, userId: UUID) {
-        val postId = postRepository.addNewPost(newPost, userId)
-    }
+	suspend fun addNewPost(newPost: PostCreateRequest, userId: UUID): PostDetailDto? {
+		val newPostId = postRepository.addNewPost(newPost, userId)
+		return getPost(newPostId.value)
+	}
 }

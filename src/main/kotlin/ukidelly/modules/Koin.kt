@@ -3,6 +3,7 @@ package ukidelly.modules
 import io.ktor.server.application.*
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
+import ukidelly.api.v1.post.repository.PostRepository
 import ukidelly.api.v1.post.service.PostService
 import ukidelly.api.v1.user.repository.UserRepository
 import ukidelly.api.v1.user.service.UserService
@@ -16,6 +17,7 @@ fun Application.configureKoin() {
 
 	val repositoryModule = module {
 		single { UserRepository() }
+		single { PostRepository() }
 	}
 
 	val serviceModule = module {
