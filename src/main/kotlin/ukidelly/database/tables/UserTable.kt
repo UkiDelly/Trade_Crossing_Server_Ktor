@@ -7,7 +7,6 @@ import ukidelly.systems.models.LoginType
 
 // Table
 object UserTable : UUIDTable("user_info", "user_id") {
-
 	val snsId = varchar("sns_id", 100)
 	val email = varchar("email", 100)
 	val defaultProfile = enumerationByName<DefaultProfile>("default_profile", 10)

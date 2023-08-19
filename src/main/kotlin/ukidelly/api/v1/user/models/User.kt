@@ -11,7 +11,6 @@ import java.util.*
 
 @Serializable
 data class User(
-
 	@Contextual
 	val userId: UUID,
 	val snsId: String,

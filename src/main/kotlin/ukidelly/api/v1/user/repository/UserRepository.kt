@@ -7,6 +7,7 @@ import ukidelly.database.DataBaseFactory.dbQuery
 import ukidelly.database.models.user.UserEntity
 import ukidelly.database.models.user.UserTable
 import ukidelly.systems.models.LoginType
+import java.util.*
 
 
 @Module
@@ -14,17 +15,19 @@ class UserRepository {
 
 
 	suspend fun findUser(snsId: String, email: String, loginType: LoginType): User? {
-
 		return dbQuery {
-
 			UserEntity.find {
 				UserTable.loginType eq loginType
 				UserTable.snsId eq snsId
 				UserTable.email eq email
-
 			}.firstOrNull()?.toUser()
 		}
+	}
 
+	suspend fun findUserById(userId: UUID): User? {
+		return dbQuery {
+			UserEntity.findById(userId)?.toUser()
+		}
 	}
 
 
@@ -39,6 +42,4 @@ class UserRepository {
 			this.defaultProfile = registerRequest.profile
 		}.toUser()
 	}
-
-
 }

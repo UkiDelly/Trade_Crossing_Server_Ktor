@@ -2,6 +2,7 @@ package ukidelly.api.v1.user
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -13,9 +14,11 @@ import ukidelly.api.v1.user.models.UserLoginRequest
 import ukidelly.api.v1.user.models.UserRegisterRequest
 import ukidelly.api.v1.user.models.UserResponse
 import ukidelly.api.v1.user.service.UserService
+import ukidelly.modules.getToken
 import ukidelly.systems.models.LoginType
 import ukidelly.systems.models.ResponseDto
 import ukidelly.systems.models.Token
+import java.util.*
 
 fun Route.userRouting() {
 
@@ -23,7 +26,7 @@ fun Route.userRouting() {
 	val service by inject<UserService>()
 	route("/login") {
 
-		get("/kakao") {
+		post("/kakao") {
 
 			val loginType = LoginType.KAKAO
 			val request = call.receive<UserLoginRequest>()
@@ -33,19 +36,19 @@ fun Route.userRouting() {
 						HttpStatusCode.NotFound,
 						ResponseDto.Error(error = "가입 되지 않은 유저입니다.", message = "로그인에 실패 했습니다.")
 					)
-					return@get
+					return@post
 				} else {
 					val token = Token.createToken(application.environment.config, user.userId.toString())
 					call.respond(
 						HttpStatusCode.OK,
 						ResponseDto.Success(data = UserResponse(user, token), message = "로그인 성공")
 					)
-					return@get
+					return@post
 				}
 			}
 		}
 
-		get("/google") {
+		post("/google") {
 
 			val loginType = LoginType.GOOGLE
 			val request = call.receive<UserLoginRequest>()
@@ -71,7 +74,7 @@ fun Route.userRouting() {
 			}
 		}
 
-		get("/apple") {
+		post("/apple") {
 			val loginType = LoginType.APPLE
 			val request = call.receive<UserLoginRequest>()
 			val user = withContext(Dispatchers.IO) {
@@ -93,6 +96,33 @@ fun Route.userRouting() {
 					HttpStatusCode.OK,
 					ResponseDto.Success(data = UserResponse(user, token), message = "로그인 성공")
 				)
+			}
+		}
+
+		authenticate("refresh-jwt") {
+
+			post("/refresh") {
+				val token = call.getToken()
+				call.respond(HttpStatusCode.OK, ResponseDto.Success(data = token, "재발급에 성공하였습니다."))
+			}
+
+			post("/auto") {
+				val userId = call.principal<UserIdPrincipal>()!!.name
+				val user = withContext(Dispatchers.IO) {
+					service.autoLogin(UUID.fromString(userId))
+				}
+
+				if (user == null) {
+					call.respond(
+						HttpStatusCode.NotFound,
+						ResponseDto.Error(error = "가입 되지 않은 유저입니다.", message = "로그인에 실패 했습니다.")
+					)
+				} else {
+					call.respond(
+						HttpStatusCode.OK,
+						ResponseDto.Success(data = UserResponse(user, call.getToken()), message = "성공")
+					)
+				}
 			}
 		}
 	}

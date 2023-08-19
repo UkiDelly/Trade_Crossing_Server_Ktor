@@ -17,10 +17,9 @@ class UserService {
 	/**
 	 * 로그인
 	 * @param loginRequest 로그인 요청 Dto
-	 * @return [UserEntity?] 유저 정보
+	 * @return [UserEntity]? 유저 정보
 	 */
 	suspend fun login(snsId: String, email: String, loginType: LoginType): User? {
-
 		return repository.findUser(
 			snsId = snsId,
 			email = email,
@@ -28,6 +27,15 @@ class UserService {
 		)
 	}
 
+	/**
+	 * 자동 로그인
+	 * @param userId 유저 아이디
+	 * @return [User] 유저 정보 또는 [null]
+	 *
+	 */
+	suspend fun autoLogin(userId: UUID): User? {
+		return repository.findUserById(userId)
+	}
 
 	/**
 	 * 회원가입
@@ -36,12 +44,10 @@ class UserService {
 
 	 */
 	suspend fun register(userRegisterRequest: UserRegisterRequest): User? {
-
 		repository.findUser(userRegisterRequest.snsId, userRegisterRequest.email, userRegisterRequest.loginType)?.let {
 			return null
 		}
 		return repository.addNewUser(userRegisterRequest)
 	}
-
 
 }
