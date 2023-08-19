@@ -4,82 +4,80 @@ val logback_version: String by project
 val developmentMode: Boolean by project
 
 plugins {
-    kotlin("jvm") version "1.9.0"
-    id("io.ktor.plugin") version "2.3.2"
-    kotlin("plugin.serialization") version "1.5.0"
-
-
+	kotlin("jvm") version "1.9.0"
+	id("io.ktor.plugin") version "2.3.2"
+	kotlin("plugin.serialization") version "1.5.0"
 }
 
 group = "ukidelly"
 version = "0.0.1"
 application {
-    mainClass.set("io.ktor.server.netty.EngineMain")
-
-    val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+	mainClass.set("io.ktor.server.netty.EngineMain")
+	val isDevelopment: Boolean = project.ext.has("development")
+	applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+    
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
 
-    // ktor
-    implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-config-yaml:$ktor_version")
-    implementation("io.ktor:ktor-server-host-common-jvm:2.3.2")
+	// ktor
+	implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
+	implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
+	implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
+	implementation("io.ktor:ktor-server-config-yaml:$ktor_version")
+	implementation("io.ktor:ktor-server-host-common-jvm:2.3.2")
 
-    // auth
-    implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")
+	// auth
+	implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")
 
-    // Di
-    implementation("io.insert-koin:koin-ktor:3.4.1")
-    implementation("io.insert-koin:koin-ksp-compiler:1.2.2")
+	// Di
+	implementation("io.insert-koin:koin-ktor:3.4.1")
+	implementation("io.insert-koin:koin-ksp-compiler:1.2.2")
 
-    runtimeOnly("io.insert-koin:koin-annotations:1.2.2")
+	runtimeOnly("io.insert-koin:koin-annotations:1.2.2")
 
-    // swagger
-    implementation("io.ktor:ktor-server-swagger-jvm:$ktor_version")
+	// swagger
+	implementation("io.ktor:ktor-server-swagger-jvm:$ktor_version")
 
-    // json
-    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.0")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+	// json
+	implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.0")
+	implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
 
-    // database
-    implementation("org.jetbrains.exposed:exposed-core:0.40.1")
-    implementation("org.jetbrains.exposed:exposed-dao:0.40.1")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.40.1")
-    implementation("org.jetbrains.exposed:exposed-java-time:0.41.1")
-    implementation("org.postgresql:postgresql:42.6.0")
-    implementation("mysql:mysql-connector-java:8.0.33")
-    implementation("com.zaxxer:HikariCP:5.0.1")
+	// database
+	implementation("org.jetbrains.exposed:exposed-core:0.40.1")
+	implementation("org.jetbrains.exposed:exposed-dao:0.40.1")
+	implementation("org.jetbrains.exposed:exposed-jdbc:0.40.1")
+	implementation("org.jetbrains.exposed:exposed-java-time:0.41.1")
+	implementation("org.postgresql:postgresql:42.6.0")
+	implementation("mysql:mysql-connector-java:8.0.33")
+	implementation("com.zaxxer:HikariCP:5.0.1")
 
-    // logging
-    implementation("io.ktor:ktor-server-call-logging-jvm:$ktor_version")
-    implementation("ch.qos.logback:logback-classic:$logback_version")
+	// logging
+	implementation("io.ktor:ktor-server-call-logging-jvm:$ktor_version")
+	implementation("ch.qos.logback:logback-classic:$logback_version")
 
-    // validation
-    implementation("io.ktor:ktor-server-request-validation:$ktor_version")
+	// validation
+	implementation("io.ktor:ktor-server-request-validation:$ktor_version")
 
-    // status
-    implementation("io.ktor:ktor-server-status-pages:$ktor_version")
-    implementation("io.ktor:ktor-server-status-pages-jvm:2.3.2")
+	// status
+	implementation("io.ktor:ktor-server-status-pages:$ktor_version")
+	implementation("io.ktor:ktor-server-status-pages-jvm:2.3.2")
 
-    // test
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
-    testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
-    testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.2")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+	// test
+	testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+	testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+	testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
+	testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.2")
+	testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
+	testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.0")
+	testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+	testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 
 
 //    implementation("org.litote.kmongo:kmongo:4.8.0")
@@ -91,5 +89,5 @@ dependencies {
 
 //test
 tasks.withType<Test> {
-    useJUnitPlatform()
+	useJUnitPlatform()
 }
