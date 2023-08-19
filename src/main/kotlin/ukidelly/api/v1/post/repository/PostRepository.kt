@@ -27,7 +27,9 @@ class PostRepository {
 	suspend fun findLatestPosts(size: Int, page: Int): Pair<List<PostPreview>, Int> {
 
 		val totalCount = dbQuery { PostTable.selectAll().count() }
-		val totalPage = (totalCount / size).toInt()
+		val totalPage = (totalCount / size).toInt().let {
+			if (it == 0) 1 else it
+		}
 		val offset = ((page - 1) * size).toLong()
 		val posts = dbQuery {
 			PostTable
