@@ -2,9 +2,7 @@ package ukidelly.api.v1.post.repository
 
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.koin.core.annotation.Module
-import org.slf4j.LoggerFactory
 import ukidelly.api.v1.comment.models.Comment
 import ukidelly.api.v1.post.models.PostCreateRequest
 import ukidelly.api.v1.post.models.PostDetail
@@ -21,7 +19,7 @@ import java.util.*
 @Module
 class PostRepository {
 
-	private val logger = LoggerFactory.getLogger("PostRepository")
+//	private val logger = LoggerFactory.getLogger("PostRepository")
 
 
 	suspend fun findLatestPosts(size: Int, page: Int): Pair<List<PostPreview>, Int> {
@@ -105,13 +103,9 @@ class PostRepository {
 	}
 
 
-	suspend fun deletePost(postId: Int, userId: UUID): Boolean {
-		val result = dbQuery {
-			PostTable.deleteWhere {
-				(PostTable.id eq postId) and (PostTable.userId eq userId)
-			}
-		}
-		return true
-
-	}
+//	suspend fun deletePost(postId: Int, userId: UUID): Boolean {
+//		TODO("게시물 삭제 구현")
+//		return true
+//
+//	}
 }

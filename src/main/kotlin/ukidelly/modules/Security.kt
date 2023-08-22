@@ -70,7 +70,7 @@ fun Application.configureJWT() {
 				UserIdPrincipal(userId)
 			}
 
-			challenge { defaultScheme, realm ->
+			challenge { _, _ ->
 				call.respond(
 					HttpStatusCode.Unauthorized,
 					ResponseDto.Error(error = "유효하지 않는 토큰입니다.", message = "실패")

@@ -8,6 +8,7 @@ ktor:
     rootPath: /api/v1
     watch: [ ukidelly ]
 
+
 jwt:
   issuer: "Trade Crossing Ktor Server"
   audience: "Trade Crossing Application"
@@ -26,4 +27,4 @@ aws:
   password: "wjdrmsdud0922"
 
 server:
-  mode: $MODE
+  mode: "DEV"

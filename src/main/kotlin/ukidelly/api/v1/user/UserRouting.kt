@@ -9,7 +9,6 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.ktor.ext.inject
-import org.slf4j.LoggerFactory
 import ukidelly.api.v1.user.models.UserLoginRequest
 import ukidelly.api.v1.user.models.UserRegisterRequest
 import ukidelly.api.v1.user.models.UserResponse
@@ -22,7 +21,7 @@ import java.util.*
 
 fun Route.userRouting() {
 
-	val logger = LoggerFactory.getLogger("UserRouting")
+//	val logger = LoggerFactory.getLogger("UserRouting")
 	val service by inject<UserService>()
 	route("/login") {
 
