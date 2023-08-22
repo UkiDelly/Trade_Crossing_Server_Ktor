@@ -4,15 +4,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class LoginType {
-	GOOGLE, KAKAO, APPLE
+	google, kakao, apple
 }
 
 
 @Serializable
-enum class DefaultProfile { NOOK, ISABELL, NO }
+enum class DefaultProfile { nook, isabella, no }
 
 enum class ServerMode {
-	DEV, PROD
+	dev, prod
 }
 
 @Serializable

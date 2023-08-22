@@ -19,8 +19,8 @@ fun Application.module() {
 	// DB 연결
 	DataBaseFactory.init(
 		databaseUrl = when (serverMode) {
-			ServerMode.DEV -> environment.config.property("aws.dev_url").getString()
-			ServerMode.PROD -> environment.config.property("aws.prod_url").getString()
+			ServerMode.dev -> environment.config.property("aws.dev_url").getString()
+			ServerMode.prod -> environment.config.property("aws.prod_url").getString()
 		},
 		user = environment.config.property("aws.user").getString(),
 		password = environment.config.property("aws.password").getString()

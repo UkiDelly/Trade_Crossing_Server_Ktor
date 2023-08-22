@@ -27,4 +27,4 @@ aws:
   password: "wjdrmsdud0922"
 
 server:
-  mode: "DEV"
+  mode: "dev"

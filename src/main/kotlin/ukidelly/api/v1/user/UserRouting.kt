@@ -27,7 +27,7 @@ fun Route.userRouting() {
 
 		post("/kakao") {
 
-			val loginType = LoginType.KAKAO
+			val loginType = LoginType.kakao
 			val request = call.receive<UserLoginRequest>()
 			service.login(snsId = request.snsId, email = request.email, loginType = loginType).let { user ->
 				if (user == null) {
@@ -49,7 +49,7 @@ fun Route.userRouting() {
 
 		post("/google") {
 
-			val loginType = LoginType.GOOGLE
+			val loginType = LoginType.google
 			val request = call.receive<UserLoginRequest>()
 			val user = withContext(Dispatchers.IO) {
 				service.login(
@@ -74,7 +74,7 @@ fun Route.userRouting() {
 		}
 
 		post("/apple") {
-			val loginType = LoginType.APPLE
+			val loginType = LoginType.apple
 			val request = call.receive<UserLoginRequest>()
 			val user = withContext(Dispatchers.IO) {
 				service.login(
