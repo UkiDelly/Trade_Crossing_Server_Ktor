@@ -4,4 +4,10 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class UserLoginRequest(val snsId: String, val email: String)
+data class UserLoginRequest(val snsId: String, val email: String) {
+
+
+	fun toJsonString(): String {
+		return """{"sns_id": "$snsId", "email": "$email"}"""
+	}
+}

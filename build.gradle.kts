@@ -36,6 +36,9 @@ dependencies {
 	// Di
 	implementation("io.insert-koin:koin-ktor:3.4.1")
 	implementation("io.insert-koin:koin-ksp-compiler:1.2.2")
+	testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+	testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+	testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 
 	runtimeOnly("io.insert-koin:koin-annotations:1.2.2")
 
@@ -77,6 +80,8 @@ dependencies {
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.0")
 	testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 	testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+	testImplementation("io.ktor:ktor-server-test-host:$ktor_version")
+	testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
 
 
 //    implementation("org.litote.kmongo:kmongo:4.8.0")
