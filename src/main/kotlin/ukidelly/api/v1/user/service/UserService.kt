@@ -14,13 +14,27 @@ class UserService {
 
 	private val repository by inject<UserRepository>(clazz = UserRepository::class.java)
 
+
+	/**
+	 * 이메일 로그인
+	 * @param email 이메일
+	 * @param password 비밀번호
+	 * @return [User]? 유저정보
+	 */
+	suspend fun emailLogin(email: String, password: String): User? {
+		return repository.findEmailUser(
+			email = email,
+			password = password
+		)
+	}
+
 	/**
 	 * 로그인
 	 * @param loginRequest 로그인 요청 Dto
 	 * @return [UserEntity]? 유저 정보
 	 */
-	suspend fun login(snsId: String, email: String, loginType: LoginType): User? {
-		return repository.findUser(
+	suspend fun socialLogin(snsId: String, email: String, loginType: LoginType): User? {
+		return repository.findSocialUser(
 			snsId = snsId,
 			email = email,
 			loginType = loginType
@@ -44,9 +58,32 @@ class UserService {
 
 	 */
 	suspend fun register(userRegisterRequest: UserRegisterRequest): User? {
-		repository.findUser(userRegisterRequest.snsId, userRegisterRequest.email, userRegisterRequest.loginType)?.let {
+
+		repository.findUserByEmail(userRegisterRequest.email)?.let {
 			return null
 		}
+
+		when (userRegisterRequest.loginType) {
+			LoginType.email -> {
+				return repository.findEmailUser(
+					userRegisterRequest.email,
+					userRegisterRequest.password!!
+				)?.let {
+					return null
+				}
+			}
+
+			else -> {
+				repository.findSocialUser(
+					userRegisterRequest.snsId,
+					userRegisterRequest.email,
+					userRegisterRequest.loginType
+				)?.let {
+					return null
+				}
+			}
+		}
+
 		return repository.addNewUser(userRegisterRequest)
 	}
 
