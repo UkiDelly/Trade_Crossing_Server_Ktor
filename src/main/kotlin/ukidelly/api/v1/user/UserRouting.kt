@@ -24,7 +24,7 @@ fun Route.userRouting() {
 //	val logger = LoggerFactory.getLogger("UserRouting")
 	val service by inject<UserService>()
 	route("/login") {
-
+		
 		post("/kakao") {
 
 			val loginType = LoginType.kakao

@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class LoginType {
-	google, kakao, apple
+	google, kakao, apple, email
 }
 
 
