@@ -36,9 +36,6 @@ dependencies {
 	// Di
 	implementation("io.insert-koin:koin-ktor:3.4.1")
 	implementation("io.insert-koin:koin-ksp-compiler:1.2.2")
-	testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
-	testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
-	testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 
 	runtimeOnly("io.insert-koin:koin-annotations:1.2.2")
 
@@ -66,19 +63,16 @@ dependencies {
 
 	// validation
 	implementation("io.ktor:ktor-server-request-validation:$ktor_version")
+	implementation("at.favre.lib:bcrypt:0.10.2")
 
 	// status
 	implementation("io.ktor:ktor-server-status-pages:$ktor_version")
 	implementation("io.ktor:ktor-server-status-pages-jvm:2.3.2")
 
 	// test
-	testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
-	testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 	testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
 	testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.2")
 	testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
-	testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.0")
-	testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 	testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 	testImplementation("io.ktor:ktor-server-test-host:$ktor_version")
 	testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")

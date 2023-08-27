@@ -13,7 +13,12 @@ import java.util.*
 @Module
 class UserRepository {
 
-
+	/**
+	 * 이메일 유저 찾기
+	 * @param email 이메일
+	 * @param password 비밀번호
+	 * @return [User]? 유저정보
+	 */
 	suspend fun findEmailUser(email: String, password: String): User? {
 		return dbQuery {
 			UserEntity.find {
@@ -24,6 +29,14 @@ class UserRepository {
 		}
 	}
 
+
+	/**
+	 * 소셜 로그인
+	 * @param snsId 소셜 ID
+	 * @param email 이메일
+	 * @param loginType 소셜로그인 타입
+	 * @return [User]? 유저정보
+	 */
 	suspend fun findSocialUser(snsId: String, email: String, loginType: LoginType): User? {
 		return dbQuery {
 			UserEntity.find {
@@ -34,12 +47,24 @@ class UserRepository {
 		}
 	}
 
+
+	/**
+	 * UUID로 유저 찾기
+	 * @param userId 유저 아이디
+	 * @return [User]? 유저정보
+	 */
 	suspend fun findUserById(userId: UUID): User? {
 		return dbQuery {
 			UserEntity.findById(userId)?.toUser()
 		}
 	}
 
+
+	/**
+	 * 이메일로 유저 가입 여부 확인
+	 * @param email 이메일
+	 * @return [User]? 유저정보
+	 */
 	suspend fun findUserByEmail(email: String): User? {
 		return dbQuery {
 			UserEntity.find {
@@ -49,6 +74,11 @@ class UserRepository {
 	}
 
 
+	/**
+	 * 유저 회원가입
+	 * @param registerRequest 회원가입 요청 Dto
+	 * @return [User] 유저정보
+	 */
 	suspend fun addNewUser(registerRequest: UserRegisterRequest): User = dbQuery {
 		UserEntity.new {
 			this.snsId = registerRequest.snsId

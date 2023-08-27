@@ -1,5 +1,6 @@
 package ukidelly.api.v1.user.service
 
+import at.favre.lib.crypto.bcrypt.BCrypt
 import org.koin.core.annotation.Module
 import org.koin.java.KoinJavaComponent.inject
 import ukidelly.api.v1.user.models.User
@@ -22,9 +23,11 @@ class UserService {
 	 * @return [User]? 유저정보
 	 */
 	suspend fun emailLogin(email: String, password: String): User? {
+
+		val hashedPassword = BCrypt.withDefaults().hashToString(12, password.toCharArray())
 		return repository.findEmailUser(
 			email = email,
-			password = password
+			password = hashedPassword
 		)
 	}
 
@@ -65,9 +68,12 @@ class UserService {
 
 		when (userRegisterRequest.loginType) {
 			LoginType.email -> {
+
+				val hashedPassword =
+					BCrypt.withDefaults().hashToString(12, userRegisterRequest.password!!.toCharArray())
 				return repository.findEmailUser(
 					userRegisterRequest.email,
-					userRegisterRequest.password!!
+					hashedPassword
 				)?.let {
 					return null
 				}
