@@ -38,7 +38,7 @@ fun Route.userRouting() {
 
 			val loginType = LoginType.kakao
 			val request = call.receive<SocialLoginRequest>()
-			service.login(snsId = request.snsId, email = request.email, loginType = loginType).let { user ->
+			service.socialLogin(snsId = request.snsId, email = request.email, loginType = loginType).let { user ->
 				if (user == null) {
 					call.respond(
 						HttpStatusCode.NotFound,
@@ -61,7 +61,7 @@ fun Route.userRouting() {
 			val loginType = LoginType.google
 			val request = call.receive<SocialLoginRequest>()
 			val user = withContext(Dispatchers.IO) {
-				service.login(
+				service.socialLogin(
 					snsId = request.snsId,
 					email = request.email,
 					loginType = loginType
@@ -86,7 +86,7 @@ fun Route.userRouting() {
 			val loginType = LoginType.apple
 			val request = call.receive<SocialLoginRequest>()
 			val user = withContext(Dispatchers.IO) {
-				service.login(
+				service.socialLogin(
 					snsId = request.snsId,
 					email = request.email,
 					loginType = loginType
