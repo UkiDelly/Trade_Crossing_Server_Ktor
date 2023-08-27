@@ -9,6 +9,7 @@ import ukidelly.systems.models.LoginType
 object UserTable : UUIDTable("user_info", "user_id") {
 	val snsId = varchar("sns_id", 100)
 	val email = varchar("email", 100)
+	val password = varchar("password", 255).nullable()
 	val defaultProfile = enumerationByName<DefaultProfile>("default_profile", 10)
 	val userName = varchar("user_name", 100)
 	val islandName = varchar("island_name", 100)

@@ -10,7 +10,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.slf4j.LoggerFactory
-import ukidelly.api.v1.user.models.UserLoginRequest
+import ukidelly.api.v1.user.models.EmailLoginReqeust
+import ukidelly.api.v1.user.models.SocialLoginRequest
 import ukidelly.module
 import ukidelly.systems.models.DefaultProfile
 import ukidelly.systems.models.LoginType
@@ -20,6 +21,23 @@ import kotlin.test.assertEquals
 class UserRoutingTest {
 
 	val logger = LoggerFactory.getLogger("UserRoutingTest")
+
+
+	@Test
+	fun testEmailLogin() = testApplication {
+		client.post("/user/login/email") {
+
+			headers {
+				append(HttpHeaders.ContentType, ContentType.Application.Json)
+			}
+
+			setBody {
+				val testBody = EmailLoginReqeust("test@test", "test")
+				testBody.toJsonString()
+			}
+		}.apply { }
+
+	}
 
 
 	@Test
@@ -54,7 +72,7 @@ class UserRoutingTest {
 				append(HttpHeaders.ContentType, ContentType.Application.Json)
 			}
 			setBody(
-				UserLoginRequest(
+				SocialLoginRequest(
 					"102802897338938679561",
 					"ukidelly@gmail.com"
 				).toJsonString()

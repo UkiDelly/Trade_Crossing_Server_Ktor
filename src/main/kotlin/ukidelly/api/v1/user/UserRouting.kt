@@ -9,7 +9,9 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.ktor.ext.inject
-import ukidelly.api.v1.user.models.UserLoginRequest
+import org.slf4j.LoggerFactory
+import ukidelly.api.v1.user.models.EmailLoginReqeust
+import ukidelly.api.v1.user.models.SocialLoginRequest
 import ukidelly.api.v1.user.models.UserRegisterRequest
 import ukidelly.api.v1.user.models.UserResponse
 import ukidelly.api.v1.user.service.UserService
@@ -21,14 +23,21 @@ import java.util.*
 
 fun Route.userRouting() {
 
-//	val logger = LoggerFactory.getLogger("UserRouting")
+	val logger = LoggerFactory.getLogger("UserRouting")
 	val service by inject<UserService>()
 	route("/login") {
-		
+
+		post("/email") {
+			val loginType = LoginType.email
+			val request = call.receive<EmailLoginReqeust>()
+
+			logger.debug("body: {}", request)
+		}
+
 		post("/kakao") {
 
 			val loginType = LoginType.kakao
-			val request = call.receive<UserLoginRequest>()
+			val request = call.receive<SocialLoginRequest>()
 			service.login(snsId = request.snsId, email = request.email, loginType = loginType).let { user ->
 				if (user == null) {
 					call.respond(
@@ -50,7 +59,7 @@ fun Route.userRouting() {
 		post("/google") {
 
 			val loginType = LoginType.google
-			val request = call.receive<UserLoginRequest>()
+			val request = call.receive<SocialLoginRequest>()
 			val user = withContext(Dispatchers.IO) {
 				service.login(
 					snsId = request.snsId,
@@ -75,7 +84,7 @@ fun Route.userRouting() {
 
 		post("/apple") {
 			val loginType = LoginType.apple
-			val request = call.receive<UserLoginRequest>()
+			val request = call.receive<SocialLoginRequest>()
 			val user = withContext(Dispatchers.IO) {
 				service.login(
 					snsId = request.snsId,

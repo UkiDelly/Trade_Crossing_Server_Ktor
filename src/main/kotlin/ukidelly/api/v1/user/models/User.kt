@@ -15,6 +15,7 @@ data class User(
 	val userId: UUID,
 	val snsId: String,
 	val email: String,
+	val password: String?,
 	val profile: DefaultProfile,
 	val userName: String,
 	val islandName: String,

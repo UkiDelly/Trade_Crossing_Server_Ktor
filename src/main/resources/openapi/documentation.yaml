@@ -4,7 +4,7 @@ info:
   description: "trade_crossing_server API"
   version: "1.0.0"
 servers:
-- url: "https://trade_crossing_server"
+  - url: "https://trade_crossing_server"
 paths:
   /:
     get:
@@ -26,7 +26,7 @@ paths:
         content:
           '*/*':
             schema:
-              $ref: "#/components/schemas/UserLoginRequest"
+              $ref: "#/components/schemas/SocialLoginRequest"
         required: true
       responses:
         "404":
@@ -92,7 +92,7 @@ paths:
                 type: "object"
 components:
   schemas:
-    UserLoginRequest:
+    SocialLoginRequest:
       type: "object"
       properties:
         snsId:
@@ -107,8 +107,8 @@ components:
         loginMethod:
           type: "string"
           enum:
-          - "google"
-          - "apple"
+            - "google"
+            - "apple"
         email:
           type: "string"
         userName:
