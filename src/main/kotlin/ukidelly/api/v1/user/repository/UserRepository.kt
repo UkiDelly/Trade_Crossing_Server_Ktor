@@ -14,7 +14,17 @@ import java.util.*
 class UserRepository {
 
 
-	suspend fun findUser(snsId: String, email: String, loginType: LoginType): User? {
+	suspend fun findEmailUser(email: String, password: String): User? {
+		return dbQuery {
+			UserEntity.find {
+				UserTable.loginType eq LoginType.email
+				UserTable.email eq email
+				UserTable.password eq password
+			}.firstOrNull()?.toUser()
+		}
+	}
+
+	suspend fun findSocialUser(snsId: String, email: String, loginType: LoginType): User? {
 		return dbQuery {
 			UserEntity.find {
 				UserTable.loginType eq loginType
@@ -27,6 +37,14 @@ class UserRepository {
 	suspend fun findUserById(userId: UUID): User? {
 		return dbQuery {
 			UserEntity.findById(userId)?.toUser()
+		}
+	}
+
+	suspend fun findUserByEmail(email: String): User? {
+		return dbQuery {
+			UserEntity.find {
+				UserTable.email eq email
+			}.firstOrNull()?.toUser()
 		}
 	}
 
