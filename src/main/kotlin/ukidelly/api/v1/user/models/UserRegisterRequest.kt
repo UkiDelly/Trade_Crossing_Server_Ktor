@@ -11,11 +11,12 @@ data class UserRegisterRequest(
 	val loginType: LoginType,
 	val profile: DefaultProfile,
 	val email: String,
+	val password: String?,
 	val userName: String,
 	val islandName: String,
 	val introduction: String
 ) {
-	
+
 
 	fun validEmail(): Boolean {
 		val regex = Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}")
