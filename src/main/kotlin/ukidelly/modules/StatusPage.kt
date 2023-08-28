@@ -10,6 +10,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.MissingFieldException
 import org.slf4j.LoggerFactory
 import ukidelly.systems.errors.InvalidJwtTokenException
+import ukidelly.systems.errors.PasswordIncorrectException
+import ukidelly.systems.errors.UserExistException
 import ukidelly.systems.models.ResponseDto
 
 
@@ -46,6 +48,16 @@ fun Application.configureStatusPage() {
 				HttpStatusCode.BadRequest,
 				ResponseDto.Error(error = exception.missingFields, message = "필드가 누락되었습니다.")
 			)
+		}
+
+		// 커스텀 에러: 유저가 이미 존재
+		exception<UserExistException> { call, e ->
+			call.respond(HttpStatusCode.Conflict, ResponseDto.Error(e.message, "실패"))
+		}
+
+		// 커스턴 에러: 비밀번호 맞지 않음
+		exception<PasswordIncorrectException> { call, e ->
+			call.respond(HttpStatusCode.Forbidden, ResponseDto.Error(e.message, "실패"))
 		}
 	}
 }

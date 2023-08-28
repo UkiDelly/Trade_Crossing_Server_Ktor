@@ -19,12 +19,11 @@ class UserRepository {
 	 * @param password 비밀번호
 	 * @return [User]? 유저정보
 	 */
-	suspend fun findEmailUser(email: String, password: String): User? {
+	suspend fun findEmailUser(email: String): User? {
 		return dbQuery {
 			UserEntity.find {
 				UserTable.loginType eq LoginType.email
 				UserTable.email eq email
-				UserTable.password eq password
 			}.firstOrNull()?.toUser()
 		}
 	}
@@ -79,10 +78,11 @@ class UserRepository {
 	 * @param registerRequest 회원가입 요청 Dto
 	 * @return [User] 유저정보
 	 */
-	suspend fun addNewUser(registerRequest: UserRegisterRequest): User = dbQuery {
+	suspend fun addNewUser(registerRequest: UserRegisterRequest, password: String? = null): User = dbQuery {
 		UserEntity.new {
 			this.snsId = registerRequest.snsId
 			this.email = registerRequest.email
+			this.password = password
 			this.userName = registerRequest.userName
 			this.islandName = registerRequest.islandName
 			this.introduction = registerRequest.introduction

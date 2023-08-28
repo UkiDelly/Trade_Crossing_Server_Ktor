@@ -3,6 +3,7 @@ package ukidelly.api.v1.user
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.config.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -10,10 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
-import ukidelly.api.v1.user.models.EmailLoginReqeust
-import ukidelly.api.v1.user.models.SocialLoginRequest
-import ukidelly.api.v1.user.models.UserRegisterRequest
-import ukidelly.api.v1.user.models.UserResponse
+import ukidelly.api.v1.user.models.*
 import ukidelly.api.v1.user.service.UserService
 import ukidelly.modules.getToken
 import ukidelly.systems.models.LoginType
@@ -31,7 +29,9 @@ fun Route.userRouting() {
 			val loginType = LoginType.email
 			val request = call.receive<EmailLoginReqeust>()
 
-			logger.debug("body: {}", request)
+			val user = service.emailLogin(request.email, request.password)
+
+			chechUserAndRespond(user, call, application.environment.config)
 		}
 
 		post("/kakao") {
@@ -68,18 +68,7 @@ fun Route.userRouting() {
 				)
 			}
 
-			if (user == null) {
-				call.respond(
-					HttpStatusCode.NotFound,
-					ResponseDto.Error(error = "가입 되지 않은 유저입니다.", message = "로그인에 실패 했습니다.")
-				)
-			} else {
-				val token = Token.createToken(application.environment.config, user.userId.toString())
-				call.respond(
-					HttpStatusCode.OK,
-					ResponseDto.Success(data = UserResponse(user, token), message = "로그인 성공")
-				)
-			}
+			chechUserAndRespond(user, call, application.environment.config)
 		}
 
 		post("/apple") {
@@ -93,18 +82,7 @@ fun Route.userRouting() {
 				)
 			}
 
-			if (user == null) {
-				call.respond(
-					HttpStatusCode.NotFound,
-					ResponseDto.Error(error = "가입 되지 않은 유저입니다.", message = "로그인에 실패 했습니다.")
-				)
-			} else {
-				val token = Token.createToken(application.environment.config, user.userId.toString())
-				call.respond(
-					HttpStatusCode.OK,
-					ResponseDto.Success(data = UserResponse(user, token), message = "로그인 성공")
-				)
-			}
+			chechUserAndRespond(user, call, application.environment.config)
 		}
 
 		authenticate("refresh-jwt") {
@@ -138,13 +116,33 @@ fun Route.userRouting() {
 	post("/register") {
 
 		val request = call.receive<UserRegisterRequest>()
-		service.register(request)?.let {
+		service.register(request).let {
 			val token = Token.createToken(application.environment.config, it.userId.toString())
 			call.respond(HttpStatusCode.OK, ResponseDto.Success(UserResponse(it, token), message = "회원가입 성공"))
-		} ?: run {
-			call.respond(HttpStatusCode.Conflict, ResponseDto.Error("이미 가입한 유저입니다.", message = "회원가입 실패"))
 		}
 
 	}
 
+}
+
+
+/**
+ * 유저 null 체크 후 응답
+ * @param [User]? 유저정보
+ * @param call [ApplicationCall]
+ * @param config [ApplicationConfig]
+ */
+private suspend fun chechUserAndRespond(user: User?, call: ApplicationCall, config: ApplicationConfig) {
+	if (user == null) {
+		call.respond(
+			HttpStatusCode.NotFound,
+			ResponseDto.Error(error = "가입 되지 않은 유저입니다.", message = "로그인에 실패 했습니다.")
+		)
+	} else {
+		val token = Token.createToken(config, user.userId.toString())
+		call.respond(
+			HttpStatusCode.OK,
+			ResponseDto.Success(data = UserResponse(user, token), message = "로그인 성공")
+		)
+	}
 }

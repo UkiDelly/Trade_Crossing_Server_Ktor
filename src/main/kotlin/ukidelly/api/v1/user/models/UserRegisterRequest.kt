@@ -11,7 +11,7 @@ data class UserRegisterRequest(
 	val loginType: LoginType,
 	val profile: DefaultProfile,
 	val email: String,
-	val password: String?,
+	val password: String? = null,
 	val userName: String,
 	val islandName: String,
 	val introduction: String

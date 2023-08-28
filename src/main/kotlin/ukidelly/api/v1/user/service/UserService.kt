@@ -7,6 +7,8 @@ import ukidelly.api.v1.user.models.User
 import ukidelly.api.v1.user.models.UserRegisterRequest
 import ukidelly.api.v1.user.repository.UserRepository
 import ukidelly.database.models.user.UserEntity
+import ukidelly.systems.errors.PasswordIncorrectException
+import ukidelly.systems.errors.UserExistException
 import ukidelly.systems.models.LoginType
 import java.util.*
 
@@ -24,11 +26,14 @@ class UserService {
 	 */
 	suspend fun emailLogin(email: String, password: String): User? {
 
-		val hashedPassword = BCrypt.withDefaults().hashToString(12, password.toCharArray())
-		return repository.findEmailUser(
-			email = email,
-			password = hashedPassword
-		)
+		val user = repository.findEmailUser(email) ?: return null
+		val isVerified = BCrypt.verifyer().verify(password.toCharArray(), user.password).verified
+
+		if (isVerified) {
+			return user
+		} else {
+			throw PasswordIncorrectException()
+		}
 	}
 
 	/**
@@ -60,23 +65,21 @@ class UserService {
 	 * @return [UserEntity]? 유저 정보로, 유저가 존재하면 [null]을 반환, 존재하지 않아 가입에 성공하면 [UserEntity]를 반환
 
 	 */
-	suspend fun register(userRegisterRequest: UserRegisterRequest): User? {
+	suspend fun register(userRegisterRequest: UserRegisterRequest): User {
 
 		repository.findUserByEmail(userRegisterRequest.email)?.let {
-			return null
+			throw UserExistException("${it.loginType}으로 가입한 유저입니다.")
 		}
 
-		when (userRegisterRequest.loginType) {
+		return when (userRegisterRequest.loginType) {
 			LoginType.email -> {
-
 				val hashedPassword =
 					BCrypt.withDefaults().hashToString(12, userRegisterRequest.password!!.toCharArray())
 				return repository.findEmailUser(
 					userRegisterRequest.email,
-					hashedPassword
 				)?.let {
-					return null
-				}
+					throw UserExistException("이미 가입한 유저입니다.")
+				} ?: repository.addNewUser(userRegisterRequest, hashedPassword)
 			}
 
 			else -> {
@@ -85,12 +88,10 @@ class UserService {
 					userRegisterRequest.email,
 					userRegisterRequest.loginType
 				)?.let {
-					return null
-				}
+					throw UserExistException("이미 가입한 유저입니다.")
+				} ?: repository.addNewUser(userRegisterRequest)
 			}
 		}
-
-		return repository.addNewUser(userRegisterRequest)
 	}
 
 }
