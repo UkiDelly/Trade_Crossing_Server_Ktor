@@ -36,6 +36,7 @@ dependencies {
 	// Di
 	implementation("io.insert-koin:koin-ktor:3.4.1")
 	implementation("io.insert-koin:koin-ksp-compiler:1.2.2")
+	testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.0")
 
 	runtimeOnly("io.insert-koin:koin-annotations:1.2.2")
 

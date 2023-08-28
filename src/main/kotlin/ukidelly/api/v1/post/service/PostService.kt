@@ -14,7 +14,7 @@ import java.util.*
 class PostService {
 
 	private val postRepository by inject<PostRepository>(clazz = PostRepository::class.java)
-	private val commentRepository = CommentRepository
+	private val commentRepository = inject<CommentRepository>(clazz = CommentRepository::class.java)
 
 	suspend fun getLatestPosts(itemsPerPage: Int, page: Int): LatestPostDto {
 		val latestPosts = postRepository.findLatestPosts(itemsPerPage, page)

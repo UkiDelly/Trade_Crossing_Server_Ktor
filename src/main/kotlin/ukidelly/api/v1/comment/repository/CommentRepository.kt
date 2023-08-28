@@ -1,34 +1,41 @@
 package ukidelly.database.models.comment
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.selectAll
+import org.koin.core.annotation.Module
+import ukidelly.database.DataBaseFactory.dbQuery
+import ukidelly.database.models.user.UserTable
 
 
-object CommentRepository {
+@Module
+class CommentRepository {
 
-//    fun entityToComment(entity: CommentEntity): Comment = Comment(
-//        commentId = entity.id.value,
-//        postId = entity.postId.value,
-//        parentCommentId = entity.parentCommentId,
-//        content = entity.commentContent,
-//        creator = "",
-//        creatorIsland = "",
-////        creator = entity.creator,
-////        creatorIsland = entity.creatorIsland,
-//        createdAt = entity.createdAt,
-//        updatedAt = entity.updatedAt
-//    )
+	suspend fun findAllComments(postId: Int): List<ResultRow> {
+		return withContext(Dispatchers.IO) {
+			dbQuery {
+				CommentTable.innerJoin(UserTable).slice(
+					CommentTable.id,
+					CommentTable.postId,
+					CommentTable.parentCommentId,
+					CommentTable.commentContent,
+					UserTable.id,
+					UserTable.userName,
+					UserTable.islandName,
+					CommentTable.createdAt,
+					CommentTable.updatedAt
+				).selectAll().toList()
+			}
+		}
+	}
 
-    suspend fun getCommentsCountInPost(postId: Int): Int {
-        return CommentTable.select { CommentTable.postId eq postId }.count().toInt()
-    }
+	suspend fun addNewComment(postId: EntityID<Int>) {
 
-
-    suspend fun addNewComment(postId: EntityID<Int>) {
-
-        CommentEntity.new {
-            this.postId = postId
-            this.commentContent = ""
-        }
-    }
+		CommentEntity.new {
+			this.postId = postId
+			this.commentContent = ""
+		}
+	}
 }
