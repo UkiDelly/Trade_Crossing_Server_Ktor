@@ -2,92 +2,22 @@
 
 ---
 
-이 서버는 Trade Crossing 앱 프로젝트의 서버입니다.
+이 서버는 Trade Crossing 앱 프로젝트의 메인 서버이며, `Kotlin`언어와 `Ktor` 프레인워크로 제작되었습니다.
 
-이 서버는 `Kotlin`언어와 `Ktor` 프레인워크로 제작되었습니다.
+## 특징
 
-이 레포의 파일구조는 다음과 같습니다.
+- Jetbrain에서 내놓은 `Koltin` 경량 웹프레임 워크인 `Ktor`를 사용함으로써 빠른 구동과, 코루틴을 사용하여 DB 입출력등의 작업을 수행할 수 있습니다.
+- (개인적인 견해) 객체지향으로 설계되어 있어 커스텀 쿼리 처리가 매우 불편한 `JPA` 대신 코틀린에서만 사용이 가능한 `Exposed` ORM 라이브러리를 사용함으로써, `JPA`와 비슷한 `DAO`
+  방식과 `QueryDSL` 방식으로 DB 접근이 가능합니다.
+- Di 라이브러리로 `Koin`을 사용했고, 각 API의 Repository, Service을 필요한 곳에서 사용할수 있게 주입하는 방식을 사용했습니다.
 
-```
-📦ukidelly
-┣ 📂api
-┃ ┣ 📂v1
-┃ ┃ ┣ 📂comment
-┃ ┃ ┃ ┣ 📂models
-┃ ┃ ┃ ┃ ┣ 📜Comment.kt
-┃ ┃ ┃ ┃ ┗ 📜CommentDto.kt
-┃ ┃ ┃ ┣ 📂repository
-┃ ┃ ┃ ┃ ┗ 📜CommentRepository.kt
-┃ ┃ ┃ ┣ 📂service
-┃ ┃ ┃ ┃ ┗ 📜CommentService.kt
-┃ ┃ ┃ ┣ 📜.DS_Store
-┃ ┃ ┃ ┗ 📜CommentRouting.kt
-┃ ┃ ┣ 📂post
-┃ ┃ ┃ ┣ 📂models
-┃ ┃ ┃ ┃ ┣ 📂dto
-┃ ┃ ┃ ┃ ┃ ┣ 📜LatestPostDto.kt
-┃ ┃ ┃ ┃ ┃ ┗ 📜PostDetailDto.kt
-┃ ┃ ┃ ┃ ┣ 📜Post.kt
-┃ ┃ ┃ ┃ ┗ 📜PostCreateRequest.kt
-┃ ┃ ┃ ┣ 📂repository
-┃ ┃ ┃ ┃ ┗ 📜PostRepository.kt
-┃ ┃ ┃ ┣ 📂service
-┃ ┃ ┃ ┃ ┗ 📜PostService.kt
-┃ ┃ ┃ ┗ 📜PostRouting.kt
-┃ ┃ ┣ 📂user
-┃ ┃ ┃ ┣ 📂models
-┃ ┃ ┃ ┃ ┣ 📜User.kt
-┃ ┃ ┃ ┃ ┣ 📜UserLoginRequest.kt
-┃ ┃ ┃ ┃ ┣ 📜UserRegisterRequest.kt
-┃ ┃ ┃ ┃ ┗ 📜UserResponse.kt
-┃ ┃ ┃ ┣ 📂repository
-┃ ┃ ┃ ┃ ┗ 📜UserRepository.kt
-┃ ┃ ┃ ┣ 📂service
-┃ ┃ ┃ ┃ ┗ 📜UserService.kt
-┃ ┃ ┃ ┗ 📜UserRouting.kt
-┃ ┃ ┗ 📜.DS_Store
-┃ ┗ 📜.DS_Store
-┣ 📂database
-┃ ┣ 📂entity
-┃ ┃ ┣ 📜CommentEntity.kt
-┃ ┃ ┣ 📜LikeEntity.kt
-┃ ┃ ┣ 📜PostEntity.kt
-┃ ┃ ┗ 📜UserEntity.kt
-┃ ┣ 📂tables
-┃ ┃ ┣ 📜CommentTable.kt
-┃ ┃ ┣ 📜LikeTable.kt
-┃ ┃ ┣ 📜PostTable.kt
-┃ ┃ ┗ 📜UserTable.kt
-┃ ┗ 📜DataBaseFactory.kt
-┣ 📂modules
-┃ ┣ 📜Koin.kt
-┃ ┣ 📜Monitoring.kt
-┃ ┣ 📜RequestValidation.kt
-┃ ┣ 📜Routing.kt
-┃ ┣ 📜Security.kt
-┃ ┣ 📜Serialization.kt
-┃ ┣ 📜StatusPage.kt
-┃ ┗ 📜SwaggerUI.kt
-┣ 📂systems
-┃ ┣ 📂errors
-┃ ┃ ┗ 📜CustomExcpetions.kt
-┃ ┣ 📂models
-┃ ┃ ┣ 📜Enums.kt
-┃ ┃ ┣ 📜ResponseDto.kt
-┃ ┃ ┗ 📜Token.kt
-┃ ┗ 📜Config.kt
-┣ 📂utils
-┃ ┗ 📜Utils.kt
-┣ 📜.DS_Store
-┗ 📜Application.kt
-```
+## API 목록
 
-`api` - 라우팅, 엔드포인트, 서비스, 각 기능의 레포지토리를 관리하는 폴더입니다.
-
-`modules` - `Koin`, `Routing`등 프로젝트에 추가된 패키지들을 관리하기 위한 폴더입니다.
-
-`systems` - 서버 설정, 커스텀 익셉션, 등등 서버 전역에 사용되는 모델, 파일을 관리하는 폴더입니다.
-
-`utils` - 유틸리티들을 관리하는 폴더입니다.
-
-`database` - DB 연결, Table, Entity들을 관리하는 폴더입니다.
+- /user
+    - 로그인, 회원가입할때 사용되는 엔드 포인트
+    - 로그인은 email, 소셜 로그인으로 분리 되어 있습니다.
+    - 이메일 로그인 / 회원가입의 경우 비밀번호를 암호화하여 DB에 저장하고 있습니다.
+- /post (/trade 으로 변경 예정)
+    - 거래 피드에 사용되는 엔드 포인트
+    - 거래 글을 업로드, 수정, 삭제 가능합니다.
+- /{거래 피드 API 또는 홈 피드 API}/comment
