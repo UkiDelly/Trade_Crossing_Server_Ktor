@@ -28,7 +28,7 @@ dependencies {
 	implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
 	implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
 	implementation("io.ktor:ktor-server-config-yaml:$ktor_version")
-	implementation("io.ktor:ktor-server-host-common-jvm:2.3.2")
+	implementation("io.ktor:ktor-server-host-common-jvm:2.3.3")
 
 	// auth
 	implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")
@@ -68,14 +68,14 @@ dependencies {
 
 	// status
 	implementation("io.ktor:ktor-server-status-pages:$ktor_version")
-	implementation("io.ktor:ktor-server-status-pages-jvm:2.3.2")
+	implementation("io.ktor:ktor-server-status-pages-jvm:2.3.3")
 
 	// test
 	testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
-	testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.2")
+	testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.3")
 	testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
 	testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
-	testImplementation("io.ktor:ktor-server-test-host:$ktor_version")
+	testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.3")
 	testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
 
 

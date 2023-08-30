@@ -8,10 +8,10 @@ import java.time.LocalDateTime
 data class CommentDto(
 	val postId: Int,
 	val commentId: Int,
-	val childComments: List<CommentDto>,
 	val content: String,
 	val creator: String,
 	val creatorIsland: String,
+	val childComments: List<CommentDto>,
 	@Contextual
 	val createdAt: LocalDateTime,
 	@Contextual
