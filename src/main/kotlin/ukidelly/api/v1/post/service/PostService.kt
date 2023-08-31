@@ -31,4 +31,8 @@ class PostService {
         val newPostId = postRepository.addNewPost(newPost, userId)
         return getPost(newPostId.value)
     }
+
+    suspend fun deletePost(postId: Int) {
+        postRepository.deletePost(postId)
+    }
 }

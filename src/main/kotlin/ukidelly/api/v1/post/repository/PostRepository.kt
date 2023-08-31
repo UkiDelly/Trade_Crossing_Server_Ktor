@@ -1,8 +1,11 @@
 package ukidelly.api.v1.post.repository
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.koin.core.annotation.Module
+import org.slf4j.LoggerFactory
 import ukidelly.api.v1.post.models.PostCreateRequest
 import ukidelly.api.v1.post.models.PostDetail
 import ukidelly.api.v1.post.models.PostPreview
@@ -17,7 +20,7 @@ import java.util.*
 @Module
 class PostRepository {
 
-//	private val logger = LoggerFactory.getLogger("PostRepository")
+    private val logger = LoggerFactory.getLogger("PostRepository")
 
 
     suspend fun findLatestPosts(size: Int, page: Int): Pair<List<PostPreview>, Int> {
@@ -94,9 +97,10 @@ class PostRepository {
     }
 
 
-//	suspend fun deletePost(postId: Int, userId: UUID): Boolean {
-//		TODO("게시물 삭제 구현")
-//		return true
-//
-//	}
+    suspend fun deletePost(postId: Int): Boolean {
+        val post = withContext(Dispatchers.IO) { dbQuery { PostEntity.findById(postId) } } ?: return false
+        logger.debug("Deleting Post: {}", post)
+//        진짜로 삭제하는 코드 구현
+        return true
+    }
 }
