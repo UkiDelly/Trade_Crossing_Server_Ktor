@@ -1,4 +1,4 @@
-package ukidelly.api.v1.post.repository
+package ukidelly.api.v1.trade_post.repository
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -6,53 +6,53 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.koin.core.annotation.Module
 import org.slf4j.LoggerFactory
-import ukidelly.api.v1.post.models.PostCreateRequest
-import ukidelly.api.v1.post.models.PostDetail
-import ukidelly.api.v1.post.models.PostPreview
+import ukidelly.api.v1.trade_post.models.TradePostCreateRequest
+import ukidelly.api.v1.trade_post.models.TradePostDetail
+import ukidelly.api.v1.trade_post.models.TradePostPreview
 import ukidelly.database.DataBaseFactory.dbQuery
-import ukidelly.database.models.comment.CommentTable
-import ukidelly.database.models.post.PostEntity
-import ukidelly.database.models.post.PostTable
+import ukidelly.database.models.comment.TradePostCommentTable
+import ukidelly.database.models.post.TradePostEntity
+import ukidelly.database.models.post.TradePostTable
 import ukidelly.database.models.user.UserEntity
 import ukidelly.database.models.user.UserTable
 import java.util.*
 
 @Module
-class PostRepository {
+class TradePostRepository {
 
     private val logger = LoggerFactory.getLogger("PostRepository")
 
 
-    suspend fun findLatestPosts(size: Int, page: Int): Pair<List<PostPreview>, Int> {
+    suspend fun findLatestPosts(size: Int, page: Int): Pair<List<TradePostPreview>, Int> {
 
-        val totalCount = dbQuery { PostTable.selectAll().count() }
+        val totalCount = dbQuery { TradePostTable.selectAll().count() }
         val totalPage = (totalCount / size).toInt().let {
             if (it == 0) 1 else it
         }
         val offset = ((page - 1) * size).toLong()
         val posts = dbQuery {
-            PostTable
+            TradePostTable
                 .join(
-                    otherTable = CommentTable,
-                    onColumn = PostTable.id,
-                    otherColumn = CommentTable.postId,
+                    otherTable = TradePostCommentTable,
+                    onColumn = TradePostTable.id,
+                    otherColumn = TradePostCommentTable.postId,
                     joinType = JoinType.LEFT
                 )
                 .join(
                     otherTable = UserTable,
-                    onColumn = PostTable.userId,
+                    onColumn = TradePostTable.userId,
                     otherColumn = UserTable.id,
                     joinType = JoinType.LEFT
                 )
                 .slice(
-                    PostTable.columns + UserTable.userName + UserTable.islandName + CommentTable.id.count()
+                    TradePostTable.columns + UserTable.userName + UserTable.islandName + TradePostCommentTable.id.count()
                 )
                 .selectAll()
                 .limit(size, offset)
-                .groupBy(PostTable.id, PostTable.createdAt)
-                .orderBy(PostTable.createdAt to SortOrder.DESC)
+                .groupBy(TradePostTable.id, TradePostTable.createdAt)
+                .orderBy(TradePostTable.createdAt to SortOrder.DESC)
                 .toList().map {
-                    PostPreview.fromResultRow(it)
+                    TradePostPreview.fromResultRow(it)
                 }
         }
 
@@ -60,12 +60,12 @@ class PostRepository {
     }
 
 
-    suspend fun findPost(postId: Int): PostDetail? {
+    suspend fun findPost(postId: Int): TradePostDetail? {
 
-        val postEntity = dbQuery { PostEntity.findById(postId) } ?: return null
+        val postEntity = dbQuery { TradePostEntity.findById(postId) } ?: return null
         val userEntity = dbQuery { UserEntity.findById(postEntity.userId) } ?: return null
 
-        return PostDetail(
+        return TradePostDetail(
             postId = postEntity.id.value,
             title = postEntity.title,
             content = postEntity.content,
@@ -81,9 +81,9 @@ class PostRepository {
     }
 
 
-    suspend fun addNewPost(post: PostCreateRequest, userId: UUID): EntityID<Int> {
+    suspend fun addNewPost(post: TradePostCreateRequest, userId: UUID): EntityID<Int> {
         return dbQuery {
-            PostTable.insertAndGetId {
+            TradePostTable.insertAndGetId {
                 it[title] = post.title
                 it[content] = post.content
                 it[UserTable.id] = userId
@@ -98,7 +98,7 @@ class PostRepository {
 
 
     suspend fun deletePost(postId: Int): Boolean {
-        val post = withContext(Dispatchers.IO) { dbQuery { PostEntity.findById(postId) } } ?: return false
+        val post = withContext(Dispatchers.IO) { dbQuery { TradePostEntity.findById(postId) } } ?: return false
         logger.debug("Deleting Post: {}", post)
 //        진짜로 삭제하는 코드 구현
         return true

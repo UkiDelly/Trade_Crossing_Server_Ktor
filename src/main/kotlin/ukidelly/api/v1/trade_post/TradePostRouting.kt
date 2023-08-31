@@ -1,4 +1,4 @@
-package ukidelly.api.v1.post
+package ukidelly.api.v1.trade_post
 
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -9,16 +9,16 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.ktor.ext.inject
-import ukidelly.api.v1.comment.commentRoutes
-import ukidelly.api.v1.post.models.PostCreateRequest
-import ukidelly.api.v1.post.service.PostService
+import ukidelly.api.v1.trade_post.comment.tradePostCommentRoutes
+import ukidelly.api.v1.trade_post.models.TradePostCreateRequest
+import ukidelly.api.v1.trade_post.service.TradePostService
 import ukidelly.database.DataBaseFactory.dbQuery
-import ukidelly.database.models.post.PostEntity
+import ukidelly.database.models.post.TradePostEntity
 import ukidelly.systems.models.ResponseDto
 import java.util.*
 
-fun Route.postRouting() {
-    val postService by inject<PostService>()
+fun Route.tradePostRouting() {
+    val tradePostService by inject<TradePostService>()
 
     // 최신 게시글 가져오기
     get("/latest") {
@@ -42,7 +42,7 @@ fun Route.postRouting() {
             call.respond(HttpStatusCode.BadRequest, ResponseDto.Error(missingParam, "파라미터가 잘못되었습니다."))
             return@get
         } else {
-            val posts = postService.getLatestPosts(
+            val posts = tradePostService.getLatestPosts(
                 itemsPerPage = queryParam["size"]!!.toInt(),
                 page = queryParam["page"]!!.toInt()
             )
@@ -58,7 +58,7 @@ fun Route.postRouting() {
         get {
 
             call.parameters["postId"]?.let { postId ->
-                postService.getPost(postId.toInt())?.let {
+                tradePostService.getPost(postId.toInt())?.let {
                     call.respond(HttpStatusCode.OK, ResponseDto.Success(it, "성공"))
                 } ?: run {
                     call.respond(HttpStatusCode.NotFound, ResponseDto.Error("존재하지 않는 게시물입니다", "다시 시도해주세요"))
@@ -77,7 +77,8 @@ fun Route.postRouting() {
             delete {
                 val userId = call.principal<UserIdPrincipal>()!!.name
                 call.parameters["postId"]?.let {
-                    val post = withContext(Dispatchers.IO) { dbQuery { database -> PostEntity.findById(it.toInt()) } }
+                    val post =
+                        withContext(Dispatchers.IO) { dbQuery { database -> TradePostEntity.findById(it.toInt()) } }
 
                     if (post == null) {
                         call.respond(
@@ -92,7 +93,7 @@ fun Route.postRouting() {
                         )
                         return@delete
                     } else {
-                        val status = postService.deletePost(postId = it.toInt())
+                        val status = tradePostService.deletePost(postId = it.toInt())
                         call.respond(HttpStatusCode.OK, ResponseDto.Success("삭제 성공", "성공"))
                     }
                 }
@@ -104,7 +105,7 @@ fun Route.postRouting() {
 
         // 댓글ㅣ
         route("/comment") {
-            commentRoutes()
+            tradePostCommentRoutes()
         }
     }
 
@@ -113,8 +114,8 @@ fun Route.postRouting() {
 
             val principal = call.principal<UserIdPrincipal>()!!
             val userId = UUID.fromString(principal.name)
-            val postCreateRequest = call.receive<PostCreateRequest>()
-            postService.addNewPost(postCreateRequest, userId)?.let {
+            val tradePostCreateRequest = call.receive<TradePostCreateRequest>()
+            tradePostService.addNewPost(tradePostCreateRequest, userId)?.let {
                 call.respond(HttpStatusCode.OK, ResponseDto.Success(it, "성공"))
             } ?: run {
                 call.respond(HttpStatusCode.BadRequest, ResponseDto.Error("게시물을 등록하지 못했습니다.", "실패"))
