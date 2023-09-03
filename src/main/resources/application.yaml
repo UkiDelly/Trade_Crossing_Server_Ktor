@@ -16,7 +16,7 @@ jwt:
   secret: "TradeCrossingKtorServer"
 
 supabase:
-  url: "jdbc:postgresql://db.ocxoixsctkhbrfxbppto.supabase.co:5432/postgres"
+  url: "jdbc:postgresql://db.lvaexmyxiqioemcdupgu.supabase.co:5432/postgres"
   username: "postgres"
   password: "wjdrmsdud0922!"
 
@@ -27,4 +27,4 @@ aws:
   password: "wjdrmsdud0922"
 
 server:
-  mode: "dev"
+  mode: "$mode:dev"
