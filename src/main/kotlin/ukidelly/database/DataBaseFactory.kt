@@ -24,7 +24,7 @@ object DataBaseFactory {
     fun init(databaseUrl: String, user: String, password: String) {
         database =
             Database.connect(
-                createHikariDataSource(databaseUrl, "com.mysql.cj.jdbc.Driver", user, password),
+                createHikariDataSource(databaseUrl, "org.postgresql.Driver", user, password),
             )
 
         transaction {

@@ -17,7 +17,7 @@ fun Application.configureKoin() {
 
     val databaseModule = module {
         single { DataBaseFactory }
-        single { SupabaseClient() }
+        single { SupabaseServerClient() }
     }
 
     val repositoryModule = module {

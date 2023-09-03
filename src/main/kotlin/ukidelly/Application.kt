@@ -5,7 +5,6 @@ import io.ktor.server.netty.*
 import ukidelly.database.DataBaseFactory
 import ukidelly.modules.*
 import ukidelly.systems.getServerMode
-import ukidelly.systems.models.ServerMode
 
 fun main(args: Array<String>): Unit =
     EngineMain.main(args)
@@ -18,12 +17,13 @@ fun Application.module() {
 
     // DB 연결
     DataBaseFactory.init(
-        databaseUrl = when (serverMode) {
-            ServerMode.dev -> environment.config.property("aws.dev_url").getString()
-            ServerMode.prod -> environment.config.property("aws.prod_url").getString()
-        },
-        user = environment.config.property("aws.user").getString(),
-        password = environment.config.property("aws.password").getString()
+//        databaseUrl = when (serverMode) {
+//            ServerMode.dev -> environment.config.property("aws.dev_url").getString()
+//            ServerMode.prod -> environment.config.property("aws.prod_url").getString()
+//        },
+        databaseUrl = environment.config.property("supabase.url").getString(),
+        user = environment.config.property("supabase.username").getString(),
+        password = environment.config.property("supabase.password").getString()
     )
 
     // Koin
