@@ -15,6 +15,7 @@ import ukidelly.database.models.post.TradePostEntity
 import ukidelly.database.models.post.TradePostTable
 import ukidelly.database.models.user.UserEntity
 import ukidelly.database.models.user.UserTable
+import java.time.LocalDateTime
 import java.util.*
 
 @Module
@@ -49,7 +50,7 @@ class TradePostRepository {
                 )
                 .selectAll()
                 .limit(size, offset)
-                .groupBy(TradePostTable.id, TradePostTable.createdAt, UserTable.userName)
+                .groupBy(TradePostTable.id, TradePostTable.createdAt, UserTable.userName, UserTable.islandName)
                 .orderBy(TradePostTable.createdAt to SortOrder.DESC)
                 .toList().map {
                     TradePostPreview.fromResultRow(it)
@@ -91,6 +92,8 @@ class TradePostRepository {
                 it[currency] = post.currency
                 it[price] = post.price
                 it[closed] = post.closed
+                it[createdAt] = LocalDateTime.now()
+                it[updatedAt] = LocalDateTime.now()
             }
         }
 
