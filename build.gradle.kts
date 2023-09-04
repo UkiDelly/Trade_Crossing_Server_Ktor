@@ -36,6 +36,9 @@ dependencies {
     // Di
     implementation("io.insert-koin:koin-ktor:3.4.1")
     implementation("io.insert-koin:koin-ksp-compiler:1.2.2")
+    implementation("io.ktor:ktor-client-cio-jvm:2.3.3")
+    implementation("io.ktor:ktor-server-websockets-jvm:2.3.3")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.0")
 
     runtimeOnly("io.insert-koin:koin-annotations:1.2.2")
 
@@ -44,6 +47,7 @@ dependencies {
 
     // json
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.0")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
@@ -55,6 +59,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-java-time:0.41.1")
     implementation("org.postgresql:postgresql:42.6.0")
     implementation("mysql:mysql-connector-java:8.0.33")
+    implementation("io.github.jan-tennert.supabase:storage-kt:1.3.0")
     implementation("com.zaxxer:HikariCP:5.0.1")
 
     // logging
@@ -68,6 +73,9 @@ dependencies {
     // status
     implementation("io.ktor:ktor-server-status-pages:$ktor_version")
     implementation("io.ktor:ktor-server-status-pages-jvm:2.3.3")
+
+    // web socket
+    implementation("io.ktor:ktor-server-websockets:$ktor_version")
 
     // test
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
