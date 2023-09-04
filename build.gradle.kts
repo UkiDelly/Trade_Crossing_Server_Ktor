@@ -38,7 +38,6 @@ dependencies {
     implementation("io.insert-koin:koin-ksp-compiler:1.2.2")
     implementation("io.ktor:ktor-client-cio-jvm:2.3.3")
     implementation("io.ktor:ktor-server-websockets-jvm:2.3.3")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.9.0")
 
     runtimeOnly("io.insert-koin:koin-annotations:1.2.2")
 
@@ -58,7 +57,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:0.40.1")
     implementation("org.jetbrains.exposed:exposed-java-time:0.41.1")
     implementation("org.postgresql:postgresql:42.6.0")
-    implementation("mysql:mysql-connector-java:8.0.33")
+//    implementation("mysql:mysql-connector-java:8.0.33")
     implementation("io.github.jan-tennert.supabase:storage-kt:1.3.0")
     implementation("com.zaxxer:HikariCP:5.0.1")
 
@@ -94,6 +93,6 @@ dependencies {
 }
 
 //test
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
+//tasks.withType<Test> {
+//    useJUnitPlatform()
+//}

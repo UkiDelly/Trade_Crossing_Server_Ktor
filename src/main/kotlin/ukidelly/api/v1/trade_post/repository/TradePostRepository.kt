@@ -49,7 +49,7 @@ class TradePostRepository {
                 )
                 .selectAll()
                 .limit(size, offset)
-                .groupBy(TradePostTable.id, TradePostTable.createdAt)
+                .groupBy(TradePostTable.id, TradePostTable.createdAt, UserTable.userName)
                 .orderBy(TradePostTable.createdAt to SortOrder.DESC)
                 .toList().map {
                     TradePostPreview.fromResultRow(it)
