@@ -4,9 +4,7 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
 import io.ktor.http.content.*
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.annotation.Module
 import org.slf4j.LoggerFactory
@@ -30,18 +28,11 @@ class SupabaseServerClient {
     suspend fun uploadImage(userId: String, file: PartData.FileItem): String {
 
         val fileByteArray = file.streamProvider().readBytes()
-        var url = ""
+        val imagePath = "${userId}/${file.originalFileName!!}"
 
-        val job = CoroutineScope(Dispatchers.IO).launch {
-
-            val imagePath = "${userId}/${file.originalFileName!!}"
-            url = client.storage.from(bucket)
-                .upload(path = imagePath, fileByteArray, upsert = true)
-                .let { client.storage.from(bucket).publicUrl(imagePath) }
-        }
-
-        job.join()
-        return url
+        return client.storage.from(bucket)
+            .upload(path = imagePath, fileByteArray, upsert = true)
+            .let { client.storage.from(bucket).publicUrl(imagePath) }
     }
 
     suspend fun listBuckets() {

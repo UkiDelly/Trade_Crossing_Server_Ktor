@@ -10,10 +10,14 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 import ukidelly.modules.SupabaseServerClient
-import ukidelly.systems.models.ResponseDto
+import ukidelly.systems.models.ResponseDto.Success
 
 fun Route.imageRouting() {
 
@@ -28,12 +32,18 @@ fun Route.imageRouting() {
             val imageUrlMap = mutableMapOf<Int, String>()
             val imageFiles = call.receiveMultipart().readAllParts() as List<FileItem>
 
-            imageFiles.forEachIndexed { index, fileItem ->
-                val url = supabaseClient.uploadImage(userId, fileItem)
-                imageUrlMap[index] = url
-            }
+            runBlocking(Dispatchers.IO) {
+                val uploadJob = imageFiles.mapIndexed { index, fileItem ->
+                    async {
+                        val url = supabaseClient.uploadImage(userId, fileItem)
+                        logger.debug("index: $index, url: $url")
+                        imageUrlMap[index] = url
+                    }
+                }
 
-            call.respond(HttpStatusCode.OK, ResponseDto.Success(data = imageUrlMap, message = "성공"))
+                uploadJob.awaitAll()
+            }
+            call.respond(HttpStatusCode.OK, Success(data = imageUrlMap, message = "성공"))
         }
     }
 }
