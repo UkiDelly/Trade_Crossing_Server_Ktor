@@ -14,6 +14,8 @@ import ukidelly.database.models.comment.TradePostCommentTable
 import ukidelly.database.models.like.LikeTable
 import ukidelly.database.models.post.TradePostTable
 import ukidelly.database.models.user.UserTable
+import ukidelly.database.tables.FeedTable
+import ukidelly.database.tables.ImageTable
 
 
 @Module
@@ -34,6 +36,8 @@ object DataBaseFactory {
                 TradePostTable,
                 TradePostCommentTable,
                 LikeTable,
+                ImageTable,
+                FeedTable,
                 withLogs = true
             )
 
