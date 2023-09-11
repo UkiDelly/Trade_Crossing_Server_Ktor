@@ -23,10 +23,10 @@ object DataBaseFactory {
 
     lateinit var database: Database
 
-    fun init(databaseUrl: String, user: String, password: String) {
+    fun init(databaseUrl: String, user: String, driver: String, password: String) {
         database =
             Database.connect(
-                createHikariDataSource(databaseUrl, "org.postgresql.Driver", user, password),
+                createHikariDataSource(databaseUrl, driver, user, password),
             )
 
         transaction {
@@ -56,7 +56,6 @@ object DataBaseFactory {
             driverClassName = driver
             username = user
             setPassword(password)
-
             jdbcUrl = url
             maximumPoolSize = 3
             isAutoCommit = false
