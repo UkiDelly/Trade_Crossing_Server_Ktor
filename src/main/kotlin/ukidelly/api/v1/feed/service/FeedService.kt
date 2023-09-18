@@ -9,4 +9,12 @@ import ukidelly.api.v1.feed.repository.FeedRepository
 class FeedService {
 
     private val feedRepository by inject<FeedRepository>(clazz = FeedRepository::class.java)
+
+
+    fun getLatestPosts(
+        page: Int,
+        size: Int
+    ) {
+
+    }
 }
