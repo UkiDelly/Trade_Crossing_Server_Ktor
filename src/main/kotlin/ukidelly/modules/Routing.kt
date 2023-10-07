@@ -16,7 +16,7 @@ fun Application.configureRouting() {
             userRouting()
         }
 
-        route("/post") {
+        route("/trade-post") {
             tradePostRouting()
         }
 
