@@ -12,3 +12,4 @@ object TradePostCommentTable : IntIdTable("TradePostComment", "id") {
     val userId = integer("user_id")
     val createdAt = datetime("created_at").clientDefault { LocalDateTime.now() }
     val updatedAt = datetime("updated_at").clientDefault { LocalDateTime.now() }
+}

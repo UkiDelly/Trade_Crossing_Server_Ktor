@@ -15,7 +15,6 @@ import ukidelly.api.v1.trade_post.service.TradePostService
 import ukidelly.database.DataBaseFactory.dbQuery
 import ukidelly.database.models.post.TradePostEntity
 import ukidelly.systems.models.ResponseDto
-import java.util.*
 
 fun Route.tradePostRouting() {
     val tradePostService by inject<TradePostService>()
@@ -86,7 +85,7 @@ fun Route.tradePostRouting() {
                             ResponseDto.Error("존재하지 않는 게시물입니다", "다시 시도해주세요")
                         )
                         return@delete
-                    } else if (post.userId.value != UUID.fromString(userId)) {
+                    } else if (post.userId != userId.toInt()) {
                         call.respond(
                             HttpStatusCode.Forbidden,
                             ResponseDto.Error("본인만 이 게시물을 삭제할 수 있습니다. ", "다시 시도해주세요")
@@ -113,7 +112,7 @@ fun Route.tradePostRouting() {
         post("/new") {
 
             val principal = call.principal<UserIdPrincipal>()!!
-            val userId = UUID.fromString(principal.name)
+            val userId = principal.name.toInt()
             val tradePostCreateRequest = call.receive<TradePostCreateRequest>()
             tradePostService.addNewPost(tradePostCreateRequest, userId)?.let {
                 call.respond(HttpStatusCode.OK, ResponseDto.Success(it, "성공"))

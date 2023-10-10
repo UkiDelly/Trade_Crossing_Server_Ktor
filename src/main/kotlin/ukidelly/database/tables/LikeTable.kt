@@ -1,10 +1,6 @@
 package ukidelly.database.models.like
 
-import org.jetbrains.exposed.dao.id.IntIdTable
-import ukidelly.database.models.post.TradePostTable
-import ukidelly.database.models.user.UserTable
-
-object LikeTable : IntIdTable("like", "id") {
-    val userId = reference("user_id", UserTable.id)
-    val postId = reference("post_id", TradePostTable.id)
-}
+//object LikeTable : IntIdTable("like", "id") {
+//    val userId = reference("user_id", UserTable.id)
+//    val postId = reference("post_id", TradePostTable.id)
+//}

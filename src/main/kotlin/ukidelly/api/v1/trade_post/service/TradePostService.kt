@@ -7,7 +7,6 @@ import ukidelly.api.v1.trade_post.models.TradePostCreateRequest
 import ukidelly.api.v1.trade_post.models.dto.LatestTradePostDto
 import ukidelly.api.v1.trade_post.models.dto.TradePostDetailDto
 import ukidelly.api.v1.trade_post.repository.TradePostRepository
-import java.util.*
 
 
 @Module
@@ -27,7 +26,7 @@ class TradePostService {
         return TradePostDetailDto(post, comments)
     }
 
-    suspend fun addNewPost(newPost: TradePostCreateRequest, userId: UUID): TradePostDetailDto? {
+    suspend fun addNewPost(newPost: TradePostCreateRequest, userId: Int): TradePostDetailDto? {
         val newPostId = tradePostRepository.addNewPost(newPost, userId)
         return getPost(newPostId.value)
     }
