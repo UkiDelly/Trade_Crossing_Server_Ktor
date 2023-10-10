@@ -2,11 +2,10 @@ package ukidelly.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
+import kotlinx.coroutines.async
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.annotation.Module
@@ -38,7 +37,8 @@ object DataBaseFactory {
                 LikeTable,
                 ImageTable,
                 FeedTable,
-                withLogs = true
+                withLogs = false,
+                inBatch = true
             )
 
         }
@@ -48,6 +48,11 @@ object DataBaseFactory {
     suspend fun <T> dbQuery(block: suspend (database: Database) -> T): T = newSuspendedTransaction(Dispatchers.IO) {
         addLogger(StdOutSqlLogger)
         block(database)
+    }
+
+    suspend fun <T> nativeQuery(block: Transaction.() -> T): T {
+        val job = CoroutineScope(Dispatchers.IO).async { transaction { block() } }
+        return job.await()
     }
 
 
