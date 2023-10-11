@@ -9,7 +9,6 @@ import ukidelly.database.DataBaseFactory.dbQuery
 import ukidelly.database.models.user.UserTable
 import ukidelly.database.tables.FeedTable
 import ukidelly.database.tables.ImageTable
-import java.util.*
 
 
 @Module
@@ -29,7 +28,7 @@ class FeedRepository {
     }
 
 
-    suspend fun addNewFeed(userId: UUID, content: String, images: List<String>) {
+    suspend fun addNewFeed(userId: Int, content: String, images: List<String>) {
 
         dbQuery { _ ->
             FeedTable.insert {

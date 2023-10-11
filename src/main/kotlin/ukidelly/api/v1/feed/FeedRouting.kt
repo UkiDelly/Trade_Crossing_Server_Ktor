@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory
 import ukidelly.api.v1.feed.models.NewFeedDto
 import ukidelly.api.v1.feed.service.FeedService
 import ukidelly.systems.models.ResponseDto
-import java.util.*
 
 fun Route.feedRouting() {
 
@@ -55,7 +54,7 @@ fun Route.feedRouting() {
         post("/new") {
             val userId = call.principal<UserIdPrincipal>()!!
             val body = call.receive<NewFeedDto>()
-            feedService.addNewFeed(UUID.fromString(userId.name), body)
+            feedService.addNewFeed(userId.name.toInt(), body)
             call.respond(HttpStatusCode.OK, ResponseDto.Success("", "성공"))
 
         }
