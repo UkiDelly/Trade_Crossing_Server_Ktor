@@ -52,7 +52,7 @@ class UserRepository {
      * @param userId 유저 아이디
      * @return [User]? 유저정보
      */
-    suspend fun findUserById(userId: UUID): User? {
+    suspend fun findUserById(userId: Int): User? {
         return dbQuery {
             UserEntity.findById(userId)?.toUser()
         }

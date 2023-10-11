@@ -10,7 +10,6 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.annotation.Module
 import ukidelly.database.models.comment.TradePostCommentTable
-import ukidelly.database.models.like.LikeTable
 import ukidelly.database.models.post.TradePostTable
 import ukidelly.database.models.user.UserTable
 import ukidelly.database.tables.FeedTable
@@ -34,7 +33,7 @@ object DataBaseFactory {
                 UserTable,
                 TradePostTable,
                 TradePostCommentTable,
-                LikeTable,
+//                LikeTable,
                 ImageTable,
                 FeedTable,
                 withLogs = false,

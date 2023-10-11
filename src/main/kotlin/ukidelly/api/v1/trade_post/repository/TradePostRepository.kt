@@ -16,7 +16,6 @@ import ukidelly.database.models.post.TradePostTable
 import ukidelly.database.models.user.UserEntity
 import ukidelly.database.models.user.UserTable
 import java.time.LocalDateTime
-import java.util.*
 
 @Module
 class TradePostRepository {
@@ -82,12 +81,12 @@ class TradePostRepository {
     }
 
 
-    suspend fun addNewPost(post: TradePostCreateRequest, userId: UUID): EntityID<Int> {
+    suspend fun addNewPost(post: TradePostCreateRequest, creatorId: Int): EntityID<Int> {
         return dbQuery {
             TradePostTable.insertAndGetId {
                 it[title] = post.title
                 it[content] = post.content
-                it[UserTable.id] = userId
+                it[userId] = creatorId
                 it[category] = post.category
                 it[currency] = post.currency
                 it[price] = post.price
