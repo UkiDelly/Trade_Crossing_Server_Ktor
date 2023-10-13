@@ -95,7 +95,6 @@ class TradePostRepository {
                 it[updatedAt] = LocalDateTime.now()
             }
         }
-
     }
 
 

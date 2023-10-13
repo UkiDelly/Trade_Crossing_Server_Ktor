@@ -30,9 +30,12 @@ class SupabaseServerClient {
         val fileByteArray = file.streamProvider().readBytes()
         val imagePath = "${userId}/${file.originalFileName!!}"
 
-        return client.storage.from(bucket)
-            .upload(path = imagePath, fileByteArray, upsert = true)
-            .let { client.storage.from(bucket).publicUrl(imagePath) }
+        withContext(Dispatchers.IO) {
+            client.storage.from(bucket)
+                .upload(path = imagePath, fileByteArray, upsert = true)
+        }
+
+        return client.storage.from(bucket).publicUrl(imagePath)
     }
 
     suspend fun listBuckets() {
