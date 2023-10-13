@@ -1,8 +1,7 @@
 package ukidelly.api.v1.user.service
 
 import at.favre.lib.crypto.bcrypt.BCrypt
-import org.koin.core.annotation.Module
-import org.koin.java.KoinJavaComponent.inject
+import org.koin.core.annotation.Single
 import ukidelly.api.v1.user.models.User
 import ukidelly.api.v1.user.models.UserRegisterRequest
 import ukidelly.api.v1.user.repository.UserRepository
@@ -12,10 +11,8 @@ import ukidelly.systems.errors.UserExistException
 import ukidelly.systems.models.LoginType
 import java.util.*
 
-@Module
-class UserService {
-
-    private val repository by inject<UserRepository>(clazz = UserRepository::class.java)
+@Single
+class UserService(private val repository: UserRepository) {
 
 
     /**

@@ -4,7 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
-import org.koin.core.annotation.Module
+import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
 import ukidelly.api.v1.trade_post.models.TradePostCreateRequest
 import ukidelly.api.v1.trade_post.models.TradePostDetail
@@ -17,7 +17,7 @@ import ukidelly.database.models.user.UserEntity
 import ukidelly.database.models.user.UserTable
 import java.time.LocalDateTime
 
-@Module
+@Single
 class TradePostRepository {
 
     private val logger = LoggerFactory.getLogger("PostRepository")

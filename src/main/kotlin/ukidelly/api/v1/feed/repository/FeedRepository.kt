@@ -3,7 +3,7 @@ package ukidelly.api.v1.feed.repository
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
-import org.koin.core.annotation.Module
+import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
 import ukidelly.database.DataBaseFactory.dbQuery
 import ukidelly.database.models.user.UserTable
@@ -11,7 +11,7 @@ import ukidelly.database.tables.FeedTable
 import ukidelly.database.tables.ImageTable
 
 
-@Module
+@Single
 class FeedRepository {
     val logger = LoggerFactory.getLogger("FeedRepository")
 

@@ -10,13 +10,11 @@ import ukidelly.api.v1.trade_post.repository.TradePostRepository
 import ukidelly.api.v1.trade_post.service.TradePostService
 import ukidelly.api.v1.user.repository.UserRepository
 import ukidelly.api.v1.user.service.UserService
-import ukidelly.database.DataBaseFactory
 import ukidelly.database.models.comment.TradePostCommentRepository
 
 fun Application.configureKoin() {
 
     val databaseModule = module {
-        single { DataBaseFactory }
         single { SupabaseServerClient() }
     }
 
@@ -28,11 +26,10 @@ fun Application.configureKoin() {
     }
 
     val serviceModule = module {
-
-        single { UserService() }
-        single { TradePostService() }
-        single { TradePostCommentService() }
-        single { FeedService() }
+        single { UserService(get()) }
+        single { TradePostService(get(), get()) }
+        single { TradePostCommentService(get()) }
+        single { FeedService(get()) }
     }
 
     install(Koin) {

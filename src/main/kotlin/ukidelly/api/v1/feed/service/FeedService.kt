@@ -1,15 +1,12 @@
 package ukidelly.api.v1.feed.service
 
-import org.koin.core.annotation.Module
-import org.koin.java.KoinJavaComponent.inject
+import org.koin.core.annotation.Single
 import ukidelly.api.v1.feed.models.NewFeedDto
 import ukidelly.api.v1.feed.repository.FeedRepository
 
 
-@Module
-class FeedService {
-
-    private val feedRepository by inject<FeedRepository>(clazz = FeedRepository::class.java)
+@Single
+class FeedService(private val feedRepository: FeedRepository) {
 
 
     suspend fun getLatestPosts(

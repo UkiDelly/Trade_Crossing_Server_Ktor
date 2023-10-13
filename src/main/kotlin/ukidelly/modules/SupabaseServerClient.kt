@@ -6,11 +6,11 @@ import io.github.jan.supabase.storage.storage
 import io.ktor.http.content.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.koin.core.annotation.Module
+import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
 
 
-@Module
+@Single
 class SupabaseServerClient {
 
     private val client = createSupabaseClient(

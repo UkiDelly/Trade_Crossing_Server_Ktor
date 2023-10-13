@@ -1,7 +1,6 @@
 package ukidelly.api.v1.trade_post.comment.service
 
-import org.koin.core.annotation.Module
-import org.koin.java.KoinJavaComponent.inject
+import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
 import ukidelly.api.v1.trade_post.comment.models.TradePostComment
 import ukidelly.api.v1.trade_post.comment.models.TradePostCommentDto
@@ -9,11 +8,11 @@ import ukidelly.database.models.comment.TradePostCommentRepository
 import ukidelly.database.models.comment.TradePostCommentTable
 
 
-@Module
-class TradePostCommentService {
+@Single
+class TradePostCommentService(private val tradePostCommentRepository: TradePostCommentRepository) {
 
-    val tradePostCommentRepository by inject<TradePostCommentRepository>(clazz = TradePostCommentRepository::class.java)
-    val logger = LoggerFactory.getLogger("CommentService")
+
+    private val logger = LoggerFactory.getLogger("CommentService")
 
     suspend fun getAllComment(postId: Int): List<TradePostCommentDto> {
 

@@ -5,12 +5,12 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.selectAll
-import org.koin.core.annotation.Module
+import org.koin.core.annotation.Single
 import ukidelly.database.DataBaseFactory.dbQuery
 import ukidelly.database.models.user.UserTable
 
 
-@Module
+@Single
 class TradePostCommentRepository {
 
     suspend fun findAllComments(postId: Int): List<ResultRow> {

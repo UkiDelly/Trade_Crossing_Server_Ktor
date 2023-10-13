@@ -8,7 +8,6 @@ import kotlinx.coroutines.async
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.koin.core.annotation.Module
 import ukidelly.database.models.comment.TradePostCommentTable
 import ukidelly.database.models.post.TradePostTable
 import ukidelly.database.models.user.UserTable
@@ -16,7 +15,6 @@ import ukidelly.database.tables.FeedTable
 import ukidelly.database.tables.ImageTable
 
 
-@Module
 object DataBaseFactory {
 
     lateinit var database: Database

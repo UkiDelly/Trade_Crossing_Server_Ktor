@@ -1,6 +1,6 @@
 package ukidelly.api.v1.user.repository
 
-import org.koin.core.annotation.Module
+import org.koin.core.annotation.Single
 import ukidelly.api.v1.user.models.User
 import ukidelly.api.v1.user.models.UserRegisterRequest
 import ukidelly.database.DataBaseFactory.dbQuery
@@ -10,7 +10,7 @@ import ukidelly.systems.models.LoginType
 import java.util.*
 
 
-@Module
+@Single
 class UserRepository {
 
     /**
