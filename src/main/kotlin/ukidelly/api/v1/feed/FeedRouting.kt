@@ -23,9 +23,9 @@ fun Route.feedRouting() {
         val missingParam = mutableMapOf<String, String>()
 
         if (!queryParam.contains("page")) {
-            missingParam["page"] = "page를 입력해주세요. "
+            missingParam["page"] = "page를 입력해주세요."
         } else if (queryParam["page"]!!.toInt() <= 0) {
-            missingParam["page"] = "page는 0보다 큰 정수를 입력해주세요. "
+            missingParam["page"] = "page는 0보다 큰 정수를 입력해주세요."
         }
 
         if (!queryParam.contains("size")) {

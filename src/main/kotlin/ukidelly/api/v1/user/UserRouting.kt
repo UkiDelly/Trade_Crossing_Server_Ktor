@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory
 import ukidelly.api.v1.user.models.*
 import ukidelly.api.v1.user.service.UserService
 import ukidelly.modules.getToken
+import ukidelly.systems.errors.ServerError
 import ukidelly.systems.models.LoginType
 import ukidelly.systems.models.ResponseDto
 import ukidelly.systems.models.Token
@@ -136,7 +137,7 @@ private suspend fun chechUserAndRespond(user: User?, call: ApplicationCall, conf
     if (user == null) {
         call.respond(
             HttpStatusCode.NotFound,
-            ResponseDto.Error(error = "가입 되지 않은 유저입니다.", message = "로그인에 실패 했습니다.")
+            ResponseDto.Error(error = ServerError.UserNotExist, message = "존재하지 않는 유저입니다.")
         )
     } else {
         val token = Token.createToken(config, user.userId.toString())

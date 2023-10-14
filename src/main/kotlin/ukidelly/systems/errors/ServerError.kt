@@ -8,6 +8,7 @@ object ServerError {
     const val MissingField = "missing_field"
     const val UserExist = "user_exist"
     const val PasswordIncorrect = "password_incorrect"
-    const val InvalidQueryParameter = "invalie_query_parameter"
+    const val InvalidQueryParameter = "invalid_query_parameter"
+    const val UserNotExist = "not_exist"
 
 }
