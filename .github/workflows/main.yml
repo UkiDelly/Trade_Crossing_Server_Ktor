@@ -1,0 +1,44 @@
+name: Deploy to cloudtype
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Connect deploy key
+        uses: cloudtype-github-actions/connect@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          ghtoken: ${{ secrets.GHP_TOKEN }}
+      - name: Deploy
+        uses: cloudtype-github-actions/deploy@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          project: trade-crossing-server/trade-crossing-server-ktor
+          stage: main
+          yaml: >
+            name: trade-crossing
+
+            app: java@17
+
+            options:
+              ports: 8080
+              start: cd build/libs; java -jar trade_crossing_server-all.jar -P:server.mode=prod
+              build: ./gradlew build
+              env:
+                - name: db_url
+                  value: jdbc:postgresql://db.lvaexmyxiqioemcdupgu.supabase.co:5432/postgres
+                - name: db_user
+                  value: postgres
+                - name: db_password
+                  value: wjdrmsdud0922!
+                - name: mode
+                  value: prod
+            context:
+              git:
+                url: git@github.com:${{ github.repository }}.git
+                ref: ${{ github.ref }}
