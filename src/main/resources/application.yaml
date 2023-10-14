@@ -21,9 +21,9 @@ supabase:
   password: $db_password
 
 local:
-  url: $local_db_url
-  username: $local_db_user
-  password: $local_db_password
+  url: "$local_db_url:"
+  username: "$local_db_user:"
+  password: "$local_db_password:"
 
 aws:
   dev_url: "jdbc:mysql://trade-crossing-db.c0u8eohuawix.ap-northeast-2.rds.amazonaws.com:3306/trade_crossing_db_dev"
