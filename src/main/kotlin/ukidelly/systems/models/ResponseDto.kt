@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
-sealed class ResponseDto<T>(
+sealed class ResponseDto(
 
     @Transient
     open val message: String? = null,
@@ -14,14 +14,14 @@ sealed class ResponseDto<T>(
     data class Success<T>(
         val data: T,
         override val message: String,
-    ) : ResponseDto<T>()
+    ) : ResponseDto()
 
 
     @Serializable
-    data class Error<T>(
-        val error: T,
+    data class Error(
+        val error: String,
         override val message: String,
-    ) : ResponseDto<T>()
+    ) : ResponseDto()
 }
 
 
