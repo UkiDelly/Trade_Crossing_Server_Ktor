@@ -34,3 +34,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### CloudType 로컬 배포 ###
+trade-crossing.yaml
