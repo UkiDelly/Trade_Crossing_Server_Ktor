@@ -64,10 +64,10 @@ fun Route.tradePostRouting() {
                 tradePostService.getPost(postId.toInt())?.let {
                     call.respond(HttpStatusCode.OK, ResponseDto.Success(it, "성공"))
                 } ?: run {
-                    call.respond(HttpStatusCode.NotFound, ResponseDto.Error("존재하지 않는 게시물입니다", "다시 시도해주세요"))
+                    call.respond(HttpStatusCode.NotFound, ResponseDto.Error(ServerError.NotExist, "존재하지 않는 게시물입니다"))
                 }
             } ?: run {
-                call.respond(HttpStatusCode.BadRequest, ResponseDto.Error("postId를 입력해주세요", "게시물을 가져오는데 실패하였습니다."))
+                call.respond(HttpStatusCode.BadRequest, ResponseDto.Error(ServerError.InvalidField, "postId를 입력해주세요"))
             }
         }
 
@@ -86,13 +86,16 @@ fun Route.tradePostRouting() {
                     if (post == null) {
                         call.respond(
                             HttpStatusCode.NotFound,
-                            ResponseDto.Error("존재하지 않는 게시물입니다", "다시 시도해주세요")
+                            call.respond(
+                                HttpStatusCode.NotFound,
+                                ResponseDto.Error(ServerError.NotExist, "존재하지 않는 게시물입니다")
+                            )
                         )
                         return@delete
                     } else if (post.userId != userId.toInt()) {
                         call.respond(
                             HttpStatusCode.Forbidden,
-                            ResponseDto.Error("본인만 이 게시물을 삭제할 수 있습니다. ", "다시 시도해주세요")
+                            ResponseDto.Error(ServerError.UnAuhtorized, "본인만 이 게시물을 삭제할 수 있습니다.")
                         )
                         return@delete
                     } else {

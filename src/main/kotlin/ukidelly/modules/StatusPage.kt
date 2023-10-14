@@ -25,7 +25,7 @@ fun Application.configureStatusPage() {
             logger.error(exception.cause.toString())
             call.respond(
                 HttpStatusCode.Unauthorized,
-                ResponseDto.Error(error = ServerError.InvalidJwtToken, message = "유효하지 않은 토큰입니다.")
+                ResponseDto.Error(error = ServerError.UnAuhtorized, message = "유효하지 않은 토큰입니다.")
             )
         }
         // Request의 Body에서 필드가 누락되었을 때
