@@ -52,8 +52,8 @@ class UserService(private val repository: UserRepository) {
      * @return [User] 유저 정보 또는 [null]
      *
      */
-    suspend fun autoLogin(userId: Int): User? {
-        return repository.findUserById(userId)
+    suspend fun autoLogin(uuid: UUID): User? {
+        return repository.findUserByUUID(uuid)?.toUser()
     }
 
     /**

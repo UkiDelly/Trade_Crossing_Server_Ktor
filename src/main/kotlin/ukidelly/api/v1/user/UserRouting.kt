@@ -94,9 +94,9 @@ fun Route.userRouting() {
             }
 
             post("/auto") {
-                val userId = call.principal<UserIdPrincipal>()!!.name
+                val uuid = call.principal<UserIdPrincipal>()!!.name
                 val user = withContext(Dispatchers.IO) {
-                    service.autoLogin(userId.toInt())
+                    service.autoLogin(UUID.fromString(uuid))
                 }
 
                 if (user == null) {
@@ -137,7 +137,7 @@ private suspend fun chechUserAndRespond(user: User?, call: ApplicationCall, conf
     if (user == null) {
         call.respond(
             HttpStatusCode.NotFound,
-            ResponseDto.Error(error = ServerError.UserNotExist, message = "존재하지 않는 유저입니다.")
+            ResponseDto.Error(error = ServerError.NotExist, message = "존재하지 않는 유저입니다.")
         )
     } else {
         val token = Token.createToken(config, user.userId.toString())

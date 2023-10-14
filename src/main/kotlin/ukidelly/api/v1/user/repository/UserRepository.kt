@@ -50,11 +50,11 @@ class UserRepository {
     /**
      * UUID로 유저 찾기
      * @param userId 유저 아이디
-     * @return [User]? 유저정보
+     * @return [UserEntity]? 유저 Entity
      */
-    suspend fun findUserById(userId: Int): User? {
+    suspend fun findUserByUUID(uuid: UUID): UserEntity? {
         return dbQuery {
-            UserEntity.findById(userId)?.toUser()
+            UserEntity.find { UserTable.uuid eq uuid }.firstOrNull()
         }
     }
 
