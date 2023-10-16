@@ -10,6 +10,7 @@ import ukidelly.database.models.user.UserTable
 import ukidelly.systems.models.Currency
 import ukidelly.systems.models.PostCategory
 import java.time.LocalDateTime
+import java.util.*
 
 @Serializable
 data class TradePostDetail(
@@ -34,7 +35,8 @@ data class TradePostPreview(
     val postId: Int,
     val title: String,
     val content: String,
-    val userId: Int,
+    @Contextual
+    val userId: UUID,
     val creator: String,
     val creatorIsland: String,
     val category: PostCategory,
@@ -54,7 +56,7 @@ data class TradePostPreview(
                 postId = result[TradePostTable.id].value,
                 title = result[TradePostTable.title],
                 content = result[TradePostTable.content],
-                userId = result[TradePostTable.userId],
+                userId = result[TradePostTable.userUUID],
                 creator = result[UserTable.userName],
                 creatorIsland = result[UserTable.islandName],
                 category = result[TradePostTable.category],

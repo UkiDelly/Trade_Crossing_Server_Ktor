@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory
 import ukidelly.api.v1.trade_post.models.TradePostCreateRequest
 import ukidelly.api.v1.trade_post.models.TradePostDetail
 import ukidelly.api.v1.trade_post.models.TradePostPreview
+import ukidelly.api.v1.trade_post.models.TradePostUpdateRequest
 import ukidelly.database.DataBaseFactory.dbQuery
 import ukidelly.database.models.comment.TradePostCommentTable
 import ukidelly.database.models.post.TradePostEntity
@@ -16,6 +17,7 @@ import ukidelly.database.models.post.TradePostTable
 import ukidelly.database.models.user.UserEntity
 import ukidelly.database.models.user.UserTable
 import java.time.LocalDateTime
+import java.util.*
 
 @Single
 class TradePostRepository {
@@ -40,7 +42,7 @@ class TradePostRepository {
                 )
                 .join(
                     otherTable = UserTable,
-                    onColumn = TradePostTable.userId,
+                    onColumn = TradePostTable.userUUID,
                     otherColumn = UserTable.id,
                     joinType = JoinType.LEFT
                 )
@@ -63,8 +65,7 @@ class TradePostRepository {
     suspend fun findPost(postId: Int): TradePostDetail? {
 
         val postEntity = dbQuery { TradePostEntity.findById(postId) } ?: return null
-        val userEntity = dbQuery { UserEntity.findById(postEntity.userId) } ?: return null
-
+        val userEntity = dbQuery { UserEntity.find { UserTable.uuid.eq(postEntity.userUUID) }.first() }
         return TradePostDetail(
             postId = postEntity.id.value,
             title = postEntity.title,
@@ -81,12 +82,12 @@ class TradePostRepository {
     }
 
 
-    suspend fun addNewPost(post: TradePostCreateRequest, creatorId: Int): EntityID<Int> {
+    suspend fun addNewPost(post: TradePostCreateRequest, creatorId: UUID): EntityID<Int> {
         return dbQuery {
             TradePostTable.insertAndGetId {
                 it[title] = post.title
                 it[content] = post.content
-                it[userId] = creatorId
+                it[userUUID] = creatorId
                 it[category] = post.category
                 it[currency] = post.currency
                 it[price] = post.price
@@ -95,6 +96,19 @@ class TradePostRepository {
                 it[updatedAt] = LocalDateTime.now()
             }
         }
+    }
+
+    suspend fun updatePost(postId: Int, post: TradePostUpdateRequest): TradePostEntity? {
+        val postEntity = dbQuery { TradePostEntity.findById(postId) }?.apply {
+            title = post.title ?: this.title
+            content = post.content ?: this.content
+            category = post.category ?: this.category
+            currency = post.currency ?: this.currency
+            price = post.price ?: this.price
+            closed = post.closed ?: this.closed
+            updatedAt = LocalDateTime.now()
+        }
+        return postEntity
     }
 
 
