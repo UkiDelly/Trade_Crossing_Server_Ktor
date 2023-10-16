@@ -31,15 +31,12 @@ object DataBaseFactory {
                 UserTable,
                 TradePostTable,
                 TradePostCommentTable,
-//                LikeTable,
                 ImageTable,
                 FeedTable,
                 withLogs = false,
                 inBatch = true
             )
-
         }
-
     }
 
     suspend fun <T> dbQuery(block: suspend (database: Database) -> T): T = newSuspendedTransaction(Dispatchers.IO) {
