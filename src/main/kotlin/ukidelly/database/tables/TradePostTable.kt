@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 object TradePostTable : IntIdTable("TradePost", "post_id") {
     val title = varchar("title", 255)
     val content = text("content")
-    val userId = integer("user_id")
+    val userUUID = uuid("user_uuid")
     val category = enumerationByName<PostCategory>("category", 100).default(PostCategory.item)
     val currency = enumerationByName<Currency>("currency", 100).default(Currency.bell)
     val price = integer("price").nullable()

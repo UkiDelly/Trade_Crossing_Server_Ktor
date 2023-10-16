@@ -11,7 +11,7 @@ class TradePostEntity(
 
     var title by TradePostTable.title
     var content by TradePostTable.content
-    var userId by TradePostTable.userId
+    val userUUID by TradePostTable.userUUID
     var category by TradePostTable.category
     var currency by TradePostTable.currency
     var price by TradePostTable.price
