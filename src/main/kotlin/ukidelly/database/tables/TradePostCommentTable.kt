@@ -9,7 +9,7 @@ object TradePostCommentTable : IntIdTable("TradePostComment", "id") {
     val postId = reference("post_id", TradePostTable.id)
     val parentCommentId = reference("parent_comment_id", TradePostCommentTable.id).nullable()
     val commentContent = text("comment_content")
-    val userId = integer("user_id")
+    val userId = uuid("user_id")
     val createdAt = datetime("created_at").clientDefault { LocalDateTime.now() }
     val updatedAt = datetime("updated_at").clientDefault { LocalDateTime.now() }
 }

@@ -1,8 +1,7 @@
 package ukidelly.database.models.comment
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.selectAll
 import org.koin.core.annotation.Single
@@ -14,20 +13,23 @@ import ukidelly.database.models.user.UserTable
 class TradePostCommentRepository {
 
     suspend fun findAllComments(postId: Int): List<ResultRow> {
-        return withContext(Dispatchers.IO) {
-            dbQuery {
-                TradePostCommentTable.innerJoin(UserTable).slice(
-                    TradePostCommentTable.id,
-                    TradePostCommentTable.postId,
-                    TradePostCommentTable.parentCommentId,
-                    TradePostCommentTable.commentContent,
-                    UserTable.id,
-                    UserTable.userName,
-                    UserTable.islandName,
-                    TradePostCommentTable.createdAt,
-                    TradePostCommentTable.updatedAt
-                ).selectAll().toList()
-            }
+        return dbQuery {
+            TradePostCommentTable.join(
+                otherTable = UserTable,
+                JoinType.LEFT,
+                onColumn = TradePostCommentTable.userId,
+                otherColumn = UserTable.uuid,
+            ).slice(
+                TradePostCommentTable.id,
+                TradePostCommentTable.postId,
+                TradePostCommentTable.parentCommentId,
+                TradePostCommentTable.commentContent,
+                UserTable.id,
+                UserTable.userName,
+                UserTable.islandName,
+                TradePostCommentTable.createdAt,
+                TradePostCommentTable.updatedAt
+            ).selectAll().toList()
         }
     }
 
