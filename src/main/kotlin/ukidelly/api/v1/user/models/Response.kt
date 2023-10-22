@@ -4,4 +4,4 @@ import kotlinx.serialization.Serializable
 import ukidelly.systems.models.Token
 
 @Serializable
-data class UserResponse(val user: User, val token: Token)
+data class UserInfoWithToken(val user: User, val token: Token)
