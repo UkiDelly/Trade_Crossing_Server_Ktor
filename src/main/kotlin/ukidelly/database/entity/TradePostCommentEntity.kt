@@ -8,14 +8,14 @@ class TradePostCommentEntity(
     id: EntityID<Int>
 ) : IntEntity(id) {
 
-    companion object : IntEntityClass<TradePostCommentEntity>(TradePostCommentTable)
+    companion object : IntEntityClass<TradePostCommentEntity>(TradePostComments)
 
-    var postId by TradePostCommentTable.postId
-    var parentCommentId by TradePostCommentTable.parentCommentId
-    var commentContent by TradePostCommentTable.commentContent
-    var userId by TradePostCommentTable.userId
-    var createdAt by TradePostCommentTable.createdAt
-    var updatedAt by TradePostCommentTable.updatedAt
+    var postId by TradePostComments.postId
+    var parentCommentId by TradePostComments.parentCommentId
+    var commentContent by TradePostComments.commentContent
+    var userId by TradePostComments.userId
+    var createdAt by TradePostComments.createdAt
+    var updatedAt by TradePostComments.updatedAt
 }
 
 

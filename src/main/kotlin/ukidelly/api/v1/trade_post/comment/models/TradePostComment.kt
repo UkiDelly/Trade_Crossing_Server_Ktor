@@ -4,8 +4,8 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.ResultRow
 import ukidelly.database.models.comment.TradePostCommentEntity
-import ukidelly.database.models.comment.TradePostCommentTable
-import ukidelly.database.models.user.UserTable
+import ukidelly.database.models.comment.TradePostComments
+import ukidelly.database.models.user.Users
 import java.time.LocalDateTime
 
 
@@ -40,14 +40,14 @@ data class TradePostComment(
 
         fun fromRow(row: ResultRow): TradePostComment {
             return TradePostComment(
-                commentId = row[TradePostCommentTable.id].value,
-                postId = row[TradePostCommentTable.postId].value,
-                content = row[TradePostCommentTable.commentContent],
-                parentCommentId = row[TradePostCommentTable.parentCommentId]?.value,
-                creator = row[UserTable.userName],
-                creatorIsland = row[UserTable.islandName],
-                createdAt = LocalDateTime.parse(row[TradePostCommentTable.createdAt].toString()),
-                updatedAt = LocalDateTime.parse(row[TradePostCommentTable.updatedAt].toString()),
+                commentId = row[TradePostComments.id].value,
+                postId = row[TradePostComments.postId].value,
+                content = row[TradePostComments.commentContent],
+                parentCommentId = row[TradePostComments.parentCommentId]?.value,
+                creator = row[Users.userName],
+                creatorIsland = row[Users.islandName],
+                createdAt = LocalDateTime.parse(row[TradePostComments.createdAt].toString()),
+                updatedAt = LocalDateTime.parse(row[TradePostComments.updatedAt].toString()),
             )
         }
     }

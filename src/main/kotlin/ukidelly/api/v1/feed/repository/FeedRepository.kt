@@ -6,8 +6,8 @@ import org.jetbrains.exposed.sql.selectAll
 import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
 import ukidelly.database.DataBaseFactory.dbQuery
-import ukidelly.database.models.user.UserTable
-import ukidelly.database.tables.FeedTable
+import ukidelly.database.models.user.Users
+import ukidelly.database.tables.Feeds
 import ukidelly.database.tables.ImageTable
 
 
@@ -18,10 +18,10 @@ class FeedRepository {
 
     suspend fun findLatestFeed(size: Int, page: Int) {
         val feedList = dbQuery {
-            FeedTable.leftJoin(ImageTable).slice(FeedTable.columns + ImageTable.url).selectAll()
+            Feeds.leftJoin(ImageTable).slice(Feeds.columns + ImageTable.url).selectAll()
                 .limit(size, ((page - 1) * size).toLong())
-                .groupBy(FeedTable.id)
-                .orderBy(FeedTable.createdAt to SortOrder.DESC).toList()
+                .groupBy(Feeds.id)
+                .orderBy(Feeds.createdAt to SortOrder.DESC).toList()
         }
 
 
@@ -31,9 +31,9 @@ class FeedRepository {
     suspend fun addNewFeed(userId: Int, content: String, images: List<String>) {
 
         dbQuery { _ ->
-            FeedTable.insert {
-                it[UserTable.id] = userId
-                it[FeedTable.content] = content
+            Feeds.insert {
+                it[Users.id] = userId
+                it[Feeds.content] = content
             }
         }
     }

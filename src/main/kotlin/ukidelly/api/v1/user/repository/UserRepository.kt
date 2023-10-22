@@ -5,7 +5,7 @@ import ukidelly.api.v1.user.models.User
 import ukidelly.api.v1.user.models.UserRegisterRequest
 import ukidelly.database.DataBaseFactory.dbQuery
 import ukidelly.database.models.user.UserEntity
-import ukidelly.database.models.user.UserTable
+import ukidelly.database.models.user.Users
 import ukidelly.systems.models.LoginType
 import java.util.*
 
@@ -22,8 +22,8 @@ class UserRepository {
     suspend fun findEmailUser(email: String): User? {
         return dbQuery {
             UserEntity.find {
-                UserTable.loginType eq LoginType.email
-                UserTable.email eq email
+                Users.loginType eq LoginType.email
+                Users.email eq email
             }.firstOrNull()?.toUser()
         }
     }
@@ -39,9 +39,9 @@ class UserRepository {
     suspend fun findSocialUser(snsId: String, email: String, loginType: LoginType): User? {
         return dbQuery {
             UserEntity.find {
-                UserTable.loginType eq loginType
-                UserTable.snsId eq snsId
-                UserTable.email eq email
+                Users.loginType eq loginType
+                Users.snsId eq snsId
+                Users.email eq email
             }.firstOrNull()?.toUser()
         }
     }
@@ -54,7 +54,7 @@ class UserRepository {
      */
     suspend fun findUserByUUID(uuid: UUID): UserEntity? {
         return dbQuery {
-            UserEntity.find { UserTable.uuid eq uuid }.firstOrNull()
+            UserEntity.find { Users.uuid eq uuid }.firstOrNull()
         }
     }
 
@@ -67,7 +67,7 @@ class UserRepository {
     suspend fun findUserByEmail(email: String): User? {
         return dbQuery {
             UserEntity.find {
-                UserTable.email eq email
+                Users.email eq email
             }.firstOrNull()?.toUser()
         }
     }

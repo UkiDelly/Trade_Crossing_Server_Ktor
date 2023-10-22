@@ -11,11 +11,11 @@ import ukidelly.api.v1.trade_post.models.TradePostDetail
 import ukidelly.api.v1.trade_post.models.TradePostPreview
 import ukidelly.api.v1.trade_post.models.TradePostUpdateRequest
 import ukidelly.database.DataBaseFactory.dbQuery
-import ukidelly.database.models.comment.TradePostCommentTable
+import ukidelly.database.models.comment.TradePostComments
 import ukidelly.database.models.post.TradePostEntity
-import ukidelly.database.models.post.TradePostTable
+import ukidelly.database.models.post.TradePosts
 import ukidelly.database.models.user.UserEntity
-import ukidelly.database.models.user.UserTable
+import ukidelly.database.models.user.Users
 import java.time.LocalDateTime
 import java.util.*
 
@@ -27,32 +27,32 @@ class TradePostRepository {
 
     suspend fun findLatestPosts(size: Int, page: Int): Pair<List<TradePostPreview>, Int> {
 
-        val totalCount = dbQuery { TradePostTable.selectAll().count() }
+        val totalCount = dbQuery { TradePosts.selectAll().count() }
         val totalPage = (totalCount / size).toInt().let {
             if (it == 0) 1 else it
         }
         val offset = ((page - 1) * size).toLong()
         val posts = dbQuery {
-            TradePostTable
+            TradePosts
                 .join(
-                    otherTable = TradePostCommentTable,
-                    onColumn = TradePostTable.id,
-                    otherColumn = TradePostCommentTable.postId,
+                    otherTable = TradePostComments,
+                    onColumn = TradePosts.id,
+                    otherColumn = TradePostComments.postId,
                     joinType = JoinType.LEFT
                 )
                 .join(
-                    otherTable = UserTable,
-                    onColumn = TradePostTable.userUUID,
-                    otherColumn = UserTable.id,
+                    otherTable = Users,
+                    onColumn = TradePosts.userUUID,
+                    otherColumn = Users.id,
                     joinType = JoinType.LEFT
                 )
                 .slice(
-                    TradePostTable.columns + UserTable.userName + UserTable.islandName + TradePostCommentTable.id.count()
+                    TradePosts.columns + Users.userName + Users.islandName + TradePostComments.id.count()
                 )
                 .selectAll()
                 .limit(size, offset)
-                .groupBy(TradePostTable.id, TradePostTable.createdAt, UserTable.userName, UserTable.islandName)
-                .orderBy(TradePostTable.createdAt to SortOrder.DESC)
+                .groupBy(TradePosts.id, TradePosts.createdAt, Users.userName, Users.islandName)
+                .orderBy(TradePosts.createdAt to SortOrder.DESC)
                 .toList().map {
                     TradePostPreview.fromResultRow(it)
                 }
@@ -65,7 +65,7 @@ class TradePostRepository {
     suspend fun findPost(postId: Int): TradePostDetail? {
 
         val postEntity = dbQuery { TradePostEntity.findById(postId) } ?: return null
-        val userEntity = dbQuery { UserEntity.find { UserTable.uuid.eq(postEntity.userUUID) }.first() }
+        val userEntity = dbQuery { UserEntity.find { Users.uuid.eq(postEntity.userUUID) }.first() }
         return TradePostDetail(
             postId = postEntity.id.value,
             title = postEntity.title,
@@ -84,7 +84,7 @@ class TradePostRepository {
 
     suspend fun addNewPost(post: TradePostCreateRequest, creatorId: UUID): EntityID<Int> {
         return dbQuery {
-            TradePostTable.insertAndGetId {
+            TradePosts.insertAndGetId {
                 it[title] = post.title
                 it[content] = post.content
                 it[userUUID] = creatorId

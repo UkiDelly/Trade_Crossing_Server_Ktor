@@ -8,10 +8,10 @@ import kotlinx.coroutines.async
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import ukidelly.database.models.comment.TradePostCommentTable
-import ukidelly.database.models.post.TradePostTable
-import ukidelly.database.models.user.UserTable
-import ukidelly.database.tables.FeedTable
+import ukidelly.database.models.comment.TradePostComments
+import ukidelly.database.models.post.TradePosts
+import ukidelly.database.models.user.Users
+import ukidelly.database.tables.Feeds
 import ukidelly.database.tables.ImageTable
 
 
@@ -28,11 +28,11 @@ object DataBaseFactory {
         transaction {
             addLogger(StdOutSqlLogger)
             SchemaUtils.createMissingTablesAndColumns(
-                UserTable,
-                TradePostTable,
-                TradePostCommentTable,
+                Users,
+                TradePosts,
+                TradePostComments,
                 ImageTable,
-                FeedTable,
+                Feeds,
                 withLogs = false,
                 inBatch = true
             )

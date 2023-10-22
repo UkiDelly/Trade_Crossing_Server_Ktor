@@ -6,7 +6,7 @@ import ukidelly.systems.models.LoginType
 
 
 // Table
-object UserTable : IntIdTable("User", "id") {
+object Users : IntIdTable("User", "id") {
     val uuid = uuid("uuid").autoGenerate()
     val snsId = varchar("sns_id", 100)
     val email = varchar("email", 100)

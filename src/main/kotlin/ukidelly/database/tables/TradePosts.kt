@@ -6,7 +6,7 @@ import ukidelly.systems.models.Currency
 import ukidelly.systems.models.PostCategory
 import java.time.LocalDateTime
 
-object TradePostTable : IntIdTable("TradePost", "post_id") {
+object TradePosts : IntIdTable("TradePost", "post_id") {
     val title = varchar("title", 255)
     val content = text("content")
     val userUUID = uuid("user_uuid")

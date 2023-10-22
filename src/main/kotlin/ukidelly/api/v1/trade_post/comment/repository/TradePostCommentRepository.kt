@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.selectAll
 import org.koin.core.annotation.Single
 import ukidelly.database.DataBaseFactory.dbQuery
-import ukidelly.database.models.user.UserTable
+import ukidelly.database.models.user.Users
 
 
 @Single
@@ -14,21 +14,21 @@ class TradePostCommentRepository {
 
     suspend fun findAllComments(postId: Int): List<ResultRow> {
         return dbQuery {
-            TradePostCommentTable.join(
-                otherTable = UserTable,
+            TradePostComments.join(
+                otherTable = Users,
                 JoinType.LEFT,
-                onColumn = TradePostCommentTable.userId,
-                otherColumn = UserTable.uuid,
+                onColumn = TradePostComments.userId,
+                otherColumn = Users.uuid,
             ).slice(
-                TradePostCommentTable.id,
-                TradePostCommentTable.postId,
-                TradePostCommentTable.parentCommentId,
-                TradePostCommentTable.commentContent,
-                UserTable.id,
-                UserTable.userName,
-                UserTable.islandName,
-                TradePostCommentTable.createdAt,
-                TradePostCommentTable.updatedAt
+                TradePostComments.id,
+                TradePostComments.postId,
+                TradePostComments.parentCommentId,
+                TradePostComments.commentContent,
+                Users.id,
+                Users.userName,
+                Users.islandName,
+                TradePostComments.createdAt,
+                TradePostComments.updatedAt
             ).selectAll().toList()
         }
     }

@@ -4,9 +4,9 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.count
-import ukidelly.database.models.comment.TradePostCommentTable
-import ukidelly.database.models.post.TradePostTable
-import ukidelly.database.models.user.UserTable
+import ukidelly.database.models.comment.TradePostComments
+import ukidelly.database.models.post.TradePosts
+import ukidelly.database.models.user.Users
 import ukidelly.systems.models.Currency
 import ukidelly.systems.models.PostCategory
 import java.time.LocalDateTime
@@ -53,19 +53,19 @@ data class TradePostPreview(
 
         fun fromResultRow(result: ResultRow): TradePostPreview {
             return TradePostPreview(
-                postId = result[TradePostTable.id].value,
-                title = result[TradePostTable.title],
-                content = result[TradePostTable.content],
-                userId = result[TradePostTable.userUUID],
-                creator = result[UserTable.userName],
-                creatorIsland = result[UserTable.islandName],
-                category = result[TradePostTable.category],
-                currency = result[TradePostTable.currency],
-                price = result[TradePostTable.price],
-                closed = result[TradePostTable.closed],
-                commentCount = result[TradePostCommentTable.id.count()],
-                createdAt = LocalDateTime.parse(result[TradePostTable.createdAt].toString()),
-                updatedAt = LocalDateTime.parse(result[TradePostTable.updatedAt].toString())
+                postId = result[TradePosts.id].value,
+                title = result[TradePosts.title],
+                content = result[TradePosts.content],
+                userId = result[TradePosts.userUUID],
+                creator = result[Users.userName],
+                creatorIsland = result[Users.islandName],
+                category = result[TradePosts.category],
+                currency = result[TradePosts.currency],
+                price = result[TradePosts.price],
+                closed = result[TradePosts.closed],
+                commentCount = result[TradePostComments.id.count()],
+                createdAt = LocalDateTime.parse(result[TradePosts.createdAt].toString()),
+                updatedAt = LocalDateTime.parse(result[TradePosts.updatedAt].toString())
             )
 
         }

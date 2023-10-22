@@ -9,17 +9,17 @@ import ukidelly.api.v1.user.models.User
 class UserEntity(
     userId: EntityID<Int>
 ) : IntEntity(userId) {
-    companion object : IntEntityClass<UserEntity>(UserTable)
+    companion object : IntEntityClass<UserEntity>(Users)
 
-    var uuid by UserTable.uuid
-    var snsId by UserTable.snsId
-    var email by UserTable.email
-    var password by UserTable.password
-    var defaultProfile by UserTable.defaultProfile
-    var userName by UserTable.userName
-    var islandName by UserTable.islandName
-    var introduction by UserTable.introduction
-    var loginType by UserTable.loginType
+    var uuid by Users.uuid
+    var snsId by Users.snsId
+    var email by Users.email
+    var password by Users.password
+    var defaultProfile by Users.defaultProfile
+    var userName by Users.userName
+    var islandName by Users.islandName
+    var introduction by Users.introduction
+    var loginType by Users.loginType
 
 
     fun toUser() = User(

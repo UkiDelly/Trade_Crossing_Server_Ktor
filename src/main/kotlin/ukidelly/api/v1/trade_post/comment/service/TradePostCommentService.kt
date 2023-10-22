@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory
 import ukidelly.api.v1.trade_post.comment.models.TradePostComment
 import ukidelly.api.v1.trade_post.comment.models.TradePostCommentDto
 import ukidelly.database.models.comment.TradePostCommentRepository
-import ukidelly.database.models.comment.TradePostCommentTable
+import ukidelly.database.models.comment.TradePostComments
 
 
 @Single
@@ -24,14 +24,14 @@ class TradePostCommentService(private val tradePostCommentRepository: TradePostC
 
         // 부모 댓글 분리
         val parentTradePostComments = comments.filter {
-            it[TradePostCommentTable.parentCommentId] == null
+            it[TradePostComments.parentCommentId] == null
         }.map {
             TradePostComment.fromRow(it)
         }
 
         // 대댓글 분리
         val childTradePostComments = comments.filter {
-            it[TradePostCommentTable.parentCommentId] != null
+            it[TradePostComments.parentCommentId] != null
         }.map { TradePostComment.fromRow(it) }
 
         // 부모 댓글 for-loop
