@@ -3,6 +3,7 @@ package ukidelly.database.models.post
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import ukidelly.database.models.user.UserEntity
 
 class TradePostEntity(
     id: EntityID<Int>
@@ -11,11 +12,13 @@ class TradePostEntity(
 
     var title by TradePosts.title
     var content by TradePosts.content
-    val userUUID by TradePosts.userUUID
+    val user by UserEntity referencedOn TradePosts.user_id
     var category by TradePosts.category
     var currency by TradePosts.currency
     var price by TradePosts.price
     var closed by TradePosts.closed
     var createdAt by TradePosts.createdAt
     var updatedAt by TradePosts.updatedAt
+
 }
+

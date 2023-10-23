@@ -2,6 +2,7 @@ package ukidelly.database.models.post
 
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
+import ukidelly.database.models.user.Users
 import ukidelly.systems.models.Currency
 import ukidelly.systems.models.PostCategory
 import java.time.LocalDateTime
@@ -9,7 +10,7 @@ import java.time.LocalDateTime
 object TradePosts : IntIdTable("TradePost", "post_id") {
     val title = varchar("title", 255)
     val content = text("content")
-    val userUUID = uuid("user_uuid")
+    val user_id = reference("user_id", Users.id)
     val category = enumerationByName<PostCategory>("category", 100).default(PostCategory.item)
     val currency = enumerationByName<Currency>("currency", 100).default(Currency.bell)
     val price = integer("price").nullable()
