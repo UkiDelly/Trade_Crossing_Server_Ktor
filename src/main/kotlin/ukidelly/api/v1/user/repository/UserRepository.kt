@@ -19,12 +19,12 @@ class UserRepository {
      * @param password 비밀번호
      * @return [User]? 유저정보
      */
-    suspend fun findEmailUser(email: String): User? {
+    suspend fun findEmailUser(email: String): UserEntity? {
         return dbQuery {
             UserEntity.find {
                 Users.loginType eq LoginType.email
                 Users.email eq email
-            }.firstOrNull()?.toUser()
+            }.firstOrNull()
         }
     }
 
@@ -36,13 +36,13 @@ class UserRepository {
      * @param loginType 소셜로그인 타입
      * @return [User]? 유저정보
      */
-    suspend fun findSocialUser(snsId: String, email: String, loginType: LoginType): User? {
+    suspend fun findSocialUser(snsId: String, email: String, loginType: LoginType): UserEntity? {
         return dbQuery {
             UserEntity.find {
                 Users.loginType eq loginType
                 Users.snsId eq snsId
                 Users.email eq email
-            }.firstOrNull()?.toUser()
+            }.firstOrNull()
         }
     }
 
@@ -64,11 +64,11 @@ class UserRepository {
      * @param email 이메일
      * @return [User]? 유저정보
      */
-    suspend fun findUserByEmail(email: String): User? {
+    suspend fun findUserByEmail(email: String): UserEntity? {
         return dbQuery {
             UserEntity.find {
                 Users.email eq email
-            }.firstOrNull()?.toUser()
+            }.firstOrNull()
         }
     }
 
@@ -78,7 +78,7 @@ class UserRepository {
      * @param registerRequest 회원가입 요청 Dto
      * @return [User] 유저정보
      */
-    suspend fun addNewUser(registerRequest: UserRegisterRequest, password: String? = null): User = dbQuery {
+    suspend fun addNewUser(registerRequest: UserRegisterRequest, password: String? = null): UserEntity = dbQuery {
         UserEntity.new {
             this.snsId = registerRequest.snsId
             this.email = registerRequest.email
@@ -88,6 +88,6 @@ class UserRepository {
             this.introduction = registerRequest.introduction
             this.loginType = registerRequest.loginType
             this.defaultProfile = registerRequest.profile
-        }.toUser()
+        }
     }
 }

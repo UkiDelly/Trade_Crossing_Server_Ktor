@@ -8,6 +8,7 @@ import ukidelly.api.v1.user.repository.UserRepository
 import ukidelly.database.models.user.UserEntity
 import ukidelly.systems.errors.PasswordIncorrectException
 import ukidelly.systems.errors.UserExistException
+import ukidelly.systems.errors.UserNotExistException
 import ukidelly.systems.models.LoginType
 import java.util.*
 
@@ -21,13 +22,13 @@ class UserService(private val repository: UserRepository) {
      * @param password 비밀번호
      * @return [User]? 유저정보
      */
-    suspend fun emailLogin(email: String, password: String): User? {
+    suspend fun emailLogin(email: String, password: String): User {
 
-        val user = repository.findEmailUser(email) ?: return null
-        val isVerified = BCrypt.verifyer().verify(password.toCharArray(), user.password).verified
+        val userEntity = repository.findEmailUser(email) ?: throw UserNotExistException()
+        val isVerified = BCrypt.verifyer().verify(password.toCharArray(), userEntity.password).verified
 
         if (isVerified) {
-            return user
+            return userEntity.toUser()
         } else {
             throw PasswordIncorrectException()
         }
@@ -38,12 +39,12 @@ class UserService(private val repository: UserRepository) {
      * @param loginRequest 로그인 요청 Dto
      * @return [UserEntity]? 유저 정보
      */
-    suspend fun socialLogin(snsId: String, email: String, loginType: LoginType): User? {
+    suspend fun socialLogin(snsId: String, email: String, loginType: LoginType): User {
         return repository.findSocialUser(
             snsId = snsId,
             email = email,
             loginType = loginType
-        )
+        )?.toUser() ?: throw UserNotExistException()
     }
 
     /**
@@ -52,8 +53,8 @@ class UserService(private val repository: UserRepository) {
      * @return [User] 유저 정보 또는 [null]
      *
      */
-    suspend fun autoLogin(uuid: UUID): User? {
-        return repository.findUserByUUID(uuid)?.toUser()
+    suspend fun autoLogin(uuid: UUID): User {
+        return repository.findUserByUUID(uuid)?.toUser() ?: throw UserNotExistException()
     }
 
     /**
@@ -76,7 +77,7 @@ class UserService(private val repository: UserRepository) {
                     userRegisterRequest.email,
                 )?.let {
                     throw UserExistException("이미 가입한 유저입니다.")
-                } ?: repository.addNewUser(userRegisterRequest, hashedPassword)
+                } ?: repository.addNewUser(userRegisterRequest, hashedPassword).toUser()
             }
 
             else -> {
@@ -86,7 +87,7 @@ class UserService(private val repository: UserRepository) {
                     userRegisterRequest.loginType
                 )?.let {
                     throw UserExistException("이미 가입한 유저입니다.")
-                } ?: repository.addNewUser(userRegisterRequest)
+                } ?: repository.addNewUser(userRegisterRequest).toUser()
             }
         }
     }

@@ -50,7 +50,7 @@ fun Route.userRouting() {
                     val token = Token.createToken(application.environment.config, user.uuid.toString())
                     call.respond(
                         HttpStatusCode.OK,
-                        ResponseDto.Success(data = UserResponse(user, token), message = "로그인 성공")
+                        ResponseDto.Success(data = UserInfoWithToken(user, token), message = "로그인 성공")
                     )
                     return@post
                 }
@@ -107,7 +107,7 @@ fun Route.userRouting() {
                 } else {
                     call.respond(
                         HttpStatusCode.OK,
-                        ResponseDto.Success(data = UserResponse(user, call.getToken()), message = "성공")
+                        ResponseDto.Success(data = UserInfoWithToken(user, call.getToken()), message = "성공")
                     )
                 }
             }
@@ -119,7 +119,7 @@ fun Route.userRouting() {
         val request = call.receive<UserRegisterRequest>()
         service.register(request).let {
             val token = Token.createToken(application.environment.config, it.uuid.toString())
-            call.respond(HttpStatusCode.OK, ResponseDto.Success(UserResponse(it, token), message = "회원가입 성공"))
+            call.respond(HttpStatusCode.OK, ResponseDto.Success(UserInfoWithToken(it, token), message = "회원가입 성공"))
         }
 
     }
@@ -143,7 +143,7 @@ private suspend fun chechUserAndRespond(user: User?, call: ApplicationCall, conf
         val token = Token.createToken(config, user.uuid.toString())
         call.respond(
             HttpStatusCode.OK,
-            ResponseDto.Success(data = UserResponse(user, token), message = "로그인 성공")
+            ResponseDto.Success(data = UserInfoWithToken(user, token), message = "로그인 성공")
         )
     }
 }
