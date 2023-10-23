@@ -10,12 +10,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.ktor.ext.inject
 import ukidelly.api.v1.trade_post.comment.tradePostCommentRoutes
-import ukidelly.api.v1.trade_post.models.TradePostCreateRequest
+import ukidelly.api.v1.trade_post.models.CreateTradePostRequest
 import ukidelly.api.v1.trade_post.service.TradePostService
 import ukidelly.database.DataBaseFactory.dbQuery
 import ukidelly.database.models.post.TradePostEntity
 import ukidelly.systems.errors.ServerError
 import ukidelly.systems.models.ResponseDto
+import java.util.*
 
 fun Route.tradePostRouting() {
     val tradePostService by inject<TradePostService>()
@@ -92,7 +93,7 @@ fun Route.tradePostRouting() {
                             )
                         )
                         return@delete
-                    } else if (post.userId != userId.toInt()) {
+                    } else if (post.user.uuid != UUID.fromString(userId)) {
                         call.respond(
                             HttpStatusCode.Forbidden,
                             ResponseDto.Error(ServerError.UnAuhtorized, "본인만 이 게시물을 삭제할 수 있습니다.")
@@ -119,9 +120,9 @@ fun Route.tradePostRouting() {
         post("/new") {
 
             val principal = call.principal<UserIdPrincipal>()!!
-            val userId = principal.name.toInt()
-            val tradePostCreateRequest = call.receive<TradePostCreateRequest>()
-            tradePostService.addNewPost(tradePostCreateRequest, userId)?.let {
+            val userId = principal.name
+            val tradePostCreateRequest = call.receive<CreateTradePostRequest>()
+            tradePostService.addNewPost(tradePostCreateRequest, UUID.fromString(userId))?.let {
                 call.respond(HttpStatusCode.OK, ResponseDto.Success(it, "성공"))
             } ?: run {
                 call.respond(HttpStatusCode.BadRequest, ResponseDto.Error("게시물을 등록하지 못했습니다.", "실패"))
