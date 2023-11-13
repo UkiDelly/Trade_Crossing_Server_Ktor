@@ -20,20 +20,7 @@ class UserEntity(
     var islandName by Users.islandName
     var introduction by Users.introduction
     var loginType by Users.loginType
-
-
-    fun toUser() = User(
-        userId = id.value,
-        uuid = uuid,
-        snsId = snsId,
-        email = email,
-        password = password,
-        profile = defaultProfile,
-        userName = userName,
-        islandName = islandName,
-        introduction = introduction,
-        loginType = loginType
-    )
+    
 
     override fun toString(): String {
         return "UserEntity(userId=${id.value}, snsId=$snsId, email=$email, password=$password, defaultProfile=$defaultProfile, " +

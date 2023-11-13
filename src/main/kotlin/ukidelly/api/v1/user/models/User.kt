@@ -2,6 +2,7 @@ package ukidelly.api.v1.user.models
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import ukidelly.database.models.user.UserEntity
 import ukidelly.systems.models.DefaultProfile
 import ukidelly.systems.models.LoginType
 import java.util.*
@@ -22,4 +23,18 @@ data class User(
     val islandName: String,
     val introduction: String,
     val loginType: LoginType
-)
+) {
+    constructor(userEntity: UserEntity) : this(
+        userId = userEntity.id.value,
+        uuid = userEntity.uuid,
+        snsId = userEntity.snsId,
+        email = userEntity.email,
+        password = userEntity.password,
+        profile = userEntity.defaultProfile,
+        userName = userEntity.userName,
+        islandName = userEntity.islandName,
+        introduction = userEntity.introduction,
+        loginType = userEntity.loginType
+
+    )
+}

@@ -28,7 +28,7 @@ class UserService(private val repository: UserRepository) {
         val isVerified = BCrypt.verifyer().verify(password.toCharArray(), userEntity.password).verified
 
         if (isVerified) {
-            return userEntity.toUser()
+            return User(userEntity)
         } else {
             throw PasswordIncorrectException()
         }
@@ -44,7 +44,8 @@ class UserService(private val repository: UserRepository) {
             snsId = snsId,
             email = email,
             loginType = loginType
-        )?.toUser() ?: throw UserNotExistException()
+        )?.let { User(it) } ?: throw UserNotExistException()
+
     }
 
     /**
@@ -54,7 +55,7 @@ class UserService(private val repository: UserRepository) {
      *
      */
     suspend fun autoLogin(uuid: UUID): User {
-        return repository.findUserByUUID(uuid)?.toUser() ?: throw UserNotExistException()
+        return repository.findUserByUUID(uuid)?.let { User(it) } ?: throw UserNotExistException()
     }
 
     /**
@@ -77,7 +78,7 @@ class UserService(private val repository: UserRepository) {
                     userRegisterRequest.email,
                 )?.let {
                     throw UserExistException("이미 가입한 유저입니다.")
-                } ?: repository.addNewUser(userRegisterRequest, hashedPassword).toUser()
+                } ?: User(repository.addNewUser(userRegisterRequest, hashedPassword))
             }
 
             else -> {
@@ -87,7 +88,7 @@ class UserService(private val repository: UserRepository) {
                     userRegisterRequest.loginType
                 )?.let {
                     throw UserExistException("이미 가입한 유저입니다.")
-                } ?: repository.addNewUser(userRegisterRequest).toUser()
+                } ?: User(repository.addNewUser(userRegisterRequest))
             }
         }
     }
