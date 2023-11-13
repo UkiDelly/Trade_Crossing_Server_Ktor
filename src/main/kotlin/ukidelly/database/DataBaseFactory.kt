@@ -9,10 +9,13 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import ukidelly.database.models.comment.TradeFeedComments
+import ukidelly.database.models.like.TradeFeedLikes
 import ukidelly.database.models.post.TradeFeeds
 import ukidelly.database.models.user.Users
+import ukidelly.database.tables.FeedComments
+import ukidelly.database.tables.FeedImages
+import ukidelly.database.tables.FeedLikes
 import ukidelly.database.tables.Feeds
-import ukidelly.database.tables.ImageTable
 
 
 object DataBaseFactory {
@@ -31,8 +34,11 @@ object DataBaseFactory {
                 Users,
                 TradeFeeds,
                 TradeFeedComments,
-                ImageTable,
+                TradeFeedLikes,
                 Feeds,
+                FeedComments,
+                FeedLikes,
+                FeedImages,
                 withLogs = false,
                 inBatch = true
             )
