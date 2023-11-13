@@ -1,6 +1,7 @@
 package ukidelly.modules
 
 import io.ktor.server.application.*
+import io.ktor.server.resources.*
 import io.ktor.server.routing.*
 import ukidelly.api.v1.chat.chatRouting
 import ukidelly.api.v1.feed.feedRouting
@@ -10,12 +11,14 @@ import ukidelly.api.v1.user.userRouting
 
 fun Application.configureRouting() {
 
+    install(Resources)
+
+
+
 
     routing {
 
-        route("/user") {
-            userRouting()
-        }
+        userRouting()
 
         route("/trade-post") {
             tradePostRouting()

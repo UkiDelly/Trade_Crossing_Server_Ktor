@@ -29,6 +29,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-config-yaml:$ktor_version")
     implementation("io.ktor:ktor-server-host-common-jvm:2.3.3")
+    implementation("io.ktor:ktor-server-resources:$ktor_version")
 
     // auth
     implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")
