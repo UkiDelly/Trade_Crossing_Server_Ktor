@@ -3,8 +3,8 @@ package ukidelly.api.v1.trade_post.comment.models//package ukidelly.post.domain
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.ResultRow
-import ukidelly.database.models.comment.TradePostCommentEntity
-import ukidelly.database.models.comment.TradePostComments
+import ukidelly.database.models.comment.TradeFeedCommentEntity
+import ukidelly.database.models.comment.TradeFeedComments
 import ukidelly.database.models.user.Users
 import java.time.LocalDateTime
 
@@ -25,7 +25,7 @@ data class TradePostComment(
 ) {
 
     companion object {
-        fun fromEntity(entity: TradePostCommentEntity, userName: String, islandName: String): TradePostComment {
+        fun fromEntity(entity: TradeFeedCommentEntity, userName: String, islandName: String): TradePostComment {
             return TradePostComment(
                 commentId = entity.id.value,
                 postId = entity.postId.value,
@@ -40,14 +40,14 @@ data class TradePostComment(
 
         fun fromRow(row: ResultRow): TradePostComment {
             return TradePostComment(
-                commentId = row[TradePostComments.id].value,
-                postId = row[TradePostComments.postId].value,
-                content = row[TradePostComments.commentContent],
-                parentCommentId = row[TradePostComments.parentCommentId]?.value,
+                commentId = row[TradeFeedComments.id].value,
+                postId = row[TradeFeedComments.postId].value,
+                content = row[TradeFeedComments.commentContent],
+                parentCommentId = row[TradeFeedComments.parentCommentId]?.value,
                 creator = row[Users.userName],
                 creatorIsland = row[Users.islandName],
-                createdAt = LocalDateTime.parse(row[TradePostComments.createdAt].toString()),
-                updatedAt = LocalDateTime.parse(row[TradePostComments.updatedAt].toString()),
+                createdAt = LocalDateTime.parse(row[TradeFeedComments.createdAt].toString()),
+                updatedAt = LocalDateTime.parse(row[TradeFeedComments.updatedAt].toString()),
             )
         }
     }

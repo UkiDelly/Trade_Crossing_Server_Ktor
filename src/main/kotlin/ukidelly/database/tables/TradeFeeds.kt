@@ -5,7 +5,7 @@ import ukidelly.database.tables.BaseTable
 import ukidelly.systems.models.Currency
 import ukidelly.systems.models.PostCategory
 
-object TradeFeeds : BaseTable("TradePost", "id") {
+object TradeFeeds : BaseTable("TradeFeed", "id") {
     val title = varchar("title", 255)
     val content = text("content")
     val user_id = reference("creator", Users.id)

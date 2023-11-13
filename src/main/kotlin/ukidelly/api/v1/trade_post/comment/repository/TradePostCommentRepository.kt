@@ -14,28 +14,28 @@ class TradePostCommentRepository {
 
     suspend fun findAllComments(postId: Int): List<ResultRow> {
         return dbQuery {
-            TradePostComments.join(
+            TradeFeedComments.join(
                 otherTable = Users,
                 JoinType.LEFT,
-                onColumn = TradePostComments.userId,
+                onColumn = TradeFeedComments.userId,
                 otherColumn = Users.uuid,
             ).slice(
-                TradePostComments.id,
-                TradePostComments.postId,
-                TradePostComments.parentCommentId,
-                TradePostComments.commentContent,
+                TradeFeedComments.id,
+                TradeFeedComments.postId,
+                TradeFeedComments.parentCommentId,
+                TradeFeedComments.commentContent,
                 Users.id,
                 Users.userName,
                 Users.islandName,
-                TradePostComments.createdAt,
-                TradePostComments.updatedAt
+                TradeFeedComments.createdAt,
+                TradeFeedComments.updatedAt
             ).selectAll().toList()
         }
     }
 
     suspend fun addNewComment(postId: EntityID<Int>) {
 
-        TradePostCommentEntity.new {
+        TradeFeedCommentEntity.new {
             this.postId = postId
             this.commentContent = ""
         }

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 import ukidelly.api.v1.trade_post.models.CreateTradePostRequest
 import ukidelly.api.v1.trade_post.models.TradePostPreview
 import ukidelly.database.DataBaseFactory.dbQuery
-import ukidelly.database.models.comment.TradePostComments
+import ukidelly.database.models.comment.TradeFeedComments
 import ukidelly.database.models.post.TradeFeedEntity
 import ukidelly.database.models.post.TradeFeeds
 import ukidelly.database.models.user.UserEntity
@@ -34,8 +34,8 @@ class TradePostRepository {
         val offset = ((page - 1) * size).toLong()
         val posts = dbQuery {
 
-            val result = TradeFeeds.leftJoin(Users).leftJoin(TradePostComments)
-                .slice(TradeFeeds.columns + Users.userName + Users.islandName + TradePostComments.id.count())
+            val result = TradeFeeds.leftJoin(Users).leftJoin(TradeFeedComments)
+                .slice(TradeFeeds.columns + Users.userName + Users.islandName + TradeFeedComments.id.count())
                 .selectAll().limit(size, offset).orderBy(TradeFeeds.createdAt to SortOrder.DESC).toList()
 
             result.map {

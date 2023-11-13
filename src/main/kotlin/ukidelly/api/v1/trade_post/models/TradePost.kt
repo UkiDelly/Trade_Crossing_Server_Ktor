@@ -4,7 +4,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.count
-import ukidelly.database.models.comment.TradePostComments
+import ukidelly.database.models.comment.TradeFeedComments
 import ukidelly.database.models.post.TradeFeedEntity
 import ukidelly.database.models.post.TradeFeeds
 import ukidelly.database.models.user.Users
@@ -69,7 +69,7 @@ data class TradePostPreview(
         category = result[TradeFeeds.category],
         currency = result[TradeFeeds.currency],
         price = result[TradeFeeds.price],
-        commentCount = result[TradePostComments.id.count()],
+        commentCount = result[TradeFeedComments.id.count()],
         createdAt = LocalDateTime.parse(result[TradeFeeds.createdAt].toString()),
         updatedAt = LocalDateTime.parse(result[TradeFeeds.updatedAt].toString())
     )

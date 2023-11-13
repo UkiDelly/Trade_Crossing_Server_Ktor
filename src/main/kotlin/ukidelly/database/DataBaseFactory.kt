@@ -8,7 +8,7 @@ import kotlinx.coroutines.async
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import ukidelly.database.models.comment.TradePostComments
+import ukidelly.database.models.comment.TradeFeedComments
 import ukidelly.database.models.post.TradeFeeds
 import ukidelly.database.models.user.Users
 import ukidelly.database.tables.Feeds
@@ -30,7 +30,7 @@ object DataBaseFactory {
             SchemaUtils.createMissingTablesAndColumns(
                 Users,
                 TradeFeeds,
-                TradePostComments,
+                TradeFeedComments,
                 ImageTable,
                 Feeds,
                 withLogs = false,
