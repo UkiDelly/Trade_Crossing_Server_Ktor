@@ -1,12 +1,9 @@
 package ukidelly.database.tables
 
-import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.javatime.datetime
-import java.time.LocalDateTime
+import ukidelly.database.models.user.Users
 
-object Feeds : IntIdTable("FeedPost", "id") {
+object Feeds : BaseTable("FeedPost", "id") {
     val content = text("content")
     val userId = integer("user_id")
-    val createdAt = datetime("created_at").clientDefault { LocalDateTime.now() }
-    val updatedAt = datetime("updated_at").clientDefault { LocalDateTime.now() }
+    val creator = reference("creator", Users.id)
 }
