@@ -10,7 +10,7 @@ import ukidelly.database.models.user.Users
 
 
 @Single
-class TradePostCommentRepository {
+class TradeFeedCommentRepository {
 
     suspend fun findAllComments(postId: Int): List<ResultRow> {
         return dbQuery {

@@ -20,7 +20,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Single
-class TradePostRepository {
+class TradeFeedRepository {
 
     private val logger = LoggerFactory.getLogger("PostRepository")
 
@@ -90,7 +90,7 @@ class TradePostRepository {
     suspend fun deletePost(postId: Int): Boolean {
         val post = withContext(Dispatchers.IO) { dbQuery { TradeFeedEntity.findById(postId) } } ?: return false
         logger.debug("Deleting Post: {}", post)
-//        진짜로 삭제하는 코드 구현
+        //        진짜로 삭제하는 코드 구현
         return true
     }
 }

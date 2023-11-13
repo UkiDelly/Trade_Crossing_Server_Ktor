@@ -5,12 +5,12 @@ import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import ukidelly.api.v1.feed.repository.FeedRepository
 import ukidelly.api.v1.feed.service.FeedService
-import ukidelly.api.v1.trade_post.comment.service.TradePostCommentService
-import ukidelly.api.v1.trade_post.repository.TradePostRepository
-import ukidelly.api.v1.trade_post.service.TradePostService
+import ukidelly.api.v1.trade_post.comment.service.TradeFeedCommentService
+import ukidelly.api.v1.trade_post.repository.TradeFeedRepository
+import ukidelly.api.v1.trade_post.service.TradeFeedService
 import ukidelly.api.v1.user.repository.UserRepository
 import ukidelly.api.v1.user.service.UserService
-import ukidelly.database.models.comment.TradePostCommentRepository
+import ukidelly.database.models.comment.TradeFeedCommentRepository
 
 fun Application.configureKoin() {
 
@@ -20,16 +20,17 @@ fun Application.configureKoin() {
 
     val repositoryModule = module {
         single { UserRepository() }
-        single { TradePostRepository() }
-        single { TradePostCommentRepository() }
+        single { TradeFeedRepository() }
+        single { TradeFeedCommentRepository() }
         single { FeedRepository() }
     }
 
+
     val serviceModule = module {
-        single { UserService(get()) }
-        single { TradePostService(get(), get()) }
-        single { TradePostCommentService(get()) }
-        single { FeedService(get()) }
+        single { UserService(get<UserRepository>()) }
+        single { TradeFeedCommentService(get<TradeFeedCommentRepository>()) }
+        single { TradeFeedService(get<TradeFeedRepository>(), get<TradeFeedCommentService>()) }
+        single { FeedService(get<FeedRepository>()) }
     }
 
     install(Koin) {

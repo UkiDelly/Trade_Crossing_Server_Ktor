@@ -11,7 +11,7 @@ import kotlinx.coroutines.withContext
 import org.koin.ktor.ext.inject
 import ukidelly.api.v1.trade_post.comment.tradePostCommentRoutes
 import ukidelly.api.v1.trade_post.models.CreateTradePostRequest
-import ukidelly.api.v1.trade_post.service.TradePostService
+import ukidelly.api.v1.trade_post.service.TradeFeedService
 import ukidelly.database.DataBaseFactory.dbQuery
 import ukidelly.database.models.post.TradeFeedEntity
 import ukidelly.systems.errors.ServerError
@@ -19,7 +19,7 @@ import ukidelly.systems.models.ResponseDto
 import java.util.*
 
 fun Route.tradePostRouting() {
-    val tradePostService by inject<TradePostService>()
+    val tradeFeedService by inject<TradeFeedService>()
 
     // 최신 게시글 가져오기
     get("/latest") {
@@ -46,7 +46,7 @@ fun Route.tradePostRouting() {
             )
             return@get
         } else {
-            val posts = tradePostService.getLatestPosts(
+            val posts = tradeFeedService.getLatestPosts(
                 itemsPerPage = queryParam["size"]!!.toInt(),
                 page = queryParam["page"]!!.toInt()
             )
@@ -62,7 +62,7 @@ fun Route.tradePostRouting() {
         get {
 
             call.parameters["postId"]?.let { postId ->
-                tradePostService.getPost(postId.toInt())?.let {
+                tradeFeedService.getPost(postId.toInt())?.let {
                     call.respond(HttpStatusCode.OK, ResponseDto.Success(it, "성공"))
                 } ?: run {
                     call.respond(HttpStatusCode.NotFound, ResponseDto.Error(ServerError.NotExist, "존재하지 않는 게시물입니다"))
@@ -100,7 +100,7 @@ fun Route.tradePostRouting() {
                         )
                         return@delete
                     } else {
-                        val status = tradePostService.deletePost(postId = it.toInt())
+                        val status = tradeFeedService.deletePost(postId = it.toInt())
                         call.respond(HttpStatusCode.OK, ResponseDto.Success("삭제 성공", "성공"))
                     }
                 }
@@ -122,7 +122,7 @@ fun Route.tradePostRouting() {
             val principal = call.principal<UserIdPrincipal>()!!
             val userId = principal.name
             val tradePostCreateRequest = call.receive<CreateTradePostRequest>()
-            tradePostService.addNewPost(tradePostCreateRequest, UUID.fromString(userId))?.let {
+            tradeFeedService.addNewPost(tradePostCreateRequest, UUID.fromString(userId))?.let {
                 call.respond(HttpStatusCode.OK, ResponseDto.Success(it, "성공"))
             } ?: run {
                 call.respond(HttpStatusCode.BadRequest, ResponseDto.Error("게시물을 등록하지 못했습니다.", "실패"))
@@ -131,24 +131,24 @@ fun Route.tradePostRouting() {
         }
 
 
-//        post("/like") {}
-//
-//
-//        post("/unlike") {}
-//
-//
-//        post("/comment") {}
-//
-//
-//        post("/editComment") {}
-//
-//
-//        post("/deleteComment") {}
-//
-//
-//        post("/likeComment") {}
-//
-//
-//        post("/unlikeComment") {}
+        //        post("/like") {}
+        //
+        //
+        //        post("/unlike") {}
+        //
+        //
+        //        post("/comment") {}
+        //
+        //
+        //        post("/editComment") {}
+        //
+        //
+        //        post("/deleteComment") {}
+        //
+        //
+        //        post("/likeComment") {}
+        //
+        //
+        //        post("/unlikeComment") {}
     }
 }

@@ -4,12 +4,12 @@ import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
 import ukidelly.api.v1.trade_post.comment.models.TradePostComment
 import ukidelly.api.v1.trade_post.comment.models.TradePostCommentDto
+import ukidelly.database.models.comment.TradeFeedCommentRepository
 import ukidelly.database.models.comment.TradeFeedComments
-import ukidelly.database.models.comment.TradePostCommentRepository
 
 
 @Single
-class TradePostCommentService(private val tradePostCommentRepository: TradePostCommentRepository) {
+class TradeFeedCommentService(private val tradeFeedCommentRepository: TradeFeedCommentRepository) {
 
 
     private val logger = LoggerFactory.getLogger("CommentService")
@@ -17,7 +17,7 @@ class TradePostCommentService(private val tradePostCommentRepository: TradePostC
     suspend fun getAllComment(postId: Int): List<TradePostCommentDto> {
 
         // Repository에서 ResultRow형태의 List를 받음
-        val comments = tradePostCommentRepository.findAllComments(postId)
+        val comments = tradeFeedCommentRepository.findAllComments(postId)
 
         // Routing에 전달할 빈 List<CommentDto> 생성
         val tradePostCommentDtos = mutableListOf<TradePostCommentDto>()
