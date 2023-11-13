@@ -17,71 +17,71 @@ import java.time.LocalDateTime
 
 fun Application.configureJWT() {
 
-	// Please read the jwt property from the config file if you are using EngineMain
-	val jwtAudience = environment.config.property("jwt.audience").getString()//"jwt-audience"
-	val jwtIssuer = environment.config.property("jwt.issuer").getString() //"https://jwt-provider-domain/"
-	val jwtRealm = environment.config.property("jwt.realm").getString()
-	val jwtSecret = environment.config.property("jwt.secret").getString()
+    // Please read the jwt property from the config file if you are using EngineMain
+    val jwtAudience = environment.config.property("jwt.audience").getString() //"jwt-audience"
+    val jwtIssuer = environment.config.property("jwt.issuer").getString() //"https://jwt-provider-domain/"
+    val jwtRealm = environment.config.property("jwt.realm").getString()
+    val jwtSecret = environment.config.property("jwt.secret").getString()
 
-	install(Authentication) {
-		jwt("auth-jwt") {
-			realm = jwtRealm
-			verifier(
-				JWT
-					.require(Algorithm.HMAC256(jwtSecret))
-					.withAudience(jwtAudience)
-					.withIssuer(jwtIssuer)
-					.build()
-			)
-			validate { credential ->
+    install(Authentication) {
+        jwt("auth-jwt") {
+            realm = jwtRealm
+            verifier(
+                JWT
+                    .require(Algorithm.HMAC256(jwtSecret))
+                    .withAudience(jwtAudience)
+                    .withIssuer(jwtIssuer)
+                    .build()
+            )
+            validate { credential ->
 
-				val now = LocalDateTime.now()
-				val validToken = now.isBefore(Utils.convertDateToLocalDate(credential.expiresAt!!))
+                val now = LocalDateTime.now()
+                val validToken = now.isBefore(Utils.convertDateToLocalDate(credential.expiresAt!!))
 
-				if (!validToken || credential.payload.getClaim("type").asString() != "access_token") {
-					throw InvalidJwtTokenException()
+                if (!validToken || credential.payload.getClaim("type").asString() != "access_token") {
+                    throw InvalidJwtTokenException()
 
-				}
-				val userId = credential.payload.subject
-				UserIdPrincipal(userId)
-			}
-		}
+                }
+                val userId = credential.payload.subject
+                UserIdPrincipal(userId)
+            }
+        }
 
-		jwt("refresh-jwt") {
-			realm = jwtRealm
-			verifier(
-				JWT
-					.require(Algorithm.HMAC256(jwtSecret))
-					.withAudience(jwtAudience)
-					.withIssuer(jwtIssuer)
-					.build()
-			)
+        jwt("refresh-jwt") {
+            realm = jwtRealm
+            verifier(
+                JWT
+                    .require(Algorithm.HMAC256(jwtSecret))
+                    .withAudience(jwtAudience)
+                    .withIssuer(jwtIssuer)
+                    .build()
+            )
 
-			validate { credential ->
-				val now = LocalDateTime.now()
-				val validToken = now.isBefore(Utils.convertDateToLocalDate(credential.expiresAt!!))
-				if (!validToken || credential.payload.getClaim("type").asString() != "refresh_token") {
-					throw InvalidJwtTokenException()
+            validate { credential ->
+                val now = LocalDateTime.now()
+                val validToken = now.isBefore(Utils.convertDateToLocalDate(credential.expiresAt!!))
+                if (!validToken || credential.payload.getClaim("type").asString() != "refresh_token") {
+                    throw InvalidJwtTokenException()
 
-				}
-				val userId = credential.payload.subject
-				val token = Token.createToken(application.environment.config, userId)
-				this.attributes.put(tokenKey, token)
-				UserIdPrincipal(userId)
-			}
+                }
+                val userId = credential.payload.subject
+                val token = Token.createToken(application.environment.config, userId)
+                this.attributes.put(tokenKey, token)
+                UserIdPrincipal(userId)
+            }
 
-			challenge { _, _ ->
-				call.respond(
-					HttpStatusCode.Unauthorized,
-					ResponseDto.Error(error = "유효하지 않는 토큰입니다.", message = "실패")
-				)
-			}
-		}
-	}
+            challenge { _, _ ->
+                call.respond(
+                    HttpStatusCode.Unauthorized,
+                    ResponseDto.Error(error = "유효하지 않는 토큰입니다.", message = "실패")
+                )
+            }
+        }
+    }
 }
 
 
 private val tokenKey = AttributeKey<Token>("token")
 fun ApplicationCall.getToken(): Token {
-	return attributes[tokenKey]
+    return attributes[tokenKey]
 }

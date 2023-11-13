@@ -39,7 +39,7 @@ fun Route.feedRouting() {
         if (missingParam.isNotEmpty()) {
             call.respond(
                 HttpStatusCode.BadRequest,
-                ResponseDto.Error(ServerError.InvalidField, missingParam.values.toString())
+                ResponseDto.Error(ServerError.InvalidField)
             )
             return@get
         } else {

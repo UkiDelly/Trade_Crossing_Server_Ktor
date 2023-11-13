@@ -19,15 +19,11 @@ class TradeFeedService(
 
     suspend fun getLatestPosts(itemsPerPage: Int, page: Int): LatestTradePostDto {
         val result = tradeFeedRepository.findLatestPosts(itemsPerPage, page)
-
         return LatestTradePostDto(result.first, page, result.second)
-
-        //        return LatestTradePostDto(latestPosts.first, page, latestPosts.second)
     }
 
     suspend fun getPost(postId: Int): TradePostDetailDto? {
         val tradePostEntity = tradeFeedRepository.findPost(postId) ?: return null
-        //        val comments = tradePostCommentService.getAllComment(postId)
         return TradePostDetailDto(TradePostDetail(tradePostEntity), emptyList())
     }
 

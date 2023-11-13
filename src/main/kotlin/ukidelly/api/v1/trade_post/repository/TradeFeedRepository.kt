@@ -1,5 +1,6 @@
 package ukidelly.api.v1.trade_post.repository
 
+import io.ktor.server.plugins.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.SortOrder
@@ -87,10 +88,13 @@ class TradeFeedRepository {
     }
 
 
-    suspend fun deletePost(postId: Int): Boolean {
-        val post = withContext(Dispatchers.IO) { dbQuery { TradeFeedEntity.findById(postId) } } ?: return false
-        logger.debug("Deleting Post: {}", post)
-        //        진짜로 삭제하는 코드 구현
-        return true
+    suspend fun deletePost(postId: Int) {
+
+        withContext(Dispatchers.IO) {
+            dbQuery {
+                TradeFeedEntity.findById(postId)?.delete() ?: throw NotFoundException()
+            }
+        }
+
     }
 }
