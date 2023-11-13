@@ -28,7 +28,7 @@ class TradePostService(
     suspend fun getPost(postId: Int): TradePostDetailDto? {
         val tradePostEntity = tradePostRepository.findPost(postId) ?: return null
 //        val comments = tradePostCommentService.getAllComment(postId)
-        return TradePostDetailDto(TradePostDetail.fromEntity(tradePostEntity), emptyList())
+        return TradePostDetailDto(TradePostDetail(tradePostEntity), emptyList())
     }
 
     suspend fun addNewPost(newPost: CreateTradePostRequest, userId: UUID): TradePostDetailDto? {

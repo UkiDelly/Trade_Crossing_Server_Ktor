@@ -13,7 +13,7 @@ import ukidelly.api.v1.trade_post.comment.tradePostCommentRoutes
 import ukidelly.api.v1.trade_post.models.CreateTradePostRequest
 import ukidelly.api.v1.trade_post.service.TradePostService
 import ukidelly.database.DataBaseFactory.dbQuery
-import ukidelly.database.models.post.TradePostEntity
+import ukidelly.database.models.post.TradeFeedEntity
 import ukidelly.systems.errors.ServerError
 import ukidelly.systems.models.ResponseDto
 import java.util.*
@@ -82,7 +82,7 @@ fun Route.tradePostRouting() {
                 val userId = call.principal<UserIdPrincipal>()!!.name
                 call.parameters["postId"]?.let {
                     val post =
-                        withContext(Dispatchers.IO) { dbQuery { database -> TradePostEntity.findById(it.toInt()) } }
+                        withContext(Dispatchers.IO) { dbQuery { database -> TradeFeedEntity.findById(it.toInt()) } }
 
                     if (post == null) {
                         call.respond(

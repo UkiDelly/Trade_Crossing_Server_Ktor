@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import ukidelly.database.models.comment.TradePostComments
-import ukidelly.database.models.post.TradePosts
+import ukidelly.database.models.post.TradeFeeds
 import ukidelly.database.models.user.Users
 import ukidelly.database.tables.Feeds
 import ukidelly.database.tables.ImageTable
@@ -29,7 +29,7 @@ object DataBaseFactory {
             addLogger(StdOutSqlLogger)
             SchemaUtils.createMissingTablesAndColumns(
                 Users,
-                TradePosts,
+                TradeFeeds,
                 TradePostComments,
                 ImageTable,
                 Feeds,
