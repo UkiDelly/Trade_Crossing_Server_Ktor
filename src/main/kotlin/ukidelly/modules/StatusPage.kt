@@ -20,6 +20,12 @@ import ukidelly.systems.models.ResponseDto
 fun Application.configureStatusPage() {
     install(StatusPages) {
         val logger = LoggerFactory.getLogger("ErrorHandle")
+
+        // 존재하지 않음
+        exception<NotFoundException> { call, exception ->
+            call.respond(HttpStatusCode.NotFound, ResponseDto.Error(ServerError.NotExist, exception.message ?: "실패"))
+        }
+
         //
         exception<InvalidJwtTokenException> { call, exception ->
             logger.error(exception.cause.toString())

@@ -6,7 +6,7 @@ import ukidelly.systems.models.PostCategory
 
 
 @Serializable
-data class CreateTradePostRequest(
+data class CreateTradeFeedRequest(
     val title: String,
     val content: String,
     val category: PostCategory,

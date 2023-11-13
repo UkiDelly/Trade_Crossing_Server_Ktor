@@ -8,6 +8,9 @@ class TradeFeedRoutes {
     @Resource("latest")
     class Latest(val parent: TradeFeedRoutes = TradeFeedRoutes(), val page: Int = 1, val size: Int = 10)
 
+    @Resource("new")
+    class New(val parent: TradeFeedRoutes = TradeFeedRoutes())
+
     @Resource("{feed_id}")
     class FeedId(val parent: TradeFeedRoutes = TradeFeedRoutes(), val id: Int) {
         @Resource("like")

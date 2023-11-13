@@ -12,7 +12,7 @@ class TradeFeedEntity(
 
     var title by TradeFeeds.title
     var content by TradeFeeds.content
-    val user by UserEntity referencedOn TradeFeeds.user_id
+    var user by UserEntity referencedOn TradeFeeds.user_id
     var category by TradeFeeds.category
     var currency by TradeFeeds.currency
     var price by TradeFeeds.price
@@ -21,4 +21,3 @@ class TradeFeedEntity(
     var updatedAt by TradeFeeds.updatedAt
 
 }
-

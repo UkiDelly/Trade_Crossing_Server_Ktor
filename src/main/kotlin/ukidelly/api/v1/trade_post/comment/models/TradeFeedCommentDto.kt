@@ -5,13 +5,13 @@ import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
 
 @Serializable
-data class TradePostCommentDto(
+data class TradeFeedCommentDto(
     val postId: Int,
     val commentId: Int,
     val content: String,
     val creator: String,
     val creatorIsland: String,
-    val childComments: List<TradePostCommentDto>,
+    val childComments: List<TradeFeedCommentDto>,
     @Contextual
     val createdAt: LocalDateTime,
     @Contextual
@@ -20,9 +20,9 @@ data class TradePostCommentDto(
     companion object {
         fun fromComment(
             tradePostComment: TradePostComment,
-            childComments: List<TradePostCommentDto>
-        ): TradePostCommentDto {
-            return TradePostCommentDto(
+            childComments: List<TradeFeedCommentDto>
+        ): TradeFeedCommentDto {
+            return TradeFeedCommentDto(
                 postId = tradePostComment.postId,
                 commentId = tradePostComment.commentId,
                 childComments = childComments,
