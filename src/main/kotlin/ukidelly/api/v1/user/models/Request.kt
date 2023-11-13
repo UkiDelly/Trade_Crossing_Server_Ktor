@@ -7,11 +7,7 @@ import ukidelly.systems.models.DefaultProfile
 import ukidelly.systems.models.LoginType
 
 @Serializable
-data class SocialLoginRequest(val snsId: String, val email: String) {
-    fun toJsonString(): String {
-        return """{"sns_id": "$snsId", "email": "$email"}"""
-    }
-}
+data class SocialLoginRequest(val snsId: String, val email: String, val loginType: LoginType)
 
 @Serializable
 data class EmailLoginReqeust(val email: String, val password: String) {

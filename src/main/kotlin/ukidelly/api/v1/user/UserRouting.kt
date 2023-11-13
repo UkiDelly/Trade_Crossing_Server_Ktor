@@ -3,16 +3,17 @@ package ukidelly.api.v1.user
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.config.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
-import ukidelly.api.v1.user.models.*
+import ukidelly.api.v1.user.models.EmailLoginReqeust
+import ukidelly.api.v1.user.models.SocialLoginRequest
+import ukidelly.api.v1.user.models.UserInfoWithToken
+import ukidelly.api.v1.user.models.UserRegisterRequest
 import ukidelly.api.v1.user.service.UserService
-import ukidelly.systems.errors.ServerError
-import ukidelly.systems.models.LoginType
+import ukidelly.modules.getToken
 import ukidelly.systems.models.ResponseDto
 import ukidelly.systems.models.Token
 import java.util.*
@@ -25,133 +26,54 @@ fun Route.userRouting() {
 
     // 이메일로 로그인
     post<UserRoutes.Login.EmailLogin> {
-        val loginType = LoginType.email
         val request = call.receive<EmailLoginReqeust>()
 
         val user = service.emailLogin(request.email, request.password)
+        val token = Token.createToken(application.environment.config, user.uuid.toString())
+        call.respond(HttpStatusCode.OK, ResponseDto.Success(UserInfoWithToken(user, token), "성공"))
     }
 
-
-//    route("/login") {
-//
-//        post("/email") {
-//            val loginType = LoginType.email
-//            val request = call.receive<EmailLoginReqeust>()
-//
-//            val user = service.emailLogin(request.email, request.password)
-//
-//            chechUserAndRespond(user, call, application.environment.config)
-//        }
-//
-//        post("/kakao") {
-//
-//            val loginType = LoginType.kakao
-//            val request = call.receive<SocialLoginRequest>()
-//            service.socialLogin(snsId = request.snsId, email = request.email, loginType = loginType).let { user ->
-//                if (user == null) {
-//                    call.respond(
-//                        HttpStatusCode.NotFound,
-//                        ResponseDto.Error(error = "가입 되지 않은 유저입니다.", message = "로그인에 실패 했습니다.")
-//                    )
-//                    return@post
-//                } else {
-//                    val token = Token.createToken(application.environment.config, user.uuid.toString())
-//                    call.respond(
-//                        HttpStatusCode.OK,
-//                        ResponseDto.Success(data = UserInfoWithToken(user, token), message = "로그인 성공")
-//                    )
-//                    return@post
-//                }
-//            }
-//        }
-//
-//        post("/google") {
-//
-//            val loginType = LoginType.google
-//            val request = call.receive<SocialLoginRequest>()
-//            val user = withContext(Dispatchers.IO) {
-//                service.socialLogin(
-//                    snsId = request.snsId,
-//                    email = request.email,
-//                    loginType = loginType
-//                )
-//            }
-//
-//            chechUserAndRespond(user, call, application.environment.config)
-//        }
-//
-//        post("/apple") {
-//            val loginType = LoginType.apple
-//            val request = call.receive<SocialLoginRequest>()
-//            val user = withContext(Dispatchers.IO) {
-//                service.socialLogin(
-//                    snsId = request.snsId,
-//                    email = request.email,
-//                    loginType = loginType
-//                )
-//            }
-//
-//            chechUserAndRespond(user, call, application.environment.config)
-//        }
-//
-//        authenticate("refresh-jwt") {
-//
-//            post("/refresh") {
-//                val token = call.getToken()
-//                call.respond(HttpStatusCode.OK, ResponseDto.Success(data = token, "재발급에 성공하였습니다."))
-//            }
-//
-//            post("/auto") {
-//                val uuid = call.principal<UserIdPrincipal>()!!.name
-//                val user = withContext(Dispatchers.IO) {
-//                    service.autoLogin(UUID.fromString(uuid))
-//                }
-//
-//                if (user == null) {
-//                    call.respond(
-//                        HttpStatusCode.NotFound,
-//                        ResponseDto.Error(error = "가입 되지 않은 유저입니다.", message = "로그인에 실패 했습니다.")
-//                    )
-//                } else {
-//                    call.respond(
-//                        HttpStatusCode.OK,
-//                        ResponseDto.Success(data = UserInfoWithToken(user, call.getToken()), message = "성공")
-//                    )
-//                }
-//            }
-//        }
-//    }
-//
-//    post("/register") {
-//
-//        val request = call.receive<UserRegisterRequest>()
-//        service.register(request).let {
-//            val token = Token.createToken(application.environment.config, it.uuid.toString())
-//            call.respond(HttpStatusCode.OK, ResponseDto.Success(UserInfoWithToken(it, token), message = "회원가입 성공"))
-//        }
-//
-//    }
-
-}
-
-
-/**
- * 유저 null 체크 후 응답
- * @param [User]? 유저정보
- * @param call [ApplicationCall]
- * @param config [ApplicationConfig]
- */
-private suspend fun chechUserAndRespond(user: User?, call: ApplicationCall, config: ApplicationConfig) {
-    if (user == null) {
-        call.respond(
-            HttpStatusCode.NotFound,
-            ResponseDto.Error(error = ServerError.NotExist, message = "존재하지 않는 유저입니다.")
-        )
-    } else {
-        val token = Token.createToken(config, user.uuid.toString())
+    // 소셜 로그인
+    post<UserRoutes.Login.SocialLogin> {
+        val request = call.receive<SocialLoginRequest>()
+        val user = service.socialLogin(request.snsId, email = request.email, loginType = request.loginType)
+        val token = Token.createToken(application.environment.config, user.uuid.toString())
         call.respond(
             HttpStatusCode.OK,
-            ResponseDto.Success(data = UserInfoWithToken(user, token), message = "로그인 성공")
+            ResponseDto.Success(UserInfoWithToken(user = user, token = token), message = "성공")
         )
     }
+
+    // 회원가입
+    post<UserRoutes.Register> {
+        val request = call.receive<UserRegisterRequest>()
+
+        val user = service.register(request)
+        val token = Token.createToken(application.environment.config, user.uuid.toString())
+        call.respond(HttpStatusCode.OK, ResponseDto.Success(UserInfoWithToken(user, token), message = "성공"))
+    }
+
+
+    authenticate("refresh-jwt") {
+
+        // 자동 로그인
+        post<UserRoutes.Login.Auto> {
+            val uuid = call.principal<UserIdPrincipal>()!!.name
+            val user = service.autoLogin(UUID.fromString(uuid))
+            call.respond(
+                HttpStatusCode.OK,
+                ResponseDto.Success(UserInfoWithToken(user, call.getToken()), message = "성공")
+            )
+        }
+
+        // 리프레쉬 토큰 재발급
+        post<UserRoutes.RefreshToken> {
+            val token = call.getToken()
+            call.respond(
+                ResponseDto.Success(token, "재발급에 성공하였습니다.")
+            )
+        }
+
+    }
+
 }
