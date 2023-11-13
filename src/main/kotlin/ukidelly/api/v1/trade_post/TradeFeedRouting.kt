@@ -8,7 +8,6 @@ import io.ktor.server.resources.post
 import io.ktor.server.resources.put
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-
 import org.koin.ktor.ext.inject
 import ukidelly.api.v1.trade_post.comment.tradeFeedCommentRoutes
 import ukidelly.api.v1.trade_post.service.TradeFeedService
@@ -25,9 +24,10 @@ fun Route.tradeFeedRouting() {
         call.respond(HttpStatusCode.OK, ResponseDto.Success(feeds, "성공"))
     }
 
+
     // 게시글 가져오기
-    get<TradeFeedRoutes.Id> { feed ->
-        val feedData = tradeFeedService.getPost(feed.feedId)
+    get<TradeFeedRoutes.FeedId> { feed ->
+        val feedData = tradeFeedService.getPost(feed.id)
         if (feedData == null) {
             call.respond(HttpStatusCode.NotFound, ResponseDto.Error(ServerError.NotExist, "존재하지 않는 게시글입니다."))
         } else {
@@ -38,15 +38,15 @@ fun Route.tradeFeedRouting() {
     authenticate("auth-jwt") {
 
         // 좋아요
-        post<TradeFeedRoutes.Id.Like> {}
+        post<TradeFeedRoutes.FeedId.Like> {}
 
         // 수정
-        put<TradeFeedRoutes.Id> { feed ->
+        put<TradeFeedRoutes.FeedId> { feed ->
 
         }
         // 삭제
-        delete<TradeFeedRoutes.Id> { feed ->
-            tradeFeedService.deletePost(feed.feedId)
+        delete<TradeFeedRoutes.FeedId> { feed ->
+            tradeFeedService.deletePost(feed.id)
             call.respond(HttpStatusCode.OK, "성공")
         }
     }

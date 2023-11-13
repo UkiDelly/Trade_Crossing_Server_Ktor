@@ -3,37 +3,25 @@ package ukidelly.api.v1.trade_post
 import io.ktor.resources.*
 
 
-@Resource("/trade-post")
+@Resource("/trade-feed")
 class TradeFeedRoutes {
     @Resource("latest")
     class Latest(val parent: TradeFeedRoutes = TradeFeedRoutes(), val page: Int = 1, val size: Int = 10)
 
-    @Resource("{id}")
-    class Id(val parent: TradeFeedRoutes = TradeFeedRoutes(), val feedId: Int) {
+    @Resource("{feed_id}")
+    class FeedId(val parent: TradeFeedRoutes = TradeFeedRoutes(), val id: Int) {
         @Resource("like")
-        class Like(val parent: Id)
-
+        class Like(val parent: FeedId)
 
         @Resource("comment")
-        class Comment(val parent: TradeFeedRoutes.Id) {
+        class Comment(val parent: FeedId) {
 
-            @Resource("new")
-            class New(val parent: Comment)
-
-            @Resource("{id}")
-            class Id(val parent: Comment, val commentId: Int) {
+            @Resource("{comment_id}")
+            class CommentId(val parent: Comment, val id: Int) {
 
                 @Resource("reply")
-                class Reply(val parent: Id) {
-
-                    @Resource("{id}")
-                    class Id(val parent: Reply, val replyId: Int)
-                }
+                class Reply(val parent: CommentId)
             }
-
         }
     }
-
-    @Resource("new")
-    class New(val parent: TradeFeedRoutes = TradeFeedRoutes())
 }
