@@ -6,6 +6,7 @@ import io.ktor.server.routing.*
 
 fun Application.configureSwaggerUI() {
     routing {
-        swaggerUI(path = "swagger")
+        swaggerUI(path = "swagger") {
+        }
     }
 }

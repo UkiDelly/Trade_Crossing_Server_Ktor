@@ -4,29 +4,171 @@ info:
   description: "trade_crossing_server API"
   version: "1.0.0"
 servers:
-  - url: "https://trade_crossing_server"
+- url: "https://trade_crossing_server"
 paths:
-  /:
-    get:
+  /chat/new:
+    post:
+      description: ""
+  /image/upload:
+    post:
       description: ""
       responses:
         "200":
           description: "OK"
           content:
-            text/plain:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Success_Map<Integer, String>"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    data: "null"
+                    message: "성공"
+  /trade-feed/{feed_id}:
+    delete:
+      description: "삭제"
+      parameters:
+      - name: "feed_id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "not_exist"
+                    message: "null"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
               schema:
                 type: "string"
               examples:
                 Example#1:
-                  value: "Hello World!"
-  /user/login:
+                  value: "성공"
     get:
-      description: ""
+      description: "게시글 가져오기"
+      parameters:
+      - name: "feed_id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "not_exist"
+                    message: "존재하지 않는 게시글입니다."
+                Example#2:
+                  description: ""
+                  value:
+                    error: "not_exist"
+                    message: "null"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Success_TradeFeedDto"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    data: "null"
+                    message: "성공"
+    put:
+      description: "수정"
+      parameters:
+      - name: "feed_id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+  /trade-feed/{feed_id}/comment:
+    get:
+      description: "모든 댓글 조회"
+      parameters:
+      - name: "feed_id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Success_List<? extends TradeFeedCommentDto>"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    data: "null"
+                    message: "성공"
+  /trade-feed/{feed_id}/comment/{comment_id}:
+    delete:
+      description: "댓글 삭제"
+      parameters:
+      - name: "feed_id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      - name: "comment_id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "not_exist"
+                    message: "null"
+    put:
+      description: "댓글 수정"
+      parameters:
+      - name: "feed_id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      - name: "comment_id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
       requestBody:
         content:
           '*/*':
             schema:
-              $ref: "#/components/schemas/SocialLoginRequest"
+              $ref: "#/components/schemas/NewCommentRequest"
         required: true
       responses:
         "404":
@@ -34,22 +176,282 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/Error"
               examples:
                 Example#1:
-                  value: "존재하지 않는 유저입니다."
+                  description: ""
+                  value:
+                    error: "not_exist"
+                    message: "null"
         "200":
-          description: "OK <br> Token(accessToken, refreshToken) <br> 응답"
+          description: "OK"
           content:
             '*/*':
               schema:
-                type: "object"
-  /user/refresh:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "성공"
+  /trade-feed/{feed_id}/comment/{comment_id}/reply:
     post:
-      description: ""
+      description: "대댓글 추가"
+      parameters:
+      - name: "feed_id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      - name: "comment_id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: "#/components/schemas/NewCommentRequest"
+        required: true
+      responses:
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "not_exist"
+                    message: "null"
+                Example#2:
+                  description: ""
+                  value:
+                    error: "not_exist"
+                    message: "null"
+                Example#3:
+                  description: ""
+                  value:
+                    error: "not_exist"
+                    message: "null"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "성공"
+  /trade-feed/{feed_id}/comment/new:
+    post:
+      description: "댓글 추가"
+      parameters:
+      - name: "feed_id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: "#/components/schemas/NewCommentRequest"
+        required: true
+      responses:
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "not_exist"
+                    message: "null"
+                Example#2:
+                  description: ""
+                  value:
+                    error: "not_exist"
+                    message: "null"
+                Example#3:
+                  description: ""
+                  value:
+                    error: "not_exist"
+                    message: "null"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "성공"
+  /trade-feed/{feed_id}/like:
+    post:
+      description: "좋아요"
+      parameters:
+      - name: "feed_id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+  /trade-feed/latest:
+    get:
+      description: "최신 게시글 가져오기"
+      parameters:
+      - name: "page"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      - name: "size"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Success_LatestTradeFeedDto"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    data: "null"
+                    message: "성공"
+  /trade-feed/new:
+    post:
+      description: "새 게시물"
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: "#/components/schemas/CreateTradeFeedRequest"
+        required: true
+      responses:
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "not_exist"
+                    message: "null"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Success_TradeFeedDto"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    data: "null"
+                    message: "성공"
+  /user/login/auto:
+    post:
+      description: "자동 로그인"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Success_UserInfoWithToken"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    data: "null"
+                    message: "성공"
+  /user/login/email:
+    post:
+      description: "이메일로 로그인"
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: "#/components/schemas/EmailLoginReqeust"
+        required: true
+      responses:
+        "403":
+          description: "Forbidden"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "password_incorrect"
+                    message: "null"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Success_UserInfoWithToken"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    data: "null"
+                    message: "성공"
+  /user/login/social:
+    post:
+      description: "소셜 로그인"
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: "#/components/schemas/SocialLoginRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Success_UserInfoWithToken"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    data: "null"
+                    message: "성공"
+  /user/refresh-token:
+    post:
+      description: "리프레쉬 토큰 재발급"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Success_Token"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    data: "null"
+                    message: "재발급에 성공하였습니다."
   /user/register:
     post:
-      description: ""
+      description: "회원가입"
       requestBody:
         content:
           '*/*':
@@ -57,41 +459,297 @@ paths:
               $ref: "#/components/schemas/UserRegisterRequest"
         required: true
       responses:
-        "500":
-          description: "Internal Server Error"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "DB 에러"
         "409":
           description: "Conflict"
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/Error"
               examples:
                 Example#1:
-                  value: "이미 존재하는 유저입니다."
-        "417":
-          description: "Expectation Failed"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "회원가입 실패"
+                  description: ""
+                  value:
+                    error: "user_exist"
+                    message: "null"
+                Example#2:
+                  description: ""
+                  value:
+                    error: "user_exist"
+                    message: "null"
+                Example#3:
+                  description: ""
+                  value:
+                    error: "user_exist"
+                    message: "null"
         "200":
           description: "OK"
           content:
             '*/*':
               schema:
-                type: "object"
+                $ref: "#/components/schemas/Success_UserInfoWithToken"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    data: "null"
+                    message: "성공"
 components:
   schemas:
+    Success:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+    Success_Map<Integer, String>:
+      type: "object"
+      properties:
+        data:
+          type: "integer"
+          format: "int32"
+        message:
+          type: "string"
+    Error:
+      type: "object"
+      properties:
+        error:
+          type: "string"
+        message:
+          type: "string"
+    LocalDateTime:
+      type: "object"
+      properties: {}
+    TradeFeedDetail:
+      type: "object"
+      properties:
+        postId:
+          type: "integer"
+          format: "int32"
+        title:
+          type: "string"
+        content:
+          type: "string"
+        creator:
+          type: "string"
+        creatorIsland:
+          type: "string"
+        category:
+          type: "string"
+          enum:
+          - "item"
+          - "turnip"
+          - "manjijak"
+        currency:
+          type: "string"
+          enum:
+          - "bell"
+          - "mileage"
+          - "free"
+        price:
+          type: "integer"
+          format: "int32"
+        closed:
+          type: "boolean"
+        createdAt:
+          $ref: "#/components/schemas/LocalDateTime"
+        updatedAt:
+          $ref: "#/components/schemas/LocalDateTime"
+    TradeFeedCommentDto:
+      type: "object"
+      properties:
+        postId:
+          type: "integer"
+          format: "int32"
+        commentId:
+          type: "integer"
+          format: "int32"
+        content:
+          type: "string"
+        creator:
+          type: "string"
+        creatorIsland:
+          type: "string"
+        childComments:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/TradeFeedCommentDto"
+        createdAt:
+          type: "string"
+          format: "date-time"
+        updatedAt:
+          type: "string"
+          format: "date-time"
+    TradeFeedDto:
+      type: "object"
+      properties:
+        post:
+          $ref: "#/components/schemas/TradeFeedDetail"
+        comments:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/TradeFeedCommentDto"
+    Success_TradeFeedDto:
+      type: "object"
+      properties:
+        data:
+          $ref: "#/components/schemas/TradeFeedDto"
+        message:
+          type: "string"
+    Success_List<? extends TradeFeedCommentDto>:
+      type: "object"
+      properties:
+        data:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/TradeFeedCommentDto"
+        message:
+          type: "string"
+    NewCommentRequest:
+      type: "object"
+      properties:
+        content:
+          type: "string"
+    TradeFeedPreview:
+      type: "object"
+      properties:
+        postId:
+          type: "integer"
+          format: "int32"
+        title:
+          type: "string"
+        content:
+          type: "string"
+        creator:
+          type: "string"
+        creatorIsland:
+          type: "string"
+        category:
+          type: "string"
+          enum:
+          - "item"
+          - "turnip"
+          - "manjijak"
+        currency:
+          type: "string"
+          enum:
+          - "bell"
+          - "mileage"
+          - "free"
+        price:
+          type: "integer"
+          format: "int32"
+        commentCount:
+          type: "integer"
+          format: "int32"
+        createdAt:
+          $ref: "#/components/schemas/LocalDateTime"
+        updatedAt:
+          $ref: "#/components/schemas/LocalDateTime"
+    LatestTradeFeedDto:
+      type: "object"
+      properties:
+        posts:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/TradeFeedPreview"
+        currentPage:
+          type: "integer"
+          format: "int32"
+        totalPages:
+          type: "integer"
+          format: "int32"
+    Success_LatestTradeFeedDto:
+      type: "object"
+      properties:
+        data:
+          $ref: "#/components/schemas/LatestTradeFeedDto"
+        message:
+          type: "string"
+    CreateTradeFeedRequest:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+        content:
+          type: "string"
+        category:
+          type: "string"
+          enum:
+          - "item"
+          - "turnip"
+          - "manjijak"
+        currency:
+          type: "string"
+          enum:
+          - "bell"
+          - "mileage"
+          - "free"
+        price:
+          type: "integer"
+          format: "int32"
+        closed:
+          type: "boolean"
+    User:
+      type: "object"
+      properties:
+        uuid:
+          type: "string"
+          format: "uuid"
+        userId:
+          type: "integer"
+          format: "int32"
+        snsId:
+          type: "string"
+        email:
+          type: "string"
+        password:
+          type: "string"
+        profile:
+          type: "string"
+          enum:
+          - "nook"
+          - "isabella"
+          - "no"
+        userName:
+          type: "string"
+        islandName:
+          type: "string"
+        introduction:
+          type: "string"
+        loginType:
+          type: "string"
+          enum:
+          - "google"
+          - "kakao"
+          - "apple"
+          - "email"
+    Token:
+      type: "object"
+      properties:
+        accessToken:
+          type: "string"
+        refreshToken:
+          type: "string"
+    UserInfoWithToken:
+      type: "object"
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        token:
+          $ref: "#/components/schemas/Token"
+    Success_UserInfoWithToken:
+      type: "object"
+      properties:
+        data:
+          $ref: "#/components/schemas/UserInfoWithToken"
+        message:
+          type: "string"
+    EmailLoginReqeust:
+      type: "object"
+      properties:
+        email:
+          type: "string"
+        password:
+          type: "string"
     SocialLoginRequest:
       type: "object"
       properties:
@@ -99,17 +757,41 @@ components:
           type: "string"
         email:
           type: "string"
+        loginType:
+          type: "string"
+          enum:
+          - "google"
+          - "kakao"
+          - "apple"
+          - "email"
+    Success_Token:
+      type: "object"
+      properties:
+        data:
+          $ref: "#/components/schemas/Token"
+        message:
+          type: "string"
     UserRegisterRequest:
       type: "object"
       properties:
         snsId:
           type: "string"
-        loginMethod:
+        loginType:
           type: "string"
           enum:
-            - "google"
-            - "apple"
+          - "google"
+          - "kakao"
+          - "apple"
+          - "email"
+        profile:
+          type: "string"
+          enum:
+          - "nook"
+          - "isabella"
+          - "no"
         email:
+          type: "string"
+        password:
           type: "string"
         userName:
           type: "string"

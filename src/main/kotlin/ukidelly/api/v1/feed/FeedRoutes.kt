@@ -9,19 +9,25 @@ class FeedRoutes {
     @Resource("latest")
     class Latest(val parent: FeedRoutes = FeedRoutes(), val page: Int = 1, val size: Int = 10)
 
-    @Resource("{id}")
-    class Id(val parent: FeedRoutes = FeedRoutes(), val feedId: Int) {
+    @Resource("new")
+    class New(val parent: FeedRoutes = FeedRoutes())
+
+    @Resource("{feedId}")
+    class FeedId(val parent: FeedRoutes = FeedRoutes(), val feedId: Int) {
         @Resource("like")
-        class Like(val parent: Id)
+        class Like(val parent: FeedId)
 
         @Resource("comment")
-        class Comment(val parent: Id) {
+        class Comment(val parent: FeedId) {
 
-            @Resource("{id}")
-            class Id(val parent: Comment, val commentId: Int) {
+            @Resource("new")
+            class New(val parent: Comment)
+
+            @Resource("{commentId}")
+            class CommentId(val parent: Comment, val commentId: Int) {
 
                 @Resource("reply")
-                class Reply(val parent: Id)
+                class Reply(val parent: CommentId)
             }
         }
     }
