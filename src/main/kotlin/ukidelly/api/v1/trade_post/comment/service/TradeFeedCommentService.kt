@@ -14,6 +14,10 @@ class TradeFeedCommentService(private val tradeFeedCommentRepository: TradeFeedC
 
     private val logger = LoggerFactory.getLogger("CommentService")
 
+    suspend fun getCommentCounts(postIdList: List<Int>): List<Long> {
+        return tradeFeedCommentRepository.getCommentCount(postIdList)
+    }
+
     suspend fun getAllComment(postId: Int): List<TradeFeedCommentDto> {
 
         // Repository에서 ResultRow형태의 List를 받음

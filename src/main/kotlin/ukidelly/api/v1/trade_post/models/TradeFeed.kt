@@ -50,7 +50,7 @@ data class TradeFeedPreview(
     val category: PostCategory,
     val currency: Currency,
     val price: Int?,
-    var commentCount: Int,
+    val commentCount: Int,
     override val createdAt: LocalDateTime,
     override val updatedAt: LocalDateTime
 ) : CreateAtUpdateAtBase {
