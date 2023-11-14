@@ -1,9 +1,6 @@
 package ukidelly.api.v1.trade_post.repository
 
 import io.ktor.server.plugins.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
 import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
@@ -51,23 +48,22 @@ class TradeFeedRepository {
 
 
     suspend fun addNewPost(post: CreateTradeFeedRequest, creatorId: UUID): Int {
-        val user = dbQuery { UserEntity.find { Users.uuid eq (creatorId) }.first() }
-
+        val userEntity = dbQuery { UserEntity.find { Users.uuid eq (creatorId) }.first() }
         val newFeed = dbQuery {
-            TradeFeeds.insertAndGetId {
-                it[title] = post.title
-                it[content] = post.content
-                it[user_id] = user.id
-                it[category] = post.category
-                it[currency] = post.currency
-                it[price] = post.price
-                it[closed] = post.closed
-            }
+            TradeFeedEntity.new {
+                title = post.title
+                content = post.content
+                user = userEntity
+                category = post.category
+                currency = post.currency
+                price = post.price
+                closed = post.closed
+            }.id
         }
         return newFeed.value
     }
 
-    suspend fun updatePost(postId: Int, post: CreateTradeFeedRequest): TradeFeedEntity? {
+    suspend fun updatePost(postId: Int, post: CreateTradeFeedRequest): TradeFeedDetail {
         val postEntity = dbQuery { TradeFeedEntity.findById(postId) }?.apply {
             title = post.title
             content = post.content
@@ -76,18 +72,14 @@ class TradeFeedRepository {
             price = post.price ?: this.price
             closed = post.closed
             updatedAt = LocalDateTime.now()
-        }
-        return postEntity
+        } ?: throw NotFoundException()
+        return TradeFeedDetail(postEntity)
     }
 
 
     suspend fun deletePost(postId: Int) {
-
-        withContext(Dispatchers.IO) {
-            dbQuery {
-                TradeFeedEntity.findById(postId)?.delete() ?: throw NotFoundException()
-            }
+        dbQuery {
+            TradeFeedEntity.findById(postId)?.delete() ?: throw NotFoundException()
         }
-
     }
 }

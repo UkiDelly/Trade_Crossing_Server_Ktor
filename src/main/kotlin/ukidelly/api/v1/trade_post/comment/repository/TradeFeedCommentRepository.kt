@@ -53,4 +53,8 @@ class TradeFeedCommentRepository {
             this.commentContent = ""
         }
     }
+
+    suspend fun updateComment(commentId: Int, content: String) {
+
+    }
 }

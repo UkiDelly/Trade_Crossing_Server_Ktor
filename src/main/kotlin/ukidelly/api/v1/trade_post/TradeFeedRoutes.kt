@@ -19,6 +19,9 @@ class TradeFeedRoutes {
         @Resource("comment")
         class Comment(val parent: FeedId) {
 
+            @Resource("new")
+            class New(val parent: Comment)
+
             @Resource("{comment_id}")
             class CommentId(val parent: Comment, val id: Int) {
 

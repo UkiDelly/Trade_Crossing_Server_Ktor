@@ -18,7 +18,6 @@ class TradeFeedService(
 
     suspend fun getLatestPosts(itemsPerPage: Int, page: Int): LatestTradeFeedDto {
         val result = tradeFeedRepository.findLatestPosts(itemsPerPage, page)
-
         val totalPage = result.second
         var feedList = result.first
         val idList = feedList.map { it.postId }
@@ -29,8 +28,8 @@ class TradeFeedService(
     }
 
     suspend fun getPost(postId: Int): TradeFeedDto {
-        val tradePostEntity = tradeFeedRepository.findPost(postId)
-        val data = TradeFeedDto(tradePostEntity, emptyList())
+        val tradeFeedEntity = tradeFeedRepository.findPost(postId)
+        val data = TradeFeedDto(tradeFeedEntity, emptyList())
         return data
     }
 
