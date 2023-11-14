@@ -14,6 +14,7 @@ import org.koin.ktor.ext.inject
 import ukidelly.api.v1.trade_post.TradeFeedRoutes
 import ukidelly.api.v1.trade_post.comment.models.NewCommentRequest
 import ukidelly.api.v1.trade_post.comment.service.TradeFeedCommentService
+import ukidelly.systems.models.ResponseDto
 import java.util.*
 
 fun Route.tradeFeedCommentRoutes() {
@@ -25,7 +26,9 @@ fun Route.tradeFeedCommentRoutes() {
     get<TradeFeedRoutes.FeedId.Comment> {
 
         val id = it.parent.feed_id
-        tradeFeedCommentService.getAllComment(id)
+        val commentList = tradeFeedCommentService.getAllComment(id)
+        call.respond(HttpStatusCode.OK, ResponseDto.Success(commentList, "성공"))
+
     }
 
     authenticate("auth-jwt") {
@@ -54,6 +57,18 @@ fun Route.tradeFeedCommentRoutes() {
         // 대댓글 추가
         post<TradeFeedRoutes.FeedId.Comment.CommentId.Reply> {
 
+            val feedId = it.parent.parent.parent.feed_id
+            val commentId = it.parent.comment_id
+            val uuid = call.principal<UserIdPrincipal>()!!.name
+            val request = call.receive<NewCommentRequest>()
+            tradeFeedCommentService.addNewComment(
+                feedId,
+                request.content,
+                UUID.fromString(uuid),
+                reply = true,
+                parentCommentId = commentId
+            )
+            call.respond(HttpStatusCode.OK, "성공")
         }
     }
 

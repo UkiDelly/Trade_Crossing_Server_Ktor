@@ -45,6 +45,12 @@ class TradeFeedCommentService(private val tradeFeedCommentRepository: TradeFeedC
     }
 
 
-    suspend fun addNewComment(postId: Int, content: String, uuid: UUID) =
-        tradeFeedCommentRepository.addNewComment(postId, content, uuid)
+    suspend fun addNewComment(
+        postId: Int,
+        content: String,
+        uuid: UUID,
+        reply: Boolean = false,
+        parentCommentId: Int? = null
+    ) =
+        tradeFeedCommentRepository.addNewComment(postId, content, uuid, reply, parentCommentId)
 }

@@ -29,7 +29,8 @@ class TradeFeedService(
 
     suspend fun getPost(postId: Int): TradeFeedDto {
         val tradeFeedEntity = tradeFeedRepository.findPost(postId)
-        val data = TradeFeedDto(tradeFeedEntity, emptyList())
+        val commentList = tradeFeedCommentService.getAllComment(postId)
+        val data = TradeFeedDto(tradeFeedEntity, commentList)
         return data
     }
 

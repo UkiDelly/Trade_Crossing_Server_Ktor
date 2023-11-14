@@ -29,24 +29,30 @@ class TradeFeedCommentRepository {
 
     suspend fun findAllComments(postId: Int): List<TradeFeedComment> {
 
-        return dbQuery {
+        val result = dbQuery {
             TradeFeedCommentEntity.find { TradeFeedComments.postId eq postId }.map {
                 TradeFeedComment(it)
             }
         }
+
+        return result
     }
 
-    suspend fun addNewComment(postId: Int, content: String, uuid: UUID) {
+    suspend fun addNewComment(postId: Int, content: String, uuid: UUID, reply: Boolean = false, parentCommentId: Int?) {
         dbQuery {
             val feed = TradeFeedEntity.findById(postId) ?: throw NotFoundException()
             val user = UserEntity.find { Users.uuid eq uuid }.firstOrNull() ?: throw NotFoundException()
             val comment = TradeFeedComments.insertAndGetId {
                 it[this.postId] = postId
                 it[this.commentContent] = content
-                it[this.userId] = user.uuid
+                it[this.userId] = user.id
+                it[this.parentCommentId] = if (reply) {
+                    val parentComment = TradeFeedCommentEntity.findById(parentCommentId!!) ?: throw NotFoundException()
+                    parentComment.id
+                } else {
+                    null
+                }
             }
-
-            comment
         }
     }
 
