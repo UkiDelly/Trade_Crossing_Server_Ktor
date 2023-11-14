@@ -1,12 +1,13 @@
 package ukidelly.database.models.comment
 
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.JoinType
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.selectAll
+import io.ktor.server.plugins.*
 import org.koin.core.annotation.Single
+import ukidelly.api.v1.trade_post.comment.models.TradeFeedComment
 import ukidelly.database.DataBaseFactory.dbQuery
+import ukidelly.database.models.post.TradeFeedEntity
+import ukidelly.database.models.user.UserEntity
 import ukidelly.database.models.user.Users
+import java.util.*
 
 
 @Single
@@ -25,32 +26,24 @@ class TradeFeedCommentRepository {
         return result
     }
 
-    suspend fun findAllComments(postId: Int): List<ResultRow> {
+    suspend fun findAllComments(postId: Int): List<TradeFeedComment> {
+
         return dbQuery {
-            TradeFeedComments.join(
-                otherTable = Users,
-                JoinType.LEFT,
-                onColumn = TradeFeedComments.userId,
-                otherColumn = Users.uuid,
-            ).slice(
-                TradeFeedComments.id,
-                TradeFeedComments.postId,
-                TradeFeedComments.parentCommentId,
-                TradeFeedComments.commentContent,
-                Users.id,
-                Users.userName,
-                Users.islandName,
-                TradeFeedComments.createdAt,
-                TradeFeedComments.updatedAt
-            ).selectAll().toList()
+            TradeFeedCommentEntity.find { TradeFeedComments.postId eq postId }.map {
+                TradeFeedComment(it)
+            }
         }
     }
 
-    suspend fun addNewComment(postId: EntityID<Int>) {
-
-        TradeFeedCommentEntity.new {
-            this.postId = postId
-            this.commentContent = ""
+    suspend fun addNewComment(postId: Int, content: String, uuid: UUID) {
+        dbQuery {
+            val feed = TradeFeedEntity.findById(postId) ?: throw NotFoundException()
+            val user = UserEntity.find { Users.uuid eq uuid }.firstOrNull() ?: throw NotFoundException()
+            TradeFeedCommentEntity.new {
+                post = feed
+                this.user = user
+                this.commentContent = content
+            }
         }
     }
 

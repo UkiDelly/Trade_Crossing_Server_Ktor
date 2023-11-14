@@ -44,9 +44,9 @@ data class TradeFeedComment(
      * @param entity [TradeFeedCommentEntity] Entity 객체
      */
     constructor(entity: TradeFeedCommentEntity) : this(
-        postId = entity.postId.value,
+        postId = entity.post.id.value,
         commentId = entity.id.value,
-        parentCommentId = entity.parentCommentId?.value,
+        parentCommentId = entity.parentComment?.id?.value,
         content = entity.commentContent,
         creator = entity.user.userName,
         creatorIsland = entity.user.islandName,
