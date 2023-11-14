@@ -17,11 +17,16 @@ class TradeFeedService(
 
 
     suspend fun getLatestPosts(itemsPerPage: Int, page: Int): LatestTradeFeedDto {
+
+
+        // 게시글 정보
         val result = tradeFeedRepository.findLatestPosts(itemsPerPage, page)
-        val totalPage = result.second
         var feedList = result.first
         val idList = feedList.map { it.postId }
+
+        // 댓글 정보
         val commentCountList = tradeFeedCommentService.getCommentCounts(idList)
+        val totalPage = result.second
         feedList =
             feedList.mapIndexed { index, tradeFeedPreview -> tradeFeedPreview.copy(commentCount = commentCountList[index].toInt()) }
         return LatestTradeFeedDto(feedList, page, totalPage)
