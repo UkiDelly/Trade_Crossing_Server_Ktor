@@ -53,4 +53,9 @@ class TradeFeedCommentService(private val tradeFeedCommentRepository: TradeFeedC
         parentCommentId: Int? = null
     ) =
         tradeFeedCommentRepository.addNewComment(postId, content, uuid, reply, parentCommentId)
+
+    suspend fun updateComment(commentId: Int, content: String) =
+        tradeFeedCommentRepository.updateComment(commentId, content)
+
+    suspend fun deleteComment(commentId: Int) = tradeFeedCommentRepository.deleteComment(commentId)
 }

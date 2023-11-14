@@ -45,12 +45,16 @@ fun Route.tradeFeedCommentRoutes() {
         // 댓글 수정
         put<TradeFeedRoutes.FeedId.Comment.CommentId> {
             val id = it.comment_id
+            val request = call.receive<NewCommentRequest>()
+            tradeFeedCommentService.updateComment(id, request.content)
+            call.respond(HttpStatusCode.OK, "성공")
 
         }
 
         // 댓글 삭제
         delete<TradeFeedRoutes.FeedId.Comment.CommentId> {
             val id = it.comment_id
+            tradeFeedCommentService.deleteComment(id)
         }
 
 
