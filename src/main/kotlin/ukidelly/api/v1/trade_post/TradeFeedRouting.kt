@@ -30,7 +30,7 @@ fun Route.tradeFeedRouting() {
 
     // 게시글 가져오기
     get<TradeFeedRoutes.FeedId> { feed ->
-        val feedData = tradeFeedService.getPost(feed.id)
+        val feedData = tradeFeedService.getPost(feed.feed_id)
         if (feedData == null) {
             call.respond(HttpStatusCode.NotFound, ResponseDto.Error(ServerError.NotExist, "존재하지 않는 게시글입니다."))
         } else {
@@ -57,7 +57,7 @@ fun Route.tradeFeedRouting() {
         }
         // 삭제
         delete<TradeFeedRoutes.FeedId> { feed ->
-            tradeFeedService.deletePost(feed.id)
+            tradeFeedService.deletePost(feed.feed_id)
             call.respond(HttpStatusCode.OK, "성공")
         }
     }

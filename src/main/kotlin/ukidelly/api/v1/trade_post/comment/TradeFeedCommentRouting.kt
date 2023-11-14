@@ -24,14 +24,14 @@ fun Route.tradeFeedCommentRoutes() {
     // 모든 댓글 조회
     get<TradeFeedRoutes.FeedId.Comment> {
 
-        val id = it.parent.id
+        val id = it.parent.feed_id
         tradeFeedCommentService.getAllComment(id)
     }
 
     authenticate("auth-jwt") {
         // 댓글 추가
         post<TradeFeedRoutes.FeedId.Comment.New> {
-            val id = it.parent.parent.id
+            val id = it.parent.parent.feed_id
             val request = call.receive<NewCommentRequest>()
             val uuid = call.principal<UserIdPrincipal>()!!.name
             tradeFeedCommentService.addNewComment(id, request.content, UUID.fromString(uuid))
@@ -41,13 +41,13 @@ fun Route.tradeFeedCommentRoutes() {
 
         // 댓글 수정
         put<TradeFeedRoutes.FeedId.Comment.CommentId> {
-            val id = it.id
+            val id = it.comment_id
 
         }
 
         // 댓글 삭제
         delete<TradeFeedRoutes.FeedId.Comment.CommentId> {
-            val id = it.id
+            val id = it.comment_id
         }
 
 

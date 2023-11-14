@@ -1,6 +1,7 @@
 package ukidelly.database.models.comment
 
 import io.ktor.server.plugins.*
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.koin.core.annotation.Single
 import ukidelly.api.v1.trade_post.comment.models.TradeFeedComment
 import ukidelly.database.DataBaseFactory.dbQuery
@@ -39,11 +40,13 @@ class TradeFeedCommentRepository {
         dbQuery {
             val feed = TradeFeedEntity.findById(postId) ?: throw NotFoundException()
             val user = UserEntity.find { Users.uuid eq uuid }.firstOrNull() ?: throw NotFoundException()
-            TradeFeedCommentEntity.new {
-                post = feed
-                this.user = user
-                this.commentContent = content
+            val comment = TradeFeedComments.insertAndGetId {
+                it[this.postId] = postId
+                it[this.commentContent] = content
+                it[this.userId] = user.uuid
             }
+
+            comment
         }
     }
 
