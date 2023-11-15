@@ -12,10 +12,7 @@ import ukidelly.database.models.comment.TradeFeedComments
 import ukidelly.database.models.like.TradeFeedLikes
 import ukidelly.database.models.post.TradeFeeds
 import ukidelly.database.models.user.Users
-import ukidelly.database.tables.FeedComments
-import ukidelly.database.tables.FeedImages
-import ukidelly.database.tables.FeedLikes
-import ukidelly.database.tables.Feeds
+import ukidelly.database.tables.*
 
 
 object DataBaseFactory {
@@ -39,16 +36,18 @@ object DataBaseFactory {
                 FeedComments,
                 FeedLikes,
                 FeedImages,
+                Images,
                 withLogs = false,
                 inBatch = true
             )
         }
     }
 
-    suspend fun <T> dbQuery(block: suspend (database: Database) -> T): T = newSuspendedTransaction(Dispatchers.IO) {
-        addLogger(StdOutSqlLogger)
-        block(database)
-    }
+    suspend fun <T> dbQuery(block: suspend () -> T): T =
+        newSuspendedTransaction(Dispatchers.IO, database) {
+            addLogger(StdOutSqlLogger)
+            block()
+        }
 
     suspend fun <T> nativeQuery(block: Transaction.() -> T): T {
         val job = CoroutineScope(Dispatchers.IO).async { transaction { block() } }
@@ -62,7 +61,7 @@ object DataBaseFactory {
             username = user
             setPassword(password)
             jdbcUrl = url
-            maximumPoolSize = 3
+            maximumPoolSize = 10
             isAutoCommit = false
             transactionIsolation = "TRANSACTION_REPEATABLE_READ"
             validate()
