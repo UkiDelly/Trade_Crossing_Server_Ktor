@@ -38,3 +38,21 @@ data class User(
 
     )
 }
+
+
+@Serializable
+data class CompactUser(
+    val userId: Int,
+    @Contextual
+    val uuid: UUID,
+    val userName: String,
+    val islandName: String
+) {
+
+    constructor(entity: UserEntity) : this(
+        userId = entity.id.value,
+        uuid = entity.uuid,
+        userName = entity.userName,
+        islandName = entity.islandName
+    )
+}
