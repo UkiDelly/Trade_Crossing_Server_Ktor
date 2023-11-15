@@ -1,14 +1,18 @@
 package ukidelly.api.v1.feed
 
 
+import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.resources.*
 import io.ktor.server.resources.post
 import io.ktor.server.resources.put
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 import ukidelly.api.v1.feed.service.FeedService
+import ukidelly.systems.models.ResponseDto
 
 fun Route.feedRouting() {
 
@@ -17,6 +21,8 @@ fun Route.feedRouting() {
 
     // 최신 자유게시판 가져오기
     get<FeedRoutes.Latest> { param ->
+        val feeds = feedService.getLatestPosts(param.page, param.size)
+        call.respond(HttpStatusCode.OK, ResponseDto.Success(feeds, message = "성공"))
 
     }
 

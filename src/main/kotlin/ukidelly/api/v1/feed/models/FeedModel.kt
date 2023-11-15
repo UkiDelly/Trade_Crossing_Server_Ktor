@@ -29,9 +29,9 @@ data class FeedPreviewModel(
         creatorIsland = entity.user.islandName,
         defaultProfile = entity.user.defaultProfile,
         content = entity.content,
-        imageUrl = emptyList(),
-        commentCount = 0,
-        likes = emptyList(),
+        imageUrl = entity.images.map { it.image.url },
+        commentCount = entity.comments.count().toInt(),
+        likes = entity.likes.map { CompactUser(it.user) },
         createdAt = LocalDateTime.parse(entity.createdAt.toString()),
         updatedAt = LocalDateTime.parse(entity.updatedAt.toString()),
     )

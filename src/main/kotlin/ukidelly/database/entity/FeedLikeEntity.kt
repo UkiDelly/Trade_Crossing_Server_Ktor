@@ -11,4 +11,8 @@ class FeedLikeEntity(id: EntityID<Int>) : IntEntity(id) {
 
     var user by UserEntity referencedOn FeedLikes.userId
     var feed by FeedEntity referencedOn FeedLikes.postId
+
+    override fun toString(): String {
+        return "FeedLikeEntity(id=$id, user=$user, feed=$feed)"
+    }
 }

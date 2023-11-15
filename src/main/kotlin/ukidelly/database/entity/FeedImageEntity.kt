@@ -10,4 +10,8 @@ class FeedImageEntity(id: EntityID<Int>) : IntEntity(id) {
 
     var post by FeedEntity referencedOn FeedImages.feedId
     var image by ImageEntity referencedOn FeedImages.imageId
+
+    override fun toString(): String {
+        return "FeedImageEntity(id=$id, post=$post, image=$image)"
+    }
 }
