@@ -8,7 +8,6 @@ import ukidelly.database.tables.Images
 class ImageEntity(id: EntityID<Int>) : IntEntity(id) {
 
     companion object : IntEntityClass<ImageEntity>(Images)
-
-    var feedId by Images.feedId
+    
     var url by Images.url
 }
