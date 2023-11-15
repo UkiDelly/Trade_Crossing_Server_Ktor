@@ -2,6 +2,7 @@ package ukidelly.api.v1.trade_post.models
 
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
+import ukidelly.api.v1.user.models.CompactUser
 import ukidelly.database.models.post.TradeFeedEntity
 import ukidelly.systems.models.CreateAtUpdateAtBase
 import ukidelly.systems.models.Currency
@@ -45,8 +46,7 @@ data class TradeFeedPreview(
     val postId: Int,
     val title: String,
     val content: String,
-    val creator: String,
-    val creatorIsland: String,
+    val creator: CompactUser,
     val category: PostCategory,
     val currency: Currency,
     val price: Int?,
@@ -59,12 +59,11 @@ data class TradeFeedPreview(
         postId = entity.id.value,
         title = entity.title,
         content = entity.content,
-        creator = entity.user.userName,
-        creatorIsland = entity.user.islandName,
+        creator = CompactUser(entity.user),
         category = entity.category,
         currency = entity.currency,
         price = entity.price,
-        commentCount = 0,
+        commentCount = entity.comments.count().toInt(),
         createdAt = LocalDateTime.parse(entity.createdAt.toString()),
         updatedAt = LocalDateTime.parse(entity.updatedAt.toString()),
     )

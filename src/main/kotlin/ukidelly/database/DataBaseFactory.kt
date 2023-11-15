@@ -23,6 +23,7 @@ object DataBaseFactory {
         database =
             Database.connect(
                 createHikariDataSource(databaseUrl, driver, user, password),
+                databaseConfig = DatabaseConfig.invoke { useNestedTransactions = true }
             )
 
         transaction {

@@ -15,19 +15,6 @@ import java.util.*
 @Single
 class TradeFeedCommentRepository {
 
-
-    suspend fun getCommentCount(postIdList: List<Int>): List<Long> {
-        val result = dbQuery {
-            val counts = mutableListOf<Long>()
-            for (postId in postIdList) {
-                val count = TradeFeedCommentEntity.find { TradeFeedComments.postId eq postId }.count()
-                counts.add(count)
-            }
-            counts
-        }
-        return result
-    }
-
     suspend fun findAllComments(postId: Int): List<TradeFeedComment> {
 
         val result = dbQuery {

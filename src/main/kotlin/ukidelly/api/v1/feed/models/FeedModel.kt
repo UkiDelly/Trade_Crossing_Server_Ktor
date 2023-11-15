@@ -2,7 +2,6 @@ package ukidelly.api.v1.feed.models
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import ukidelly.api.v1.user.models.CompactUser
 import ukidelly.database.entity.FeedEntity
 import ukidelly.systems.models.DefaultProfile
 import java.time.LocalDateTime
@@ -17,7 +16,7 @@ data class FeedPreviewModel(
     val content: String,
     var imageUrl: List<String>,
     var commentCount: Int,
-    var likes: List<CompactUser>,
+    var likes: List<String>,
     @Contextual
     val createdAt: LocalDateTime,
     @Contextual
@@ -31,7 +30,7 @@ data class FeedPreviewModel(
         content = entity.content,
         imageUrl = entity.images.map { it.image.url },
         commentCount = entity.comments.count().toInt(),
-        likes = entity.likes.map { CompactUser(it.user) },
+        likes = entity.likes.map { it.user.uuid.toString() },
         createdAt = LocalDateTime.parse(entity.createdAt.toString()),
         updatedAt = LocalDateTime.parse(entity.updatedAt.toString()),
     )

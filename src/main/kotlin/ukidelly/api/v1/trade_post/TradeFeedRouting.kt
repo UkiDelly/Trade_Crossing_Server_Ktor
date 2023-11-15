@@ -13,7 +13,6 @@ import org.koin.ktor.ext.inject
 import ukidelly.api.v1.trade_post.comment.tradeFeedCommentRoutes
 import ukidelly.api.v1.trade_post.models.CreateTradeFeedRequest
 import ukidelly.api.v1.trade_post.service.TradeFeedService
-import ukidelly.systems.errors.ServerError
 import ukidelly.systems.models.ResponseDto
 import java.util.*
 
@@ -31,11 +30,7 @@ fun Route.tradeFeedRouting() {
     // 게시글 가져오기
     get<TradeFeedRoutes.FeedId> { feed ->
         val feedData = tradeFeedService.getPost(feed.feed_id)
-        if (feedData == null) {
-            call.respond(HttpStatusCode.NotFound, ResponseDto.Error(ServerError.NotExist, "존재하지 않는 게시글입니다."))
-        } else {
-            call.respond(HttpStatusCode.OK, ResponseDto.Success(feedData, "성공"))
-        }
+        call.respond(HttpStatusCode.OK, ResponseDto.Success(feedData, "성공"))
     }
 
     authenticate("auth-jwt") {

@@ -1,7 +1,6 @@
 package ukidelly.api.v1.trade_post.repository
 
 import io.ktor.server.plugins.*
-import org.jetbrains.exposed.sql.selectAll
 import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
 import ukidelly.api.v1.trade_post.models.CreateTradeFeedRequest
@@ -9,7 +8,6 @@ import ukidelly.api.v1.trade_post.models.TradeFeedDetail
 import ukidelly.api.v1.trade_post.models.TradeFeedPreview
 import ukidelly.database.DataBaseFactory.dbQuery
 import ukidelly.database.models.post.TradeFeedEntity
-import ukidelly.database.models.post.TradeFeeds
 import ukidelly.database.models.user.UserEntity
 import ukidelly.database.models.user.Users
 import java.time.LocalDateTime
@@ -23,19 +21,15 @@ class TradeFeedRepository {
 
     suspend fun findLatestPosts(size: Int, page: Int): Pair<List<TradeFeedPreview>, Int> {
 
-        val totalCount = dbQuery { TradeFeeds.selectAll().count() }
-        if (totalCount.toInt() == 0) {
-            return emptyList<TradeFeedPreview>() to 1
+        return dbQuery {
+            val totalPage = (TradeFeedEntity.count().toInt() / size).let { if (it == 0) 1 else it }
+
+            val offset = (size * (page - 1)).toLong()
+            val feedList = TradeFeedEntity.all().limit(size, offset).map { TradeFeedPreview(it) }
+
+            (feedList to totalPage)
         }
-        val totalPage = (totalCount / size).toInt().let {
-            if (it == 0) 1 else it
-        }
-        val offset = ((page - 1) * size).toLong()
-        val posts = dbQuery {
-            val result = TradeFeedEntity.all().limit(size, offset).toList()
-            result.map { TradeFeedPreview(it) }
-        }
-        return posts to totalPage
+        
     }
 
 
@@ -79,7 +73,7 @@ class TradeFeedRepository {
 
     suspend fun deletePost(postId: Int) {
         dbQuery {
-            TradeFeedEntity.findById(postId)?.delete() ?: throw NotFoundException()
+            TradeFeedEntity.findById(postId)?.delete() ?: throw NotFoundException("게시글이 존재하지 않습니다.")
         }
     }
 }

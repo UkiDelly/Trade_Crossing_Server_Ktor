@@ -9,13 +9,8 @@ import java.util.*
 
 @Single
 class TradeFeedCommentService(private val tradeFeedCommentRepository: TradeFeedCommentRepository) {
-
-
+    
     private val logger = LoggerFactory.getLogger("CommentService")
-
-    suspend fun getCommentCounts(postIdList: List<Int>): List<Long> {
-        return tradeFeedCommentRepository.getCommentCount(postIdList)
-    }
 
     suspend fun getAllComment(postId: Int): List<TradeFeedCommentDto> {
 
