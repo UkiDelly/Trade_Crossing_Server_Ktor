@@ -15,7 +15,7 @@ import ukidelly.database.models.comment.TradeFeedCommentRepository
 fun Application.configureKoin() {
 
     val databaseModule = module {
-        single { SupabaseServerClient() }
+        single { SupabaseServerClient(environment.config) }
     }
 
     val repositoryModule = module {
@@ -34,6 +34,7 @@ fun Application.configureKoin() {
     }
 
     install(Koin) {
+        allowOverride(true)
         modules(databaseModule, repositoryModule, serviceModule)
     }
 }
