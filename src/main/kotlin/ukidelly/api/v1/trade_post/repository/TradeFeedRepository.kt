@@ -3,6 +3,7 @@ package ukidelly.api.v1.trade_post.repository
 import io.ktor.server.plugins.*
 import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
+import ukidelly.api.v1.trade_post.comment.models.TradeFeedComment
 import ukidelly.api.v1.trade_post.models.CreateTradeFeedRequest
 import ukidelly.api.v1.trade_post.models.TradeFeedDetail
 import ukidelly.api.v1.trade_post.models.TradeFeedPreview
@@ -29,14 +30,16 @@ class TradeFeedRepository {
 
             (feedList to totalPage)
         }
-        
+
     }
 
 
-    suspend fun findPost(postId: Int): TradeFeedDetail {
+    suspend fun findPost(postId: Int): Pair<TradeFeedDetail, List<TradeFeedComment>> {
         return dbQuery {
-            val post = TradeFeedEntity.findById(postId) ?: throw NotFoundException()
-            TradeFeedDetail(post)
+            val feedEntity = TradeFeedEntity.findById(postId) ?: throw NotFoundException()
+            val feed = TradeFeedDetail(feedEntity)
+            val comments = feedEntity.comments.map { TradeFeedComment(it) }
+            feed to comments
         }
     }
 

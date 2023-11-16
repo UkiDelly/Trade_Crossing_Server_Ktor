@@ -20,7 +20,7 @@ data class TradeFeedCommentDto(
 
     constructor(
         tradeFeedComment: TradeFeedComment,
-        childComments: List<TradeFeedCommentDto>
+        childComments: List<TradeFeedCommentDto> = emptyList()
     ) : this(
         postId = tradeFeedComment.postId,
         commentId = tradeFeedComment.commentId,
