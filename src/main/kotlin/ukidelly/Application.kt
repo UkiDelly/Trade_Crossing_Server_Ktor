@@ -10,7 +10,7 @@ import ukidelly.systems.models.ServerMode
 fun main(args: Array<String>): Unit =
     EngineMain.main(args)
 
-//@Suppress("unused") // application.conf references the main function. This annotation prevents the IDE from marking it as unused.
+
 fun Application.module() {
 
     val serverMode = environment.config.getServerMode()
@@ -18,8 +18,8 @@ fun Application.module() {
     // DB 연결
     DataBaseFactory.init(
         databaseUrl = when (serverMode) {
-            ServerMode.dev -> environment.config.property("local.url").getString()
-            ServerMode.prod -> environment.config.property("supabase.url").getString()
+            ServerMode.dev -> "jdbc:mariadb://localhost:3306/trade_crossing"
+            ServerMode.prod -> environment.config.property("database.url").getString()
         },
         driver = when (serverMode) {
             ServerMode.dev -> "org.mariadb.jdbc.Driver"
@@ -27,13 +27,13 @@ fun Application.module() {
         },
 
         user = when (serverMode) {
-            ServerMode.dev -> environment.config.property("local.username").getString()
+            ServerMode.dev -> "root"
             ServerMode.prod -> environment.config.property("supabase.username").getString()
         },
 
         password = when (serverMode) {
-            ServerMode.dev -> environment.config.property("local.password").getString()
-            ServerMode.prod -> environment.config.property("supabase.password").getString()
+            ServerMode.dev -> "1234"
+            ServerMode.prod -> environment.config.property("database.password").getString()
         }
     )
 
