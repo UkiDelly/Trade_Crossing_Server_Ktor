@@ -27,7 +27,12 @@ fun Route.feedRouting() {
     }
 
     // {feedId}의 게시글 가져오기
-    get<FeedRoutes.FeedId> { }
+    get<FeedRoutes.FeedId> {
+        val id = it.feedId
+
+        val feed = feedService.getFeedById(id)
+        call.respond(HttpStatusCode.OK, ResponseDto.Success(feed, message = "성공"))
+    }
 
     authenticate("auth-jwt") {
 

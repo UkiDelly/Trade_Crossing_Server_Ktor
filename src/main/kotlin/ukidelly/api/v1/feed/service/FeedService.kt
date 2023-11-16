@@ -1,8 +1,9 @@
 package ukidelly.api.v1.feed.service
 
 import org.koin.core.annotation.Single
+import ukidelly.api.v1.feed.comment.models.FeedCommentDto
+import ukidelly.api.v1.feed.models.FeedDto
 import ukidelly.api.v1.feed.models.FeedPreviewModel
-import ukidelly.api.v1.feed.models.NewFeedDto
 import ukidelly.api.v1.feed.repository.FeedRepository
 
 
@@ -18,10 +19,17 @@ class FeedService(private val feedRepository: FeedRepository) {
 
     }
 
+    suspend fun getFeedById(feedId: Int): FeedDto {
 
-    suspend fun addNewFeed(userId: Int, newFeed: NewFeedDto) {
+        val result = feedRepository.findFeedById(feedId)
+        val commentDtos = mutableListOf<FeedCommentDto>()
+        val comments = result.second
 
-        feedRepository.addNewFeed(userId, newFeed.content, newFeed.images)
-
+        comments.forEach { parentComment ->
+            val childComments = comments.filter { it.parentComment == parentComment.id }
+            val commentDto = FeedCommentDto(parentComment, childComments)
+            commentDtos.add(commentDto)
+        }
+        return FeedDto(result.first, commentDtos)
     }
 }

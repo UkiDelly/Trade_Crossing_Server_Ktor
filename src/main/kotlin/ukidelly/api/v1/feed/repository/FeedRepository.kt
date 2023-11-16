@@ -1,13 +1,14 @@
 package ukidelly.api.v1.feed.repository
 
-import org.jetbrains.exposed.sql.insert
+import io.ktor.server.plugins.*
 import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
+import ukidelly.api.v1.feed.comment.models.FeedComment
+import ukidelly.api.v1.feed.models.Feed
 import ukidelly.api.v1.feed.models.FeedPreviewModel
 import ukidelly.database.DataBaseFactory.dbQuery
 import ukidelly.database.entity.FeedEntity
-import ukidelly.database.models.user.Users
-import ukidelly.database.tables.Feeds
+import java.util.*
 
 
 @Single
@@ -26,14 +27,20 @@ class FeedRepository {
         }
     }
 
+    suspend fun findFeedById(feedId: Int): Pair<Feed, List<FeedComment>> {
+        return dbQuery {
+            val feedEntity = FeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
+            val feed = Feed(feedEntity)
+            val comments = feedEntity.comments.map { FeedComment(it) }
+            feed to comments
+        }
+    }
 
-    suspend fun addNewFeed(userId: Int, content: String, images: List<String>) {
 
-        dbQuery {
-            Feeds.insert {
-                it[Users.id] = userId
-                it[Feeds.content] = content
-            }
+    suspend fun addNewFeed(uuid: UUID, content: String, images: List<String>): List<String> {
+
+        return dbQuery {
+            emptyList<String>()
         }
     }
 }
