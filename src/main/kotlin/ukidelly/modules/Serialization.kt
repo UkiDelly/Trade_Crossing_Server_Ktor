@@ -20,7 +20,6 @@ import java.util.*
 @OptIn(ExperimentalSerializationApi::class)
 fun Application.configureSerialization() {
     install(ContentNegotiation) {
-
         json(
             Json {
                 prettyPrint = true
