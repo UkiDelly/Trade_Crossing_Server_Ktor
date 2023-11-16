@@ -15,7 +15,6 @@ fun Application.module() {
 
     val serverMode = environment.config.getServerMode()
 
-
     // DB 연결
     DataBaseFactory.init(
         databaseUrl = when (serverMode) {
@@ -27,13 +26,11 @@ fun Application.module() {
             ServerMode.prod -> "org.postgresql.Driver"
         },
 
-//        databaseUrl = environment.config.property("supabase.url").getString(),
         user = when (serverMode) {
             ServerMode.dev -> environment.config.property("local.username").getString()
             ServerMode.prod -> environment.config.property("supabase.username").getString()
         },
-//        user = environment.config.property("supabase.username").getString(),
-//        password = environment.config.property("supabase.password").getString()
+
         password = when (serverMode) {
             ServerMode.dev -> environment.config.property("local.password").getString()
             ServerMode.prod -> environment.config.property("supabase.password").getString()
@@ -54,7 +51,6 @@ fun Application.module() {
 
     // Json
     configureSerialization()
-
 
     // Request Validation
     configureRequestValidation()
