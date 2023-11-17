@@ -3,7 +3,6 @@ package ukidelly.models
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import ukidelly.database.models.post.TradeFeedEntity
-import ukidelly.systems.models.CreateAtUpdateAtBase
 import ukidelly.systems.models.Currency
 import ukidelly.systems.models.PostCategory
 
@@ -18,9 +17,9 @@ data class TradeFeedDetail(
     val currency: Currency,
     val price: Int?,
     val closed: Boolean,
-    override val createdAt: LocalDateTime,
-    override val updatedAt: LocalDateTime,
-) : CreateAtUpdateAtBase {
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime,
+) {
 
     constructor(entity: TradeFeedEntity) : this(
         postId = entity.id.value,
@@ -50,9 +49,9 @@ data class TradeFeedPreview(
     val currency: Currency,
     val price: Int?,
     val commentCount: Int,
-    override val createdAt: LocalDateTime,
-    override val updatedAt: LocalDateTime
-) : CreateAtUpdateAtBase {
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime
+) {
 
     constructor(entity: TradeFeedEntity) : this(
         postId = entity.id.value,
