@@ -3,7 +3,6 @@ package ukidelly.database.models.user
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
-import ukidelly.api.v1.user.models.User
 
 
 class UserEntity(
@@ -20,7 +19,7 @@ class UserEntity(
     var islandName by Users.islandName
     var introduction by Users.introduction
     var loginType by Users.loginType
-    
+
 
     override fun toString(): String {
         return "UserEntity(userId=${id.value}, snsId=$snsId, email=$email, password=$password, defaultProfile=$defaultProfile, " +

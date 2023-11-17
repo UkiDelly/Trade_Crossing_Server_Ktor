@@ -8,8 +8,8 @@ import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import io.ktor.util.*
+import ukidelly.dto.responses.ResponseDto
 import ukidelly.systems.errors.InvalidJwtTokenException
-import ukidelly.systems.models.ResponseDto
 import ukidelly.systems.models.Token
 import ukidelly.utils.Utils
 import java.time.LocalDateTime

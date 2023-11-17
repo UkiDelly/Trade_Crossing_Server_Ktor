@@ -9,11 +9,11 @@ import io.ktor.server.response.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.MissingFieldException
 import org.slf4j.LoggerFactory
+import ukidelly.dto.responses.ResponseDto
 import ukidelly.systems.errors.InvalidJwtTokenException
 import ukidelly.systems.errors.PasswordIncorrectException
 import ukidelly.systems.errors.ServerError
 import ukidelly.systems.errors.UserExistException
-import ukidelly.systems.models.ResponseDto
 
 
 @OptIn(ExperimentalSerializationApi::class)

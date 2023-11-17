@@ -12,7 +12,7 @@ import kotlinx.serialization.json.JsonNamingStrategy
 import kotlinx.serialization.modules.SerializersModule
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import ukidelly.api.v1.user.models.SocialLoginRequest
+import ukidelly.dto.requests.SocialLoginRequestDto
 import ukidelly.modules.LocalDateTimeSerializerModule
 import ukidelly.modules.UUIDSerializerModule
 import ukidelly.systems.models.LoginType
@@ -58,7 +58,7 @@ class UserRoutingTest {
             contentType(ContentType.Application.Json)
             setBody(
                 jsonConvertor.encodeToString(
-                    SocialLoginRequest(
+                    SocialLoginRequestDto(
                         snsId = "1",
                         email = "test@apple.com",
                         loginType = LoginType.apple,
@@ -82,5 +82,5 @@ class UserRoutingTest {
             println(this.bodyAsText())
         }
     }
-    
+
 }
