@@ -16,11 +16,9 @@ fun Application.configureRouting() {
         userRouting()
         tradeFeedRouting()
         feedRouting()
+        imageRouting()
         route("/chat") {
             chatRouting()
-        }
-        route("/image") {
-            imageRouting()
         }
 
         get {

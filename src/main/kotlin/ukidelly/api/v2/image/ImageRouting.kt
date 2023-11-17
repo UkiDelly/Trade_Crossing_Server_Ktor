@@ -25,7 +25,7 @@ fun Route.imageRouting() {
     val supabaseClient by inject<SupabaseServerClient>()
 
     authenticate("auth-jwt") {
-        post("/upload") {
+        post<ImageRoutes.Upload> {
 
 
             val userId = call.principal<UserIdPrincipal>()!!.name
