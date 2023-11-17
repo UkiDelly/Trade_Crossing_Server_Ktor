@@ -37,3 +37,7 @@ out/
 
 ### CloudType 로컬 배포 ###
 trade-crossing.yaml
+
+
+### Test 파일 ###
+src/test
