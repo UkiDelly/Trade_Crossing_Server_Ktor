@@ -1,5 +1,4 @@
 ktor:
-  development: true
   application:
     modules:
       - ukidelly.ApplicationKt.module
@@ -8,21 +7,24 @@ ktor:
     rootPath: /api/v1
     watch: [ ukidelly ]
 
+server:
+  mode: "$mode:dev"
+
+database:
+  url: $db_url
+  user: $db_user
+  password: $db_password
+
+supabase:
+  url: "$supabase_url:"
+  key: "$supabase_key:"
+
 
 jwt:
   issuer: "Trade Crossing Ktor Server"
   audience: "Trade Crossing Application"
   realm: "Trade Crossing Ktor Server"
-  secret: "TradeCrossingKtorServer"
+  secret: $jwt_secret
 
-database:
-  url: $db_url
-  username: $db_user
-  password: $db_password
 
-server:
-  mode: "$mode:dev"
 
-supabase:
-  url: $supabase_url
-  key: $supabase_key
