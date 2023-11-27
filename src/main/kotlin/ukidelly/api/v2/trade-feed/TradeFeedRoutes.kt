@@ -16,18 +16,20 @@ class TradeFeedRoutes {
         @Resource("like")
         class Like(val parent: FeedId)
 
-        @Resource("comment")
-        class Comment(val parent: FeedId) {
 
-            @Resource("new")
-            class New(val parent: Comment)
+    }
+}
 
-            @Resource("{comment_id}")
-            class CommentId(val parent: Comment, val comment_id: Int) {
+@Resource("comment")
+class TradeFeedCommentRoute(val parent: TradeFeedRoutes.FeedId) {
 
-                @Resource("reply")
-                class Reply(val parent: CommentId)
-            }
-        }
+    @Resource("new")
+    class New(val parent: TradeFeedCommentRoute)
+
+    @Resource("{comment_id}")
+    class CommentId(val parent: TradeFeedCommentRoute, val comment_id: Int) {
+
+        @Resource("reply")
+        class Reply(val parent: CommentId)
     }
 }

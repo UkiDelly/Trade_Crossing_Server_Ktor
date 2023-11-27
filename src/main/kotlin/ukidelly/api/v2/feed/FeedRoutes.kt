@@ -17,18 +17,21 @@ class FeedRoutes {
         @Resource("like")
         class Like(val parent: FeedId)
 
-        @Resource("comment")
-        class Comment(val parent: FeedId) {
 
-            @Resource("new")
-            class New(val parent: Comment)
+    }
+}
 
-            @Resource("{commentId}")
-            class CommentId(val parent: Comment, val commentId: Int) {
 
-                @Resource("reply")
-                class Reply(val parent: CommentId)
-            }
-        }
+@Resource("comment")
+class FeedCommentRoutes(val parent: FeedRoutes.FeedId) {
+
+    @Resource("new")
+    class New(val parent: FeedCommentRoutes)
+
+    @Resource("{commentId}")
+    class CommentId(val parent: FeedCommentRoutes, val commentId: Int) {
+
+        @Resource("reply")
+        class Reply(val parent: CommentId)
     }
 }
