@@ -7,10 +7,13 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import io.ktor.util.*
+import org.slf4j.LoggerFactory
 import ukidelly.dto.responses.ResponseDto
 import ukidelly.systems.errors.InvalidJwtTokenException
 import ukidelly.systems.models.Token
+import ukidelly.systems.models.TokenType
 import ukidelly.utils.Utils
 import java.time.LocalDateTime
 
@@ -84,4 +87,52 @@ fun Application.configureJWT() {
 private val tokenKey = AttributeKey<Token>("token")
 fun ApplicationCall.getToken(): Token {
     return attributes[tokenKey]
+}
+
+
+fun Route.withJWT(tokenType: TokenType) {
+    val child = createChild(AuthRouterSelector()).apply {
+        install(JwtAuthPlugin)
+    }
+}
+
+
+private val userIdKey = AttributeKey<String>("userId")
+
+fun ApplicationCall.getUserId(): Int = attributes[userIdKey].toInt()
+
+
+class AuthPluginCongiguration {
+    lateinit var type: TokenType
+}
+
+
+class AuthRouterSelector : RouteSelector() {
+    override fun evaluate(context: RoutingResolveContext, segmentIndex: Int): RouteSelectorEvaluation =
+        RouteSelectorEvaluation.Transparent
+
+    override fun toString(): String {
+        return "{ AuthRoute }"
+    }
+}
+
+
+val JwtAuthPlugin = createRouteScopedPlugin(
+    name = "JwtAuthPlugin",
+    createConfiguration = ::AuthPluginCongiguration
+) {
+    val config = applicationConfig!!
+    val logger = LoggerFactory.getLogger("JwtAuthPlugin")
+
+    val jwtAudience = config.property("jwt.audience").getString() //"jwt-audience"
+    val jwtIssuer = config.property("jwt.issuer").getString() //"https://jwt-provider-domain/"
+    val jwtRealm = config.property("jwt.realm").getString()
+    val jwtSecret = config.property("jwt.secret").getString()
+    val verifier = JWT.require(Algorithm.HMAC256(jwtSecret))
+        .withAudience(jwtAudience)
+        .withIssuer(jwtIssuer)
+        .build()
+
+
+    onCall { }
 }
