@@ -14,6 +14,7 @@ import ukidelly.dto.responses.ResponseDto
 import ukidelly.systems.models.TokenType
 import ukidelly.utils.Utils
 import java.time.LocalDateTime
+import java.util.*
 
 
 //fun Application.configureJWT() {
@@ -97,8 +98,8 @@ fun Route.withAuth(tokenType: TokenType, route: Route.() -> Unit): Route {
 }
 
 
-private val userIdKey = AttributeKey<String>("userId")
-fun ApplicationCall.getUserId(): Int = attributes[userIdKey].toInt()
+private val userIdKey = AttributeKey<UUID>("userId")
+fun ApplicationCall.getUserId(): UUID = attributes[userIdKey]
 
 class AuthRouter : RouteSelector() {
     override fun evaluate(context: RoutingResolveContext, segmentIndex: Int): RouteSelectorEvaluation =
@@ -156,7 +157,7 @@ val JwtAuthPlugin = createRouteScopedPlugin(
                 )
 
                 val userId = this.subject
-                call.attributes.put(userIdKey, userId)
+                call.attributes.put(userIdKey, UUID.fromString(userId))
             }
         }
     }

@@ -37,7 +37,7 @@ fun Route.userRouting() {
         val request = call.receive<EmailLoginReqeustDto>()
 
         val user = service.emailLogin(request.email, request.password)
-        val token = Token.createToken(application.environment.config, user.uuid.toString())
+        val token = getToken(user.uuid.toString())
         call.respond(HttpStatusCode.OK, ResponseDto.Success(UserWithTokenDto(user, token), "성공"))
     }
 
@@ -45,7 +45,7 @@ fun Route.userRouting() {
     post<UserRoutes.Login.SocialLogin> {
         val request = call.receive<SocialLoginRequestDto>()
         val user = service.socialLogin(request.snsId, email = request.email, loginType = request.loginType)
-        val token = Token.createToken(application.environment.config, user.uuid.toString())
+        val token = getToken(user.uuid.toString())
         call.respond(
             HttpStatusCode.OK,
             ResponseDto.Success(UserWithTokenDto(user = user, token = token), message = "성공")
@@ -57,7 +57,7 @@ fun Route.userRouting() {
         val request = call.receive<UserRegisterRequestDto>()
 
         val user = service.register(request)
-        val token = Token.createToken(application.environment.config, user.uuid.toString())
+        val token = getToken(user.uuid.toString())
         call.respond(HttpStatusCode.OK, ResponseDto.Success(UserWithTokenDto(user, token), message = "성공"))
     }
 
