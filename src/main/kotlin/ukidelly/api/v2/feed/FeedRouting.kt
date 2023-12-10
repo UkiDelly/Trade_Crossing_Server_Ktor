@@ -20,7 +20,7 @@ fun Route.feedRouting() {
     val feedService by inject<FeedService>()
 
     // 최신 자유게시판 가져오기
-    get<FeedRoutes.Latest> { param ->
+    get<FeedRoutes> { param ->
         val feeds = feedService.getLatestPosts(param.page, param.size)
         call.respond(HttpStatusCode.OK, ResponseDto.Success(feeds, message = "성공"))
 
@@ -37,7 +37,7 @@ fun Route.feedRouting() {
     authenticate("auth-jwt") {
 
         // 새로운 게시글 생성하기
-        post<FeedRoutes.New> { }
+        post<FeedRoutes> { }
 
         // 게시글 수정하기
         put<FeedRoutes.FeedId> { }
