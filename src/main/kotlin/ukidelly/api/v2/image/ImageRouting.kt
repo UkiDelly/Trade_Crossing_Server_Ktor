@@ -18,13 +18,15 @@ import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 import ukidelly.dto.responses.ResponseDto.Success
 import ukidelly.modules.SupabaseServerClient
+import ukidelly.modules.withAuth
+import ukidelly.systems.models.TokenType
 
 fun Route.imageRouting() {
 
     val logger = LoggerFactory.getLogger("ImageRouting")
     val supabaseClient by inject<SupabaseServerClient>()
 
-    authenticate("auth-jwt") {
+    withAuth(TokenType.access) {
         post<ImageRoutes.Upload> {
 
 

@@ -14,7 +14,9 @@ import org.koin.ktor.ext.inject
 import ukidelly.api.v2.`trade-feed`.TradeFeedCommentRoute
 import ukidelly.dto.requests.NewCommentRequestDto
 import ukidelly.dto.responses.ResponseDto
+import ukidelly.modules.withAuth
 import ukidelly.services.TradeFeedCommentService
+import ukidelly.systems.models.TokenType
 import java.util.*
 
 fun Route.tradeFeedCommentRoutes() {
@@ -31,7 +33,7 @@ fun Route.tradeFeedCommentRoutes() {
 
     }
 
-    authenticate("auth-jwt") {
+    withAuth(TokenType.access) {
         // 댓글 추가
         post<TradeFeedCommentRoute> {
             val id = it.parent.feed_id

@@ -15,12 +15,18 @@ import ukidelly.dto.requests.SocialLoginRequestDto
 import ukidelly.dto.requests.UserRegisterRequestDto
 import ukidelly.dto.responses.ResponseDto
 import ukidelly.dto.responses.UserWithTokenDto
-import ukidelly.modules.getToken
+import ukidelly.modules.getUserId
+import ukidelly.modules.withAuth
 import ukidelly.services.UserService
 import ukidelly.systems.models.Token
+import ukidelly.systems.models.TokenType
+import ukidelly.systems.models.generateToken
 import java.util.*
 
 fun Route.userRouting() {
+
+    fun getToken(userId: String): Token = environment!!.config.generateToken(userId)
+
 
     val logger = LoggerFactory.getLogger("UserRouting")
     val service by inject<UserService>()
@@ -56,7 +62,7 @@ fun Route.userRouting() {
     }
 
 
-    authenticate("refresh-jwt") {
+    withAuth(TokenType.refresh) {
 
         // 자동 로그인
         post<UserRoutes.Login.Auto> {
@@ -64,13 +70,17 @@ fun Route.userRouting() {
             val user = service.autoLogin(UUID.fromString(uuid))
             call.respond(
                 HttpStatusCode.OK,
-                ResponseDto.Success(UserWithTokenDto(user, call.getToken()), message = "성공")
+                ResponseDto.Success(
+                    UserWithTokenDto(user, getToken(user.userId.toString())),
+                    message = "성공"
+                )
             )
         }
 
         // 리프레쉬 토큰 재발급
         post<UserRoutes.RefreshToken> {
-            val token = call.getToken()
+            val userId = call.getUserId()
+            val token = getToken(userId.toString())
             call.respond(
                 ResponseDto.Success(token, "재발급에 성공하였습니다.")
             )

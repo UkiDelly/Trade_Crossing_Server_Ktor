@@ -13,7 +13,9 @@ import org.koin.ktor.ext.inject
 import ukidelly.api.v2.`trade-feed`.comments.tradeFeedCommentRoutes
 import ukidelly.dto.requests.CreateTradeFeedRequestDto
 import ukidelly.dto.responses.ResponseDto
+import ukidelly.modules.withAuth
 import ukidelly.services.TradeFeedService
+import ukidelly.systems.models.TokenType
 import java.util.*
 
 fun Route.tradeFeedRouting() {
@@ -33,7 +35,7 @@ fun Route.tradeFeedRouting() {
         call.respond(HttpStatusCode.OK, ResponseDto.Success(feedData, "성공"))
     }
 
-    authenticate("auth-jwt") {
+    withAuth(TokenType.access) {
 
         // 새 게시물
         post<TradeFeedRoutes.New> {
