@@ -51,4 +51,8 @@ class TradeFeedService(
     suspend fun deletePost(postId: Int) {
         tradeFeedRepository.deletePost(postId)
     }
+
+    suspend fun likeFeed(feedId: Int, userId: UUID) {
+        tradeFeedRepository.likeFeed(feedId, userId)
+    }
 }

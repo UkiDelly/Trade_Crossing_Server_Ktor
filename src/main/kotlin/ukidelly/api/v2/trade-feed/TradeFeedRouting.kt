@@ -13,6 +13,7 @@ import org.koin.ktor.ext.inject
 import ukidelly.api.v2.`trade-feed`.comments.tradeFeedCommentRoutes
 import ukidelly.dto.requests.CreateTradeFeedRequestDto
 import ukidelly.dto.responses.ResponseDto
+import ukidelly.modules.getUserId
 import ukidelly.modules.withAuth
 import ukidelly.services.TradeFeedService
 import ukidelly.systems.models.TokenType
@@ -31,7 +32,7 @@ fun Route.tradeFeedRouting() {
 
     // 게시글 가져오기
     get<TradeFeedRoutes.FeedId> { feed ->
-        
+
         val feedData = tradeFeedService.getPost(feed.feed_id)
         call.respond(HttpStatusCode.OK, ResponseDto.Success(feedData, "성공"))
     }
@@ -47,7 +48,11 @@ fun Route.tradeFeedRouting() {
         }
 
         // 좋아요
-        post<TradeFeedRoutes.FeedId.Like> {}
+        post<TradeFeedRoutes.FeedId.Like> { feed ->
+            val feedId = feed.parent.feed_id
+            val userId = call.getUserId()
+            tradeFeedService.likeFeed(feedId, userId)
+        }
 
         // 수정
         put<TradeFeedRoutes.FeedId> { feed ->

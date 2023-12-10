@@ -1,9 +1,12 @@
 package ukidelly.repositories
 
 import io.ktor.server.plugins.*
+import org.jetbrains.exposed.sql.insert
 import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
 import ukidelly.database.DataBaseFactory.dbQuery
+import ukidelly.database.models.like.TradeFeedLikeEntity
+import ukidelly.database.models.like.TradeFeedLikes
 import ukidelly.database.models.post.TradeFeedEntity
 import ukidelly.database.models.user.UserEntity
 import ukidelly.database.models.user.Users
@@ -77,6 +80,27 @@ class TradeFeedRepository {
     suspend fun deletePost(postId: Int) {
         dbQuery {
             TradeFeedEntity.findById(postId)?.delete() ?: throw NotFoundException("게시글이 존재하지 않습니다.")
+        }
+    }
+
+    suspend fun likeFeed(feedId: Int, userId: UUID): String {
+        return dbQuery {
+            val feed = TradeFeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
+            val user =
+                UserEntity.find { Users.uuid eq userId }.firstOrNull() ?: throw NotFoundException("존재하지 않는 유저입니다.")
+            val likeEntity =
+                TradeFeedLikeEntity.find { TradeFeedLikes.postId eq feed.id }.find { it.user == user }
+
+            if (likeEntity != null) {
+                likeEntity.delete()
+                "unlike"
+            } else {
+                TradeFeedLikes.insert {
+                    it[postId] = feed.id
+                    it[TradeFeedLikes.userId] = user.id
+                }
+                "like"
+            }
         }
     }
 }
