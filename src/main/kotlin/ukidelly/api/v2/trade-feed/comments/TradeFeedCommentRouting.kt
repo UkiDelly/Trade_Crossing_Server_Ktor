@@ -11,7 +11,6 @@ import io.ktor.server.resources.put
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
-import ukidelly.api.v2.`trade-feed`.TradeFeedCommentRoute
 import ukidelly.dto.requests.NewCommentRequestDto
 import ukidelly.dto.responses.ResponseDto
 import ukidelly.modules.withAuth
