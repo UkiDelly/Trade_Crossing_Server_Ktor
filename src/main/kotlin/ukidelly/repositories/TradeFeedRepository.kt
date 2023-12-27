@@ -1,12 +1,9 @@
 package ukidelly.repositories
 
 import io.ktor.server.plugins.*
-import org.jetbrains.exposed.sql.insert
 import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
 import ukidelly.database.DataBaseFactory.dbQuery
-import ukidelly.database.models.like.TradeFeedLikeEntity
-import ukidelly.database.models.like.TradeFeedLikes
 import ukidelly.database.models.post.TradeFeedEntity
 import ukidelly.database.models.user.UserEntity
 import ukidelly.database.models.user.Users
@@ -47,7 +44,7 @@ class TradeFeedRepository {
     }
 
 
-    suspend fun addNewPost(post: CreateTradeFeedRequestDto, creatorId: UUID): Int {
+    suspend fun addNewPost(post: CreateTradeFeedRequestDto, creatorId: UUID): TradeFeedDetail {
         val userEntity = dbQuery { UserEntity.find { Users.uuid eq (creatorId) }.first() }
         val newFeed = dbQuery {
             TradeFeedEntity.new {
@@ -58,9 +55,9 @@ class TradeFeedRepository {
                 currency = post.currency
                 price = post.price
                 closed = post.closed
-            }.id
+            }
         }
-        return newFeed.value
+        return TradeFeedDetail(newFeed)
     }
 
     suspend fun updatePost(postId: Int, post: CreateTradeFeedRequestDto): TradeFeedDetail {
@@ -88,19 +85,21 @@ class TradeFeedRepository {
             val feed = TradeFeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
             val user =
                 UserEntity.find { Users.uuid eq userId }.firstOrNull() ?: throw NotFoundException("존재하지 않는 유저입니다.")
-            val likeEntity =
-                TradeFeedLikeEntity.find { TradeFeedLikes.postId eq feed.id }.find { it.user == user }
+            feed.likes.onEach { println(it) }
 
-            if (likeEntity != null) {
-                likeEntity.delete()
-                "unlike"
-            } else {
-                TradeFeedLikes.insert {
-                    it[postId] = feed.id
-                    it[TradeFeedLikes.userId] = user.id
-                }
-                "like"
-            }
+            ""
+
+
+            //if (likeEntity != null) {
+            //    likeEntity.delete()
+            //    "unlike"
+            //} else {
+            //    TradeFeedLikes.insert {
+            //        it[postId] = feed.id
+            //        it[TradeFeedLikes.userId] = user.id
+            //    }
+            //    "like"
+            //}
         }
     }
 }

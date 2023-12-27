@@ -5,6 +5,7 @@ import ukidelly.dto.requests.CreateTradeFeedRequestDto
 import ukidelly.dto.responses.LatestTradeFeedDto
 import ukidelly.dto.responses.TradeFeedCommentDto
 import ukidelly.dto.responses.TradeFeedDto
+import ukidelly.models.TradeFeedDetail
 import ukidelly.repositories.TradeFeedRepository
 import java.util.*
 
@@ -38,9 +39,9 @@ class TradeFeedService(
         return TradeFeedDto(result.first, tradeCommentDtos)
     }
 
-    suspend fun addNewPost(newPost: CreateTradeFeedRequestDto, userId: UUID): TradeFeedDto {
-        val newPostId = tradeFeedRepository.addNewPost(newPost, userId)
-        return getPost(newPostId)
+    suspend fun addNewPost(newPost: CreateTradeFeedRequestDto, userId: UUID): TradeFeedDetail {
+        return tradeFeedRepository.addNewPost(newPost, userId)
+
     }
 
     suspend fun updateFeed(feedId: Int, feed: CreateTradeFeedRequestDto): TradeFeedDto {

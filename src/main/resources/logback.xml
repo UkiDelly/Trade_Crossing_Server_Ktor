@@ -5,13 +5,13 @@
             </pattern>
         </encoder>
     </appender>
-    <root level="TRACE">
+    <root level="debug">
         <appender-ref ref="STDOUT"/>
     </root>
 
     <!-- debug 모드일때만 로그 출력   -->
     <logger name="org.eclipse.jetty" level="INFO"/>
     <logger name="io.netty" level="INFO"/>
-    <logger name="org.mongodb.driver" level="WARN"/>
+    <logger name="org.mariadb.jdbc.Driver" level="TRACE"/>
     <logger name="io.ktor.server.routing" level="TRACE"/>
 </configuration>
