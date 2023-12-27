@@ -5,11 +5,12 @@ import org.jetbrains.exposed.dao.with
 import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
 import ukidelly.database.DataBaseFactory.dbQuery
+import ukidelly.database.models.like.TradeFeedLikeEntity
+import ukidelly.database.models.like.TradeFeedLikes
 import ukidelly.database.models.post.TradeFeedEntity
 import ukidelly.database.models.user.UserEntity
 import ukidelly.database.models.user.Users
 import ukidelly.dto.requests.CreateTradeFeedRequestDto
-import ukidelly.models.TradeFeedComment
 import ukidelly.models.TradeFeedDetail
 import ukidelly.models.TradeFeedPreview
 import java.time.LocalDateTime
@@ -36,12 +37,10 @@ class TradeFeedRepository {
     }
 
 
-    suspend fun findPost(postId: Int): Pair<TradeFeedDetail, List<TradeFeedComment>> {
+    suspend fun findPost(postId: Int): TradeFeedDetail {
         return dbQuery {
             val feedEntity = TradeFeedEntity.findById(postId) ?: throw NotFoundException()
-            val feed = TradeFeedDetail(feedEntity)
-            val comments = feedEntity.comments.map { TradeFeedComment(it) }
-            feed to comments
+            TradeFeedDetail(feedEntity)
         }
     }
 
@@ -82,26 +81,26 @@ class TradeFeedRepository {
         }
     }
 
-    suspend fun likeFeed(feedId: Int, userId: UUID): String {
+    suspend fun likeFeed(feedId: Int, userId: UUID): TradeFeedDetail {
         return dbQuery {
             val feed = TradeFeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
             val user =
                 UserEntity.find { Users.uuid eq userId }.firstOrNull() ?: throw NotFoundException("존재하지 않는 유저입니다.")
-            feed.likes.onEach { println(it) }
 
-            ""
+            val likeEntity = TradeFeedLikeEntity.find { TradeFeedLikes.postId eq feedId }.firstOrNull()
 
 
-            //if (likeEntity != null) {
-            //    likeEntity.delete()
-            //    "unlike"
-            //} else {
-            //    TradeFeedLikes.insert {
-            //        it[postId] = feed.id
-            //        it[TradeFeedLikes.userId] = user.id
-            //    }
-            //    "like"
-            //}
+            if (likeEntity != null) {
+                likeEntity.delete()
+                TradeFeedDetail(feed)
+            } else {
+                TradeFeedLikeEntity.new {
+                    this.post = feed.id
+                    this.user = user.id
+                }
+                TradeFeedDetail(feed)
+            }
+
         }
     }
 }

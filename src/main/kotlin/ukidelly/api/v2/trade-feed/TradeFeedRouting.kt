@@ -51,12 +51,13 @@ fun Route.tradeFeedRouting() {
         post<TradeFeedRoutes.FeedId.Like> { feed ->
             val feedId = feed.parent.feed_id
             val userId = call.getUserId()
-            tradeFeedService.likeFeed(feedId, userId)
+            val result = tradeFeedService.likeFeed(feedId, userId)
+            call.respond(HttpStatusCode.OK, ResponseDto.Success(result, "성공"))
         }
 
         // 수정
         put<TradeFeedRoutes.FeedId> { feed ->
-            
+
         }
         // 삭제
         delete<TradeFeedRoutes.FeedId> { feed ->

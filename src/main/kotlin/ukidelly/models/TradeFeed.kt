@@ -18,6 +18,7 @@ data class TradeFeedDetail(
     val closed: Boolean,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
+    val likes: List<Int>
 ) {
 
     constructor(entity: TradeFeedEntity) : this(
@@ -31,6 +32,7 @@ data class TradeFeedDetail(
         closed = entity.closed,
         createdAt = LocalDateTime.parse(entity.createdAt.toString()),
         updatedAt = LocalDateTime.parse(entity.updatedAt.toString()),
+        likes = entity.likes.map { it.id.value }
     )
 
 
