@@ -23,5 +23,5 @@ class TradeFeedEntity(
     var createdAt by TradeFeeds.createdAt
     var updatedAt by TradeFeeds.updatedAt
     val comments by TradeFeedCommentEntity referrersOn TradeFeedComments.postId
-    val likes by UserEntity referrersOn TradeFeedLikes.userId
+    val likes by UserEntity via TradeFeedLikes
 }

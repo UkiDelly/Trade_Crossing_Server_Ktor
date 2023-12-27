@@ -1,6 +1,7 @@
 package ukidelly.repositories
 
 import io.ktor.server.plugins.*
+import org.jetbrains.exposed.dao.with
 import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
 import ukidelly.database.DataBaseFactory.dbQuery
@@ -24,9 +25,10 @@ class TradeFeedRepository {
 
         return dbQuery {
             val totalPage = (TradeFeedEntity.count().toInt() / size).let { if (it == 0) 1 else it }
-
             val offset = (size * (page - 1)).toLong()
-            val feedList = TradeFeedEntity.all().limit(size, offset).map { TradeFeedPreview(it) }
+            val feedList = TradeFeedEntity.all().limit(size, offset).with(TradeFeedEntity::user).map {
+                TradeFeedPreview(it)
+            }
 
             (feedList to totalPage)
         }

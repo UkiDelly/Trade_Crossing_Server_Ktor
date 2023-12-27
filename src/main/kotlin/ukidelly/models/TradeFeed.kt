@@ -50,7 +50,8 @@ data class TradeFeedPreview(
     val price: Int?,
     val commentCount: Int,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
+    val likes: List<Int>
 ) {
 
     constructor(entity: TradeFeedEntity) : this(
@@ -64,6 +65,7 @@ data class TradeFeedPreview(
         commentCount = entity.comments.count().toInt(),
         createdAt = LocalDateTime.parse(entity.createdAt.toString()),
         updatedAt = LocalDateTime.parse(entity.updatedAt.toString()),
+        likes = entity.likes.map { it.id.value }
     )
 
 }
