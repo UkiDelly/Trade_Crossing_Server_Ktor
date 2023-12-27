@@ -6,8 +6,8 @@ import org.jetbrains.exposed.dao.id.EntityID
 
 
 class UserEntity(
-    userId: EntityID<Int>
-) : IntEntity(userId) {
+    id: EntityID<Int>
+) : IntEntity(id) {
     companion object : IntEntityClass<UserEntity>(Users)
 
     var uuid by Users.uuid

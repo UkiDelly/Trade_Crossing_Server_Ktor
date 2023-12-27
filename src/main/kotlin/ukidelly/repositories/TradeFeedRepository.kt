@@ -44,7 +44,7 @@ class TradeFeedRepository {
     }
 
 
-    suspend fun addNewPost(post: CreateTradeFeedRequestDto, creatorId: UUID): Int {
+    suspend fun addNewPost(post: CreateTradeFeedRequestDto, creatorId: UUID): TradeFeedDetail {
         val userEntity = dbQuery { UserEntity.find { Users.uuid eq (creatorId) }.first() }
         val newFeed = dbQuery {
             TradeFeedEntity.new {
@@ -55,9 +55,9 @@ class TradeFeedRepository {
                 currency = post.currency
                 price = post.price
                 closed = post.closed
-            }.id
+            }
         }
-        return newFeed.value
+        return TradeFeedDetail(newFeed)
     }
 
     suspend fun updatePost(postId: Int, post: CreateTradeFeedRequestDto): TradeFeedDetail {
@@ -77,6 +77,29 @@ class TradeFeedRepository {
     suspend fun deletePost(postId: Int) {
         dbQuery {
             TradeFeedEntity.findById(postId)?.delete() ?: throw NotFoundException("게시글이 존재하지 않습니다.")
+        }
+    }
+
+    suspend fun likeFeed(feedId: Int, userId: UUID): String {
+        return dbQuery {
+            val feed = TradeFeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
+            val user =
+                UserEntity.find { Users.uuid eq userId }.firstOrNull() ?: throw NotFoundException("존재하지 않는 유저입니다.")
+            feed.likes.onEach { println(it) }
+
+            ""
+
+
+            //if (likeEntity != null) {
+            //    likeEntity.delete()
+            //    "unlike"
+            //} else {
+            //    TradeFeedLikes.insert {
+            //        it[postId] = feed.id
+            //        it[TradeFeedLikes.userId] = user.id
+            //    }
+            //    "like"
+            //}
         }
     }
 }

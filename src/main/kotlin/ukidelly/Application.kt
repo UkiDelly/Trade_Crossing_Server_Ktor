@@ -28,7 +28,7 @@ fun Application.module() {
     configureStatusPage()
 
     // JWT
-    configureJWT()
+    //configureJWT()
 
     // swagger
     configureSwaggerUI()

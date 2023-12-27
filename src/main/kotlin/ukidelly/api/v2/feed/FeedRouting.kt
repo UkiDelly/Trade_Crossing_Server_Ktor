@@ -3,7 +3,6 @@ package ukidelly.api.v2.feed
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
 import io.ktor.server.resources.*
 import io.ktor.server.resources.post
 import io.ktor.server.resources.put
@@ -12,7 +11,9 @@ import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 import ukidelly.dto.responses.ResponseDto
+import ukidelly.modules.withAuth
 import ukidelly.services.FeedService
+import ukidelly.systems.models.TokenType
 
 fun Route.feedRouting() {
 
@@ -20,7 +21,7 @@ fun Route.feedRouting() {
     val feedService by inject<FeedService>()
 
     // 최신 자유게시판 가져오기
-    get<FeedRoutes.Latest> { param ->
+    get<FeedRoutes> { param ->
         val feeds = feedService.getLatestPosts(param.page, param.size)
         call.respond(HttpStatusCode.OK, ResponseDto.Success(feeds, message = "성공"))
 
@@ -34,10 +35,10 @@ fun Route.feedRouting() {
         call.respond(HttpStatusCode.OK, ResponseDto.Success(feed, message = "성공"))
     }
 
-    authenticate("auth-jwt") {
+    withAuth(TokenType.access) {
 
         // 새로운 게시글 생성하기
-        post<FeedRoutes.New> { }
+        post<FeedRoutes> { }
 
         // 게시글 수정하기
         put<FeedRoutes.FeedId> { }

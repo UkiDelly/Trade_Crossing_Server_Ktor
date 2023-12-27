@@ -1,5 +1,6 @@
 package ukidelly.modules
 
+import com.auth0.jwt.exceptions.TokenExpiredException
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*
@@ -31,6 +32,15 @@ fun Application.configureStatusPage() {
             logger.error(exception.cause.toString())
             call.respond(
                 HttpStatusCode.Unauthorized,
+                ResponseDto.Error(error = ServerError.UnAuhtorized, message = "유효하지 않은 토큰입니다.")
+            )
+        }
+
+        //
+        exception<TokenExpiredException> { call, exception ->
+            logger.error(exception.cause.toString())
+            call.respond(
+                HttpStatusCode.BadRequest,
                 ResponseDto.Error(error = ServerError.UnAuhtorized, message = "유효하지 않은 토큰입니다.")
             )
         }

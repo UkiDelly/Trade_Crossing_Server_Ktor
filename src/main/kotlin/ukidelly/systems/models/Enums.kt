@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class LoginType {
-	google, kakao, apple, email
+    google, kakao, apple, email
 }
 
 
@@ -12,13 +12,15 @@ enum class LoginType {
 enum class DefaultProfile { nook, isabella, no }
 
 enum class ServerMode {
-	dev, prod
+    dev, prod
 }
 
 @Serializable
 enum class Currency {
-	bell, mileage, free
+    bell, mileage, free
 }
 
 @Serializable
 enum class PostCategory { item, turnip, manjijak }
+
+enum class TokenType { access, refresh }

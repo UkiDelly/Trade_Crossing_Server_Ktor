@@ -3,7 +3,7 @@ package ukidelly.api.v2.user
 import io.ktor.resources.*
 
 
-@Resource("/user")
+@Resource("/users")
 class UserRoutes {
 
 
