@@ -4,7 +4,7 @@ import io.ktor.resources.*
 import ukidelly.api.v2.`trade-feed`.TradeFeedRoutes
 
 
-@Resource("comment")
+@Resource("comments")
 class TradeFeedCommentRoute(val parent: TradeFeedRoutes.FeedId) {
 
     @Resource("{comment_id}")
