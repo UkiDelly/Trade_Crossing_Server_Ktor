@@ -3,7 +3,7 @@ package ukidelly.api.v2.feed
 import io.ktor.resources.*
 
 
-@Resource("/feed")
+@Resource("/feeds")
 class FeedRoutes(val page: Int = 1, val size: Int = 10) {
 
     @Resource("{feedId}")
@@ -16,7 +16,7 @@ class FeedRoutes(val page: Int = 1, val size: Int = 10) {
 }
 
 
-@Resource("comment")
+@Resource("comments")
 class FeedCommentRoutes(val parent: FeedRoutes.FeedId) {
 
     @Resource("new")

@@ -3,7 +3,7 @@ package ukidelly.api.v2.`trade-feed`
 import io.ktor.resources.*
 
 
-@Resource("/trade-feed")
+@Resource("/trades")
 class TradeFeedRoutes(val page: Int = 1, val size: Int = 10) {
 
     @Resource("{feed_id}")
