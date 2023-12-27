@@ -5,7 +5,6 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import ukidelly.database.models.comment.TradeFeedCommentEntity
 import ukidelly.database.models.comment.TradeFeedComments
-import ukidelly.database.models.like.TradeFeedLikeEntity
 import ukidelly.database.models.like.TradeFeedLikes
 import ukidelly.database.models.user.UserEntity
 
@@ -24,5 +23,5 @@ class TradeFeedEntity(
     var createdAt by TradeFeeds.createdAt
     var updatedAt by TradeFeeds.updatedAt
     val comments by TradeFeedCommentEntity referrersOn TradeFeedComments.postId
-    val likes by TradeFeedLikeEntity referrersOn TradeFeedLikes.postId
+    val likes by UserEntity referrersOn TradeFeedLikes.userId
 }

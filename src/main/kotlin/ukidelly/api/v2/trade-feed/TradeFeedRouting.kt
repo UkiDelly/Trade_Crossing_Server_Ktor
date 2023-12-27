@@ -44,7 +44,7 @@ fun Route.tradeFeedRouting() {
             val uuid = call.principal<UserIdPrincipal>()!!.name
             val reqeust = call.receive<CreateTradeFeedRequestDto>()
             val newPost = tradeFeedService.addNewPost(reqeust, UUID.fromString(uuid))
-            call.respond(HttpStatusCode.OK, ResponseDto.Success(newPost, "성공"))
+            call.respond(HttpStatusCode.Created, ResponseDto.Success(newPost, "성공"))
         }
 
         // 좋아요
@@ -56,8 +56,7 @@ fun Route.tradeFeedRouting() {
 
         // 수정
         put<TradeFeedRoutes.FeedId> { feed ->
-
-
+            
         }
         // 삭제
         delete<TradeFeedRoutes.FeedId> { feed ->
