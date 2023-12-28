@@ -53,6 +53,7 @@ fun Route.tradeFeedCommentRoutes() {
         delete<TradeFeedCommentRoute.CommentId> {
             val id = it.commentId
             tradeFeedCommentService.deleteComment(id)
+            call.respond(HttpStatusCode.OK, "성공")
         }
 
 
