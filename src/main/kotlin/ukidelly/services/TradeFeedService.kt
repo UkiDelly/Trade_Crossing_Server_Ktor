@@ -2,6 +2,7 @@ package ukidelly.services
 
 import org.koin.core.annotation.Single
 import ukidelly.dto.requests.CreateTradeFeedRequestDto
+import ukidelly.dto.requests.UpdateTradeFeedRequestDto
 import ukidelly.dto.responses.LatestTradeFeedDto
 import ukidelly.models.TradeFeedDetail
 import ukidelly.repositories.TradeFeedRepository
@@ -31,10 +32,8 @@ class TradeFeedService(
 
     }
 
-    suspend fun updateFeed(feedId: Int, feed: CreateTradeFeedRequestDto): TradeFeedDetail {
-        val updatedFeed = tradeFeedRepository.updatePost(postId = feedId, feed)
-        return getPost(updatedFeed.postId)
-    }
+    suspend fun updateFeed(feedId: Int, feed: UpdateTradeFeedRequestDto): TradeFeedDetail =
+        tradeFeedRepository.updatePost(postId = feedId, feed)
 
     suspend fun deletePost(postId: Int) {
         tradeFeedRepository.deletePost(postId)

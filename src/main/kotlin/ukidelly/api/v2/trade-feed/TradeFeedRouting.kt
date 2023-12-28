@@ -6,12 +6,12 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.resources.*
 import io.ktor.server.resources.post
-import io.ktor.server.resources.put
 import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.server.routing.Route
 import org.koin.ktor.ext.inject
 import ukidelly.api.v2.`trade-feed`.comments.tradeFeedCommentRoutes
 import ukidelly.dto.requests.CreateTradeFeedRequestDto
+import ukidelly.dto.requests.UpdateTradeFeedRequestDto
 import ukidelly.dto.responses.ResponseDto
 import ukidelly.modules.getUserId
 import ukidelly.modules.withAuth
@@ -32,7 +32,6 @@ fun Route.tradeFeedRouting() {
 
     // 게시글 가져오기
     get<TradeFeedRoutes.FeedId> { feed ->
-
         val feedData = tradeFeedService.getPost(feed.feed_id)
         call.respond(HttpStatusCode.OK, ResponseDto.Success(feedData, "성공"))
     }
@@ -56,7 +55,11 @@ fun Route.tradeFeedRouting() {
         }
 
         // 수정
-        put<TradeFeedRoutes.FeedId> { feed ->
+        patch<TradeFeedRoutes.FeedId> { feed ->
+            val feedId = feed.feed_id
+            val request = call.receive<UpdateTradeFeedRequestDto>()
+            val result = tradeFeedService.updateFeed(feedId, request)
+            call.respond(HttpStatusCode.OK, ResponseDto.Success(result, "성공"))
 
         }
         // 삭제

@@ -15,3 +15,12 @@ data class CreateTradeFeedRequestDto(
     val closed: Boolean = false,
 )
 
+
+@Serializable
+data class UpdateTradeFeedRequestDto(
+    val title: String?,
+    val content: String?,
+    val category: PostCategory?,
+    val currency: Currency?,
+    val price: Int?,
+)

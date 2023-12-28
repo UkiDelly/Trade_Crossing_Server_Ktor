@@ -11,6 +11,7 @@ import ukidelly.database.models.post.TradeFeedEntity
 import ukidelly.database.models.user.UserEntity
 import ukidelly.database.models.user.Users
 import ukidelly.dto.requests.CreateTradeFeedRequestDto
+import ukidelly.dto.requests.UpdateTradeFeedRequestDto
 import ukidelly.models.TradeFeedDetail
 import ukidelly.models.TradeFeedPreview
 import java.time.LocalDateTime
@@ -23,7 +24,6 @@ class TradeFeedRepository {
 
 
     suspend fun findLatestPosts(size: Int, page: Int): Pair<List<TradeFeedPreview>, Int> {
-
         return dbQuery {
             val totalPage = (TradeFeedEntity.count().toInt() / size).let { if (it == 0) 1 else it }
             val offset = (size * (page - 1)).toLong()
@@ -33,7 +33,6 @@ class TradeFeedRepository {
 
             (feedList to totalPage)
         }
-
     }
 
 
@@ -61,17 +60,16 @@ class TradeFeedRepository {
         return TradeFeedDetail(newFeed)
     }
 
-    suspend fun updatePost(postId: Int, post: CreateTradeFeedRequestDto): TradeFeedDetail {
-        val postEntity = dbQuery { TradeFeedEntity.findById(postId) }?.apply {
-            title = post.title
-            content = post.content
-            category = post.category
-            currency = post.currency
-            price = post.price ?: this.price
-            closed = post.closed
+    suspend fun updatePost(postId: Int, post: UpdateTradeFeedRequestDto): TradeFeedDetail = dbQuery {
+        val tradeEntity = TradeFeedEntity.findById(postId)?.apply {
+            title = post.title ?: this.title
+            content = post.content ?: this.content
+            category = post.category ?: this.category
+            currency = post.currency ?: this.currency
+            price = post.price
             updatedAt = LocalDateTime.now()
-        } ?: throw NotFoundException()
-        return TradeFeedDetail(postEntity)
+        } ?: throw NotFoundException("게시글을 찾을 수 없습니다.")
+        TradeFeedDetail(tradeEntity)
     }
 
 
@@ -86,9 +84,7 @@ class TradeFeedRepository {
             val feed = TradeFeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
             val user =
                 UserEntity.find { Users.uuid eq userId }.firstOrNull() ?: throw NotFoundException("존재하지 않는 유저입니다.")
-
             val likeEntity = TradeFeedLikeEntity.find { TradeFeedLikes.postId eq feedId }.firstOrNull()
-
 
             if (likeEntity != null) {
                 likeEntity.delete()
@@ -100,7 +96,6 @@ class TradeFeedRepository {
                 }
                 TradeFeedDetail(feed)
             }
-
         }
     }
 }
