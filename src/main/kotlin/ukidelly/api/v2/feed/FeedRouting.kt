@@ -2,7 +2,9 @@ package ukidelly.api.v2.feed
 
 
 import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.resources.*
 import io.ktor.server.resources.post
 import io.ktor.server.resources.put
@@ -11,6 +13,8 @@ import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 import ukidelly.dto.responses.ResponseDto
+import ukidelly.modules.SupabaseServerClient
+import ukidelly.modules.getUserId
 import ukidelly.modules.withAuth
 import ukidelly.services.FeedService
 import ukidelly.systems.models.TokenType
@@ -35,9 +39,24 @@ fun Route.feedRouting() {
     }
 
     withAuth(TokenType.access) {
+        val supabaseServerClient by inject<SupabaseServerClient>()
 
         // 새로운 게시글 생성하기
-        post<FeedRoutes> { }
+        post<FeedRoutes> {
+            val userId = call.getUserId()
+            val partDatas = call.receiveMultipart().readAllParts()
+            val imageFiles = partDatas.filterIsInstance<PartData.FileItem>()
+            val content = partDatas.filterIsInstance<PartData.FormItem>().first { it.name == "content" }.value
+
+            logger.debug("content: $content")
+            imageFiles.forEach {
+                logger.debug("image: ${it.originalFileName}")
+            }
+
+
+            call.respondText { "OK" }
+
+        }
 
         // 게시글 수정하기
         put<FeedRoutes.FeedId> { }
