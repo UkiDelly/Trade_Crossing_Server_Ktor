@@ -24,15 +24,15 @@ fun Route.tradeFeedRouting() {
 
 
     // 최신 게시글 가져오기
-    get<TradeFeedRoutes> { feed ->
-        val feeds = tradeFeedService.getLatestPosts(feed.size, feed.page)
+    get<TradeFeedRoutes> {
+        val feeds = tradeFeedService.getLatestPosts(it.size, it.page)
         call.respond(HttpStatusCode.OK, ResponseDto.Success(feeds, "성공"))
     }
 
 
     // 게시글 가져오기
-    get<TradeFeedRoutes.FeedId> { feed ->
-        val feedData = tradeFeedService.getPost(feed.feed_id)
+    get<TradeFeedRoutes.FeedId> {
+        val feedData = tradeFeedService.getPost(it.feedId)
         call.respond(HttpStatusCode.OK, ResponseDto.Success(feedData, "성공"))
     }
 
@@ -47,24 +47,24 @@ fun Route.tradeFeedRouting() {
         }
 
         // 좋아요
-        post<TradeFeedRoutes.FeedId.Like> { feed ->
-            val feedId = feed.parent.feed_id
+        post<TradeFeedRoutes.FeedId.Like> {
+            val feedId = it.feed.feedId
             val userId = call.getUserId()
             val result = tradeFeedService.likeFeed(feedId, userId)
             call.respond(HttpStatusCode.OK, ResponseDto.Success(result, "성공"))
         }
 
         // 수정
-        patch<TradeFeedRoutes.FeedId> { feed ->
-            val feedId = feed.feed_id
+        patch<TradeFeedRoutes.FeedId> {
+            val feedId = it.feedId
             val request = call.receive<UpdateTradeFeedRequestDto>()
             val result = tradeFeedService.updateFeed(feedId, request)
             call.respond(HttpStatusCode.OK, ResponseDto.Success(result, "성공"))
 
         }
         // 삭제
-        delete<TradeFeedRoutes.FeedId> { feed ->
-            tradeFeedService.deletePost(feed.feed_id)
+        delete<TradeFeedRoutes.FeedId> {
+            tradeFeedService.deletePost(it.feedId)
             call.respond(HttpStatusCode.OK, "성공")
         }
     }

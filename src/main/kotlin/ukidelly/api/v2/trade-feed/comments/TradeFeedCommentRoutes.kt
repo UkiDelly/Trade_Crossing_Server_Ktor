@@ -5,12 +5,12 @@ import ukidelly.api.v2.`trade-feed`.TradeFeedRoutes
 
 
 @Resource("comments")
-class TradeFeedCommentRoute(val parent: TradeFeedRoutes.FeedId) {
+class TradeFeedCommentRoute(val feed: TradeFeedRoutes.FeedId) {
 
-    @Resource("{comment_id}")
-    class CommentId(val parent: TradeFeedCommentRoute, val comment_id: Int) {
+    @Resource("{commentId}")
+    class CommentId(val comments: TradeFeedCommentRoute, val commentId: Int) {
 
         @Resource("reply")
-        class Reply(val parent: CommentId)
+        class Reply(val comment: CommentId)
     }
 }

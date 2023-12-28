@@ -6,10 +6,10 @@ import io.ktor.resources.*
 @Resource("/trades")
 class TradeFeedRoutes(val page: Int = 1, val size: Int = 10) {
 
-    @Resource("{feed_id}")
-    class FeedId(val parent: TradeFeedRoutes = TradeFeedRoutes(), val feed_id: Int) {
+    @Resource("{feedId}")
+    class FeedId(val trades: TradeFeedRoutes = TradeFeedRoutes(), val feedId: Int) {
         @Resource("like")
-        class Like(val parent: FeedId)
+        class Like(val feed: FeedId)
     }
 }
 

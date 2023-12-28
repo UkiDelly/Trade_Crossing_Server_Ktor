@@ -14,7 +14,7 @@ class TradeFeedCommentService(private val tradeFeedCommentRepository: TradeFeedC
 
     suspend fun getAllComment(postId: Int): List<TradeFeedCommentDto> {
 
-        // Repository에서 ResultRow형태의 List를 받음
+        // Repository에서 모든 댓글 조회
         val comments = tradeFeedCommentRepository.findAllComments(postId)
         // Routing에 전달할 빈 List<CommentDto> 생성
         val tradeFeedCommentDtoList = mutableListOf<TradeFeedCommentDto>()
@@ -28,12 +28,13 @@ class TradeFeedCommentService(private val tradeFeedCommentRepository: TradeFeedC
             val childTradeFeedCommentDtos = childComments.filter { it.parentCommentId == parentComment.commentId }
                 .map { TradeFeedCommentDto(it, emptyList()) }
 
-            // 새로운 childComments가 빈배열인 CommentDto 생성
+            // 해당 부모댓글의 Dto 생성
             val tradeFeedCommentDto = TradeFeedCommentDto(
                 tradeFeedComment = parentComment,
                 childComments = childTradeFeedCommentDtos
             )
 
+            // 생성한 Dto를 List에 추가
             tradeFeedCommentDtoList.add(tradeFeedCommentDto)
         }
         return tradeFeedCommentDtoList

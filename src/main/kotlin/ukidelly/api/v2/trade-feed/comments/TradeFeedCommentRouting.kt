@@ -24,8 +24,7 @@ fun Route.tradeFeedCommentRoutes() {
 
     // 모든 댓글 조회
     get<TradeFeedCommentRoute> {
-
-        val id = it.parent.feed_id
+        val id = it.feed.feedId
         val commentList = tradeFeedCommentService.getAllComment(id)
         call.respond(HttpStatusCode.OK, ResponseDto.Success(commentList, "성공"))
 
@@ -34,7 +33,7 @@ fun Route.tradeFeedCommentRoutes() {
     withAuth(TokenType.access) {
         // 댓글 추가
         post<TradeFeedCommentRoute> {
-            val id = it.parent.feed_id
+            val id = it.feed.feedId
             val request = call.receive<NewCommentRequestDto>()
             val uuid = call.getUserId()
             tradeFeedCommentService.addNewComment(id, request.content, uuid)
@@ -44,25 +43,23 @@ fun Route.tradeFeedCommentRoutes() {
 
         // 댓글 수정
         put<TradeFeedCommentRoute.CommentId> {
-            val id = it.comment_id
+            val id = it.commentId
             val request = call.receive<NewCommentRequestDto>()
             tradeFeedCommentService.updateComment(id, request.content)
             call.respond(HttpStatusCode.OK, "성공")
-
         }
 
         // 댓글 삭제
         delete<TradeFeedCommentRoute.CommentId> {
-            val id = it.comment_id
+            val id = it.commentId
             tradeFeedCommentService.deleteComment(id)
         }
 
 
         // 대댓글 추가
         post<TradeFeedCommentRoute.CommentId.Reply> {
-
-            val feedId = it.parent.parent.parent.feed_id
-            val commentId = it.parent.comment_id
+            val feedId = it.comment.comments.feed.feedId
+            val commentId = it.comment.commentId
             val uuid = call.getUserId()
             val request = call.receive<NewCommentRequestDto>()
             tradeFeedCommentService.addNewComment(
