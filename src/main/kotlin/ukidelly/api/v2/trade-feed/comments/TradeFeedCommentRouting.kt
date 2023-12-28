@@ -3,7 +3,6 @@ package ukidelly.api.v2.`trade-feed`.comments
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.resources.*
 import io.ktor.server.resources.post
@@ -13,10 +12,10 @@ import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import ukidelly.dto.requests.NewCommentRequestDto
 import ukidelly.dto.responses.ResponseDto
+import ukidelly.modules.getUserId
 import ukidelly.modules.withAuth
 import ukidelly.services.TradeFeedCommentService
 import ukidelly.systems.models.TokenType
-import java.util.*
 
 fun Route.tradeFeedCommentRoutes() {
 
@@ -37,8 +36,8 @@ fun Route.tradeFeedCommentRoutes() {
         post<TradeFeedCommentRoute> {
             val id = it.parent.feed_id
             val request = call.receive<NewCommentRequestDto>()
-            val uuid = call.principal<UserIdPrincipal>()!!.name
-            tradeFeedCommentService.addNewComment(id, request.content, UUID.fromString(uuid))
+            val uuid = call.getUserId()
+            tradeFeedCommentService.addNewComment(id, request.content, uuid)
             call.respond(HttpStatusCode.OK, "성공")
         }
 
@@ -64,12 +63,12 @@ fun Route.tradeFeedCommentRoutes() {
 
             val feedId = it.parent.parent.parent.feed_id
             val commentId = it.parent.comment_id
-            val uuid = call.principal<UserIdPrincipal>()!!.name
+            val uuid = call.getUserId()
             val request = call.receive<NewCommentRequestDto>()
             tradeFeedCommentService.addNewComment(
                 feedId,
                 request.content,
-                UUID.fromString(uuid),
+                uuid,
                 reply = true,
                 parentCommentId = commentId
             )
