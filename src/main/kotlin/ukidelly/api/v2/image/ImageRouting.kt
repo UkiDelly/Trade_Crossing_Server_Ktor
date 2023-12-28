@@ -37,7 +37,7 @@ fun Route.imageRouting() {
             runBlocking(Dispatchers.IO) {
                 val uploadJob = imageFiles.mapIndexed { index, fileItem ->
                     async {
-                        val url = supabaseClient.uploadImage(userId, fileItem)
+                        val url = supabaseClient.uploadImage(fileItem)
                         logger.debug("index: $index, url: $url")
                         imageUrlMap[index] = url
                     }

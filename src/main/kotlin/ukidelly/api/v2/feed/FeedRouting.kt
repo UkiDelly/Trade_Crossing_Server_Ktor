@@ -13,7 +13,6 @@ import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 import ukidelly.dto.responses.ResponseDto
-import ukidelly.modules.SupabaseServerClient
 import ukidelly.modules.getUserId
 import ukidelly.modules.withAuth
 import ukidelly.services.FeedService
@@ -39,7 +38,6 @@ fun Route.feedRouting() {
     }
 
     withAuth(TokenType.access) {
-        val supabaseServerClient by inject<SupabaseServerClient>()
 
         // 새로운 게시글 생성하기
         post<FeedRoutes> {
@@ -47,15 +45,9 @@ fun Route.feedRouting() {
             val partDatas = call.receiveMultipart().readAllParts()
             val imageFiles = partDatas.filterIsInstance<PartData.FileItem>()
             val content = partDatas.filterIsInstance<PartData.FormItem>().first { it.name == "content" }.value
+            val feed = feedService.addNewFeed(userId, imageFiles, content)
 
-            logger.debug("content: $content")
-            imageFiles.forEach {
-                logger.debug("image: ${it.originalFileName}")
-            }
-
-
-            call.respondText { "OK" }
-
+            call.respond(HttpStatusCode.Created, ResponseDto.Success(feed, message = "성공"))
         }
 
         // 게시글 수정하기

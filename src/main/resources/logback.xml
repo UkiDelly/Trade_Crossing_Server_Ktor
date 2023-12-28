@@ -14,4 +14,5 @@
     <logger name="io.netty" level="INFO"/>
     <logger name="org.mariadb.jdbc.Driver" level="TRACE"/>
     <logger name="io.ktor.server.routing" level="TRACE"/>
+    <logger name="io.github.jan.supabase" level="DEBUG"/>
 </configuration>
