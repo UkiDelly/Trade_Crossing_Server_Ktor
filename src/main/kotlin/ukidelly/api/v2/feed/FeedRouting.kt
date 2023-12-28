@@ -21,16 +21,15 @@ fun Route.feedRouting() {
     val feedService by inject<FeedService>()
 
     // 최신 자유게시판 가져오기
-    get<FeedRoutes> { param ->
-        val feeds = feedService.getLatestPosts(param.page, param.size)
+    get<FeedRoutes> {
+        val feeds = feedService.getLatestPosts(it.page, it.size)
         call.respond(HttpStatusCode.OK, ResponseDto.Success(feeds, message = "성공"))
 
     }
 
-    // {feedId}의 게시글 가져오기
+    // 게시글 가져오기
     get<FeedRoutes.FeedId> {
         val id = it.feedId
-
         val feed = feedService.getFeedById(id)
         call.respond(HttpStatusCode.OK, ResponseDto.Success(feed, message = "성공"))
     }
@@ -48,62 +47,6 @@ fun Route.feedRouting() {
 
 
     }
-
-
-    //get("/latest") {
-    //    val queryParam = call.request.queryParameters
-    //    val missingParam = mutableMapOf<String, String>()
-    //
-    //    if (!queryParam.contains("page")) {
-    //        missingParam["page"] = "page를 입력해주세요."
-    //    } else if (queryParam["page"]!!.toInt() <= 0) {
-    //        missingParam["page"] = "page는 0보다 큰 정수를 입력해주세요."
-    //    }
-    //
-    //    if (!queryParam.contains("size")) {
-    //        missingParam["size"] = "size를 입력해주세요."
-    //    } else if (queryParam["size"]!!.toInt() <= 0) {
-    //        missingParam["size"] = "size는 0보다 큰 정수를 입력해주세요."
-    //    }
-    //
-    //
-    //
-    //    if (missingParam.isNotEmpty()) {
-    //        call.respond(
-    //            HttpStatusCode.BadRequest,
-    //            ResponseDto.Error(ServerError.InvalidField, "실패")
-    //        )
-    //        return@get
-    //    } else {
-    //        val posts = feedService.getLatestPosts(
-    //            page = queryParam["page"]!!.toInt(),
-    //            size = queryParam["size"]!!.toInt()
-    //        )
-    //        call.respond(HttpStatusCode.OK, ResponseDto.Success("", "성공"))
-    //    }
-    //
-    //
-    //}
-    //
-    //get("/{postId}") { }
-    //
-    //authenticate("auth-jwt") {
-    //
-    //    post("/new") {
-    //        val userId = call.principal<UserIdPrincipal>()!!
-    //        val body = call.receive<NewFeedDto>()
-    //        feedService.addNewFeed(userId.name.toInt(), body)
-    //        call.respond(HttpStatusCode.OK, ResponseDto.Success("", "성공"))
-    //
-    //    }
-    //
-    //    route("/{postId}") {
-    //
-    //        put { }
-    //
-    //        delete { }
-    //    }
-    //}
 }
 
 

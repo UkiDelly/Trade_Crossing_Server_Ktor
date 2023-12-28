@@ -17,7 +17,6 @@ class FeedRepository {
 
 
     suspend fun findLatestFeed(size: Int, page: Int): List<FeedPreview> {
-
         return dbQuery {
             var totalPage = (FeedEntity.count().toInt() / size).let {
                 if (it == 0) 1 else it

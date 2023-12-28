@@ -11,10 +11,7 @@ import ukidelly.repositories.FeedRepository
 class FeedService(private val feedRepository: FeedRepository) {
 
 
-    suspend fun getLatestPosts(
-        page: Int,
-        size: Int
-    ): List<FeedPreview> {
+    suspend fun getLatestPosts(page: Int, size: Int): List<FeedPreview> {
         return feedRepository.findLatestFeed(size, page)
 
     }
