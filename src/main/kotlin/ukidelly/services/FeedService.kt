@@ -7,6 +7,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import org.koin.core.annotation.Single
 import org.koin.java.KoinJavaComponent.inject
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import ukidelly.dto.responses.LatestFeedDto
 import ukidelly.models.Feed
@@ -18,13 +19,13 @@ import java.util.*
 @Single
 class FeedService(private val feedRepository: FeedRepository) {
 
-    val logger = LoggerFactory.getLogger(FeedService::class.java)
-    val supabaseClient by inject<SupabaseServerClient>(clazz = SupabaseServerClient::class.java)
+    val logger: Logger = LoggerFactory.getLogger(FeedService::class.java)
+    private val supabaseClient by inject<SupabaseServerClient>(clazz = SupabaseServerClient::class.java)
 
 
     suspend fun getLatestPosts(page: Int, size: Int): LatestFeedDto {
-        val feeds = feedRepository.findLatestFeed(size, page)
-        return LatestFeedDto(page, size, feeds.first, feeds.second)
+        val (totalPage, feeds) = feedRepository.findLatestFeed(size, page)
+        return LatestFeedDto(page, size, totalPage, feeds)
     }
 
     suspend fun getFeedById(feedId: Int): Feed = feedRepository.findFeedById(feedId)
@@ -55,14 +56,10 @@ class FeedService(private val feedRepository: FeedRepository) {
         logger.debug("oldImagesUrl: {}", oldImagesUrl)
         supabaseClient.deleteImage(oldImagesUrl)
 
-        if (newImages.isEmpty()) {
-            return feedRepository.updateFeed(feedId, content, emptyList())
-        }
+        if (newImages.isEmpty()) return feedRepository.updateFeed(feedId, content, emptyList())
 
         val newImageUrls = runBlocking(Dispatchers.IO) {
-            newImages.map {
-                async { supabaseClient.uploadImage(it) }
-            }.awaitAll()
+            newImages.map { async { supabaseClient.uploadImage(it) } }.awaitAll()
         }
 
         return feedRepository.updateFeed(feedId, content, newImageUrls)

@@ -2,9 +2,7 @@ package ukidelly.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -49,12 +47,6 @@ object DataBaseFactory {
             addLogger(StdOutSqlLogger)
             block()
         }
-
-    suspend fun <T> nativeQuery(block: Transaction.() -> T): T {
-        val job = CoroutineScope(Dispatchers.IO).async { transaction { block() } }
-        return job.await()
-    }
-
 
     private fun createHikariDataSource(url: String, driver: String, user: String, password: String) = HikariDataSource(
         HikariConfig().apply {

@@ -1,6 +1,7 @@
 package ukidelly.repositories
 
 import io.ktor.server.plugins.*
+import org.jetbrains.exposed.dao.with
 import org.koin.core.annotation.Single
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -22,10 +23,13 @@ class FeedRepository {
 
     suspend fun findLatestFeed(size: Int, page: Int): Pair<Int, List<FeedPreview>> =
         dbQuery {
-            val totalPage = (FeedEntity.count().toInt() / size).let { if (it == 0) 1 else it }
+            val totalPage = (FeedEntity.count().toInt() / size) + 1
             val offset = (size * (page - 1)).toLong()
 
-            (totalPage to FeedEntity.all().limit(size, offset).map { FeedPreview(it) }.reversed())
+            (totalPage to FeedEntity.all().with(FeedEntity::user, FeedEntity::images, FeedEntity::likes)
+                .limit(size, offset)
+                .map { FeedPreview(it) }
+                .reversed())
         }
 
 
