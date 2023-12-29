@@ -18,62 +18,72 @@ import java.util.*
 
 @Single
 class FeedRepository {
-    val logger: Logger = LoggerFactory.getLogger("FeedRepository")
+  val logger: Logger = LoggerFactory.getLogger("FeedRepository")
 
 
-    suspend fun findLatestFeed(size: Int, page: Int): Pair<Int, List<FeedPreview>> =
-        dbQuery {
-            val totalPage = (FeedEntity.count().toInt() / size) + 1
-            val offset = (size * (page - 1)).toLong()
+  suspend fun findLatestFeed(size: Int, page: Int): Pair<Int, List<FeedPreview>> =
+    dbQuery {
+      val totalPage = (FeedEntity.count().toInt() / size) + 1
+      val offset = (size * (page - 1)).toLong()
 
-            (totalPage to FeedEntity.all().with(FeedEntity::user, FeedEntity::images, FeedEntity::likes)
-                .limit(size, offset)
-                .map { FeedPreview(it) }
-                .reversed())
-        }
+      val feedPreviews =
+        FeedEntity.all().with(
+          FeedEntity::user,
+          FeedEntity::images,
+          FeedEntity::likes,
+          FeedEntity::comments,
+          FeedEntity::likes
+        )
+          .limit(size, offset)
+          .reversed().map { FeedPreview(it) }
 
-
-    suspend fun findFeedById(feedId: Int): Feed = dbQuery {
-        val feedEntity = FeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
-
-        Feed(feedEntity)
+      (totalPage to feedPreviews)
     }
 
 
-    suspend fun addNewFeed(uuid: UUID, content: String, images: List<String>): Feed {
-        return dbQuery {
-            val user = UserEntity.find { Users.uuid eq uuid }.firstOrNull() ?: throw NotFoundException("유저가 존재하지 않습니다.")
-            var feedEntity = FeedEntity.new { this.user = user; this.content = content }
-            val feedId = feedEntity.id.value
-            val imageEntities = images.map { ImageEntity.new { this.url = it } }
-            imageEntities.map { FeedImageEntity.new { this.post = feedEntity; this.image = it } }
-            feedEntity = FeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
+  suspend fun findFeedById(feedId: Int): Feed = dbQuery {
+    val feedEntity = FeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
 
-            Feed(feedEntity)
-        }
+    Feed(feedEntity)
+  }
+
+
+  suspend fun addNewFeed(uuid: UUID, content: String, images: List<String>): Feed {
+    return dbQuery {
+      val user = UserEntity.find { Users.uuid eq uuid }.firstOrNull()
+        ?: throw NotFoundException("유저가 존재하지 않습니다.")
+      var feedEntity = FeedEntity.new { this.user = user; this.content = content }
+      val feedId = feedEntity.id.value
+      val imageEntities = images.map { ImageEntity.new { this.url = it } }
+      imageEntities.map { FeedImageEntity.new { this.post = feedEntity; this.image = it } }
+      feedEntity = FeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
+
+      Feed(feedEntity)
     }
+  }
 
-    suspend fun updateFeed(feedId: Int, content: String?, images: List<String>): Feed {
-        return dbQuery {
-            var feedEntity = FeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
+  suspend fun updateFeed(feedId: Int, content: String?, images: List<String>): Feed {
+    return dbQuery {
+      var feedEntity = FeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
 
-            if (content != null) feedEntity.content = content
-            if (images.isEmpty()) return@dbQuery Feed(feedEntity)
+      if (content != null) feedEntity.content = content
+      if (images.isEmpty()) return@dbQuery Feed(feedEntity)
 
-            val imageEntities = images.map { ImageEntity.new { this.url = it } }
-            imageEntities.map { FeedImageEntity.new { this.post = feedEntity; this.image = it } }
-            feedEntity = FeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
+      val imageEntities = images.map { ImageEntity.new { this.url = it } }
+      imageEntities.map { FeedImageEntity.new { this.post = feedEntity; this.image = it } }
+      feedEntity = FeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
 
-            Feed(feedEntity)
-        }
+      Feed(feedEntity)
     }
+  }
 
-    suspend fun deleteImages(imageIds: List<Int>): List<String> {
-        return dbQuery {
-            val imageUrls = imageIds.map { ImageEntity.findById(it)!!.url }
-            imageIds.forEach { ImageEntity.findById(it)!!.delete() }
+  suspend fun deleteImages(imageIds: List<Int>): List<String> {
+    return dbQuery {
+      val imageUrls = imageIds.map { ImageEntity.findById(it)!!.url }
+      imageIds.forEach { ImageEntity.findById(it)!!.delete() }
 
-            imageUrls
-        }
+      imageUrls
     }
+  }
+
 }

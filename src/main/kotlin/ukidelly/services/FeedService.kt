@@ -45,7 +45,6 @@ class FeedService(private val feedRepository: FeedRepository) {
         return feedRepository.addNewFeed(userUUID, content, imageUrls)
     }
 
-
     suspend fun updateFeed(
         feedId: Int,
         newImages: List<PartData.FileItem>,
