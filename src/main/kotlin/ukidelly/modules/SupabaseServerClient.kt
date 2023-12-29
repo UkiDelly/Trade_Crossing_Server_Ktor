@@ -5,7 +5,6 @@ import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
 import io.ktor.http.content.*
 import io.ktor.server.config.*
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -34,14 +33,14 @@ class SupabaseServerClient(config: ApplicationConfig) {
         withContext(Dispatchers.IO) {
             async { bucket.upload(path = imagePath, fileByteArray, upsert = false) }.await()
         }
-        
+
         return bucket.publicUrl(imagePath)
     }
 
-    suspend fun deleteImage(imagePath: String) {
-        CoroutineScope(Dispatchers.IO).async {
+    suspend fun deleteImage(imagePath: List<String>) {
+        withContext(Dispatchers.IO) {
             bucket.delete(imagePath)
-        }.await()
+        }
     }
 
     suspend fun listBuckets() {

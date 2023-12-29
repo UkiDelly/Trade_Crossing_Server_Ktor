@@ -7,9 +7,8 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.resources.*
 import io.ktor.server.resources.post
-import io.ktor.server.resources.put
 import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.server.routing.Route
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 import ukidelly.dto.responses.ResponseDto
@@ -51,7 +50,23 @@ fun Route.feedRouting() {
         }
 
         // 게시글 수정하기
-        put<FeedRoutes.FeedId> { }
+        patch<FeedRoutes.FeedId> { feed ->
+            val feedId = feed.feedId
+            val (content, newImages, deleteImages) = call.receiveMultipart().readAllParts().let { partData ->
+                val content =
+                    partData.filterIsInstance<PartData.FormItem>().firstOrNull { it.name == "content" }?.value
+                val newImages = partData.filterIsInstance<PartData.FileItem>()
+                val deleteImages =
+                    partData.filterIsInstance<PartData.FormItem>()
+                        .first { it.name == "deleteImages" }.value.split(",")
+                        .map { it.toInt() }
+                Triple(content, newImages, deleteImages)
+            }
+
+            val updatedFeed = feedService.updateFeed(feedId, newImages, deleteImages, content)
+
+            call.respond(HttpStatusCode.OK, ResponseDto.Success(updatedFeed, message = "성공"))
+        }
 
         // 게시글 삭제하기
         delete<FeedRoutes.FeedId> { }

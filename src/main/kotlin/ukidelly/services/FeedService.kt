@@ -45,4 +45,26 @@ class FeedService(private val feedRepository: FeedRepository) {
     }
 
 
+    suspend fun updateFeed(
+        feedId: Int,
+        newImages: List<PartData.FileItem>,
+        oldImages: List<Int>,
+        content: String?
+    ): Feed {
+        val oldImagesUrl = feedRepository.deleteImages(oldImages)
+        logger.debug("oldImagesUrl: {}", oldImagesUrl)
+        supabaseClient.deleteImage(oldImagesUrl)
+
+        if (newImages.isEmpty()) {
+            return feedRepository.updateFeed(feedId, content, emptyList())
+        }
+
+        val newImageUrls = runBlocking(Dispatchers.IO) {
+            newImages.map {
+                async { supabaseClient.uploadImage(it) }
+            }.awaitAll()
+        }
+
+        return feedRepository.updateFeed(feedId, content, newImageUrls)
+    }
 }
