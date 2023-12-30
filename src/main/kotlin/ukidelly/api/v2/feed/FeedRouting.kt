@@ -11,6 +11,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.Route
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
+import ukidelly.api.v2.feed.comments.feedCommentRoutes
 import ukidelly.dto.responses.ResponseDto
 import ukidelly.modules.getUserId
 import ukidelly.modules.withAuth
@@ -75,7 +76,7 @@ fun Route.feedRouting() {
       call.respond(HttpStatusCode.OK, ResponseDto.Success(true, message = "성공"))
     }
 
-
+    feedCommentRoutes()
   }
 }
 
