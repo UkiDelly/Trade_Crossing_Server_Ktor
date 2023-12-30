@@ -41,3 +41,6 @@ trade-crossing.yaml
 
 ### Test 파일 ###
 src/test
+
+### DB ###
+db/
