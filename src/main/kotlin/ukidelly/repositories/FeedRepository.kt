@@ -1,8 +1,15 @@
 package ukidelly.repositories
 
 import io.ktor.server.plugins.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.dao.with
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
+import org.jetbrains.exposed.sql.batchInsert
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.koin.core.annotation.Single
+import org.koin.java.KoinJavaComponent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import ukidelly.database.DataBaseFactory.dbQuery
@@ -11,14 +18,19 @@ import ukidelly.database.entity.FeedImageEntity
 import ukidelly.database.entity.ImageEntity
 import ukidelly.database.models.user.UserEntity
 import ukidelly.database.models.user.Users
+import ukidelly.database.tables.FeedImages
+import ukidelly.database.tables.Feeds
+import ukidelly.database.tables.Images
 import ukidelly.models.Feed
 import ukidelly.models.FeedPreview
+import ukidelly.modules.SupabaseServerClient
 import java.util.*
 
 
 @Single
 class FeedRepository {
   val logger: Logger = LoggerFactory.getLogger("FeedRepository")
+  private val supabaseClient by KoinJavaComponent.inject<SupabaseServerClient>(clazz = SupabaseServerClient::class.java)
 
 
   suspend fun findLatestFeed(size: Int, page: Int): Pair<Int, List<FeedPreview>> =
@@ -27,15 +39,13 @@ class FeedRepository {
       val offset = (size * (page - 1)).toLong()
 
       val feedPreviews =
-        FeedEntity.all().with(
+        FeedEntity.all().limit(size, offset).with(
           FeedEntity::user,
           FeedEntity::images,
           FeedEntity::likes,
           FeedEntity::comments,
           FeedEntity::likes
-        )
-          .limit(size, offset)
-          .reversed().map { FeedPreview(it) }
+        ).reversed().map { FeedPreview(it) }
 
       (totalPage to feedPreviews)
     }
@@ -52,17 +62,27 @@ class FeedRepository {
     return dbQuery {
       val user = UserEntity.find { Users.uuid eq uuid }.firstOrNull()
         ?: throw NotFoundException("유저가 존재하지 않습니다.")
-      var feedEntity = FeedEntity.new { this.user = user; this.content = content }
-      val feedId = feedEntity.id.value
-      val imageEntities = images.map { ImageEntity.new { this.url = it } }
-      imageEntities.map { FeedImageEntity.new { this.post = feedEntity; this.image = it } }
-      feedEntity = FeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
+
+      val imageEntities = Images.batchInsert(images) { url ->
+        this[Images.url] = url
+      }.map { ImageEntity.wrapRow(it) }
+
+      val feedEntity = Feeds.insertAndGetId {
+        it[creator] = user.id
+        it[Feeds.content] = content
+      }.let {
+        FeedEntity.findById(it)!!
+      }
+      FeedImages.batchInsert(imageEntities) { imageEntity ->
+        this[FeedImages.feedId] = feedEntity.id
+        this[FeedImages.imageId] = imageEntity.id
+      }
 
       Feed(feedEntity)
     }
   }
 
-  suspend fun updateFeed(feedId: Int, content: String?, images: List<String>): Feed {
+  suspend fun updateFeed(feedId: Int, content: String?, images: List<String>, deleteImages: List<Int>): Feed {
     return dbQuery {
       var feedEntity = FeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
 
@@ -71,19 +91,33 @@ class FeedRepository {
 
       val imageEntities = images.map { ImageEntity.new { this.url = it } }
       imageEntities.map { FeedImageEntity.new { this.post = feedEntity; this.image = it } }
-      feedEntity = FeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
+      feedEntity.refresh(flush = true)
 
       Feed(feedEntity)
     }
   }
 
-  suspend fun deleteImages(imageIds: List<Int>): List<String> {
-    return dbQuery {
-      val imageUrls = imageIds.map { ImageEntity.findById(it)!!.url }
-      imageIds.forEach { ImageEntity.findById(it)!!.delete() }
+  suspend fun deleteFeed(feedId: Int) {
+    dbQuery {
+      val feed = FeedEntity.findById(feedId) ?: throw NotFoundException("게시글이 존재하지 않습니다.")
+      val imageIds = feed.images.map { it.id.value }
 
-      imageUrls
+      if (imageIds.isNotEmpty()) {
+        val imageUrls = deleteAndGetImagesUrl(imageIds)
+        withContext(Dispatchers.IO) { supabaseClient.deleteImage(imageUrls) }
+      }
+
+      feed.delete()
     }
+  }
+
+
+  private fun deleteAndGetImagesUrl(imageIds: List<Int>): List<String> {
+    val images = ImageEntity.find { Images.id inList imageIds }.toList()
+    val urls = images.map { it.url }
+    Images.deleteWhere { Images.id inList imageIds }
+
+    return urls
   }
 
 }

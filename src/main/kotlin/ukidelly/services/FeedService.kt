@@ -19,48 +19,47 @@ import java.util.*
 @Single
 class FeedService(private val feedRepository: FeedRepository) {
 
-    val logger: Logger = LoggerFactory.getLogger(FeedService::class.java)
-    private val supabaseClient by inject<SupabaseServerClient>(clazz = SupabaseServerClient::class.java)
+  val logger: Logger = LoggerFactory.getLogger(FeedService::class.java)
+  private val supabaseClient by inject<SupabaseServerClient>(clazz = SupabaseServerClient::class.java)
 
 
-    suspend fun getLatestPosts(page: Int, size: Int): LatestFeedDto {
-        val (totalPage, feeds) = feedRepository.findLatestFeed(size, page)
-        return LatestFeedDto(page, size, totalPage, feeds)
-    }
+  suspend fun getLatestPosts(page: Int, size: Int): LatestFeedDto {
+    val (totalPage, feeds) = feedRepository.findLatestFeed(size, page)
+    return LatestFeedDto(page, size, totalPage, feeds)
+  }
 
-    suspend fun getFeedById(feedId: Int): Feed = feedRepository.findFeedById(feedId)
+  suspend fun getFeedById(feedId: Int): Feed = feedRepository.findFeedById(feedId)
 
-    suspend fun addNewFeed(userUUID: UUID, images: List<PartData.FileItem>, content: String): Feed {
-        val imageUrls = mutableListOf<String>()
+  suspend fun addNewFeed(userUUID: UUID, images: List<PartData.FileItem>, content: String): Feed {
+    val imageUrls = mutableListOf<String>()
 
-        runBlocking(Dispatchers.IO) {
-            images.map {
-                async {
-                    val url = supabaseClient.uploadImage(it)
-                    imageUrls.add(url)
-                }
-            }.awaitAll()
+    runBlocking(Dispatchers.IO) {
+      images.map {
+        async {
+          val url = supabaseClient.uploadImage(it)
+          imageUrls.add(url)
         }
-
-        return feedRepository.addNewFeed(userUUID, content, imageUrls)
+      }.awaitAll()
     }
 
-    suspend fun updateFeed(
-        feedId: Int,
-        newImages: List<PartData.FileItem>,
-        oldImages: List<Int>,
-        content: String?
-    ): Feed {
-        val oldImagesUrl = feedRepository.deleteImages(oldImages)
-        logger.debug("oldImagesUrl: {}", oldImagesUrl)
-        supabaseClient.deleteImage(oldImagesUrl)
+    return feedRepository.addNewFeed(userUUID, content, imageUrls)
+  }
 
-        if (newImages.isEmpty()) return feedRepository.updateFeed(feedId, content, emptyList())
+  suspend fun updateFeed(
+    feedId: Int,
+    newImages: List<PartData.FileItem>,
+    oldImages: List<Int>,
+    content: String?
+  ): Feed {
+    if (newImages.isEmpty()) return feedRepository.updateFeed(feedId, content, emptyList(), oldImages)
 
-        val newImageUrls = runBlocking(Dispatchers.IO) {
-            newImages.map { async { supabaseClient.uploadImage(it) } }.awaitAll()
-        }
-
-        return feedRepository.updateFeed(feedId, content, newImageUrls)
+    val newImageUrls = runBlocking(Dispatchers.IO) {
+      newImages.map { async { supabaseClient.uploadImage(it) } }.awaitAll()
     }
+
+    return feedRepository.updateFeed(feedId, content, newImageUrls, oldImages)
+  }
+
+  suspend fun deleteFeed(feedId: Int) = feedRepository.deleteFeed(feedId)
+
 }

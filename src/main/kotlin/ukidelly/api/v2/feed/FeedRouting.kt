@@ -19,60 +19,64 @@ import ukidelly.systems.models.TokenType
 
 fun Route.feedRouting() {
 
-    val logger = LoggerFactory.getLogger("FeedRouting")
-    val feedService by inject<FeedService>()
+  val logger = LoggerFactory.getLogger("FeedRouting")
+  val feedService by inject<FeedService>()
 
-    // 최신 자유게시판 가져오기
-    get<FeedRoutes> {
-        val feeds = feedService.getLatestPosts(it.page, it.size)
-        call.respond(HttpStatusCode.OK, ResponseDto.Success(feeds, message = "성공"))
+  // 최신 자유게시판 가져오기
+  get<FeedRoutes> {
+    val feeds = feedService.getLatestPosts(it.page, it.size)
+    call.respond(HttpStatusCode.OK, ResponseDto.Success(feeds, message = "성공"))
 
+  }
+
+  // 게시글 가져오기
+  get<FeedRoutes.FeedId> {
+    val id = it.feedId
+    val feed = feedService.getFeedById(id)
+    call.respond(HttpStatusCode.OK, ResponseDto.Success(feed, message = "성공"))
+  }
+
+  withAuth(TokenType.access) {
+
+    // 새로운 게시글 생성하기
+    post<FeedRoutes> {
+      val userId = call.getUserId()
+      val partDatas = call.receiveMultipart().readAllParts()
+      val imageFiles = partDatas.filterIsInstance<PartData.FileItem>()
+      val content = partDatas.filterIsInstance<PartData.FormItem>().first { it.name == "content" }.value
+      val feed = feedService.addNewFeed(userId, imageFiles, content)
+
+      call.respond(HttpStatusCode.Created, ResponseDto.Success(feed, message = "성공"))
     }
 
-    // 게시글 가져오기
-    get<FeedRoutes.FeedId> {
-        val id = it.feedId
-        val feed = feedService.getFeedById(id)
-        call.respond(HttpStatusCode.OK, ResponseDto.Success(feed, message = "성공"))
+    // 게시글 수정하기
+    patch<FeedRoutes.FeedId> { feed ->
+      val feedId = feed.feedId
+      val (content, newImages, deleteImages) = call.receiveMultipart().readAllParts().let { partData ->
+        val content =
+          partData.filterIsInstance<PartData.FormItem>().firstOrNull { it.name == "content" }?.value
+        val newImages = partData.filterIsInstance<PartData.FileItem>()
+        val deleteImages =
+          partData.filterIsInstance<PartData.FormItem>()
+            .first { it.name == "deleteImages" }.value.split(",")
+            .map { it.toInt() }
+        Triple(content, newImages, deleteImages)
+      }
+
+      val updatedFeed = feedService.updateFeed(feedId, newImages, deleteImages, content)
+
+      call.respond(HttpStatusCode.OK, ResponseDto.Success(updatedFeed, message = "성공"))
     }
 
-    withAuth(TokenType.access) {
-
-        // 새로운 게시글 생성하기
-        post<FeedRoutes> {
-            val userId = call.getUserId()
-            val partDatas = call.receiveMultipart().readAllParts()
-            val imageFiles = partDatas.filterIsInstance<PartData.FileItem>()
-            val content = partDatas.filterIsInstance<PartData.FormItem>().first { it.name == "content" }.value
-            val feed = feedService.addNewFeed(userId, imageFiles, content)
-
-            call.respond(HttpStatusCode.Created, ResponseDto.Success(feed, message = "성공"))
-        }
-
-        // 게시글 수정하기
-        patch<FeedRoutes.FeedId> { feed ->
-            val feedId = feed.feedId
-            val (content, newImages, deleteImages) = call.receiveMultipart().readAllParts().let { partData ->
-                val content =
-                    partData.filterIsInstance<PartData.FormItem>().firstOrNull { it.name == "content" }?.value
-                val newImages = partData.filterIsInstance<PartData.FileItem>()
-                val deleteImages =
-                    partData.filterIsInstance<PartData.FormItem>()
-                        .first { it.name == "deleteImages" }.value.split(",")
-                        .map { it.toInt() }
-                Triple(content, newImages, deleteImages)
-            }
-
-            val updatedFeed = feedService.updateFeed(feedId, newImages, deleteImages, content)
-
-            call.respond(HttpStatusCode.OK, ResponseDto.Success(updatedFeed, message = "성공"))
-        }
-
-        // 게시글 삭제하기
-        delete<FeedRoutes.FeedId> { }
-
-
+    // 게시글 삭제하기
+    delete<FeedRoutes.FeedId> {
+      val feedId = it.feedId
+      feedService.deleteFeed(feedId)
+      call.respond(HttpStatusCode.OK, ResponseDto.Success(true, message = "성공"))
     }
+
+
+  }
 }
 
 
