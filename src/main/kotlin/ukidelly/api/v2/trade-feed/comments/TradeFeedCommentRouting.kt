@@ -56,6 +56,8 @@ fun Route.tradeFeedCommentRoutes() {
     post<TradeFeedCommentRoute>({
       description = "댓글 추가"
       tags = listOf("거래 피드", "댓글", "인증")
+      securitySchemeName = "Access"
+      protected = true
 
       request {
         pathParameter<Int>("feedId") { required = true }
@@ -68,7 +70,7 @@ fun Route.tradeFeedCommentRoutes() {
           body<ResponseDto.Error> {
             example(
               "예시",
-              ResponseDto.Error(ServerError.UnAuhtorized, "로그인이 필요합니다.")
+              ResponseDto.Error(ServerError.Unauthorized, "로그인이 필요합니다.")
             )
           }
         }
@@ -94,6 +96,8 @@ fun Route.tradeFeedCommentRoutes() {
     patch<TradeFeedCommentRoute.CommentId>({
       description = "댓글 수정"
       tags = listOf("거래 피드", "댓글", "인증")
+      securitySchemeName = "Access"
+      protected = true
 
       request {
         pathParameter<Int>("commentId") { required = true }
@@ -106,7 +110,7 @@ fun Route.tradeFeedCommentRoutes() {
           body<ResponseDto.Error> {
             example(
               "예시",
-              ResponseDto.Error(ServerError.UnAuhtorized, "로그인이 필요합니다.")
+              ResponseDto.Error(ServerError.Unauthorized, "로그인이 필요합니다.")
             )
           }
         }
@@ -130,6 +134,8 @@ fun Route.tradeFeedCommentRoutes() {
     delete<TradeFeedCommentRoute.CommentId>({
       description = "댓글 삭제"
       tags = listOf("거래 피드", "댓글", "인증")
+      securitySchemeName = "Access"
+      protected = true
 
       request {
         pathParameter<Int>("commentId") { required = true }
@@ -141,7 +147,7 @@ fun Route.tradeFeedCommentRoutes() {
           body<ResponseDto.Error> {
             example(
               "예시",
-              ResponseDto.Error(ServerError.UnAuhtorized, "본인이 작성한 댓글이 아닙니다.")
+              ResponseDto.Error(ServerError.Unauthorized, "본인이 작성한 댓글이 아닙니다.")
             )
           }
         }
@@ -165,6 +171,8 @@ fun Route.tradeFeedCommentRoutes() {
     post<TradeFeedCommentRoute.CommentId.Reply>({
       description = "대댓글 추가"
       tags = listOf("거래 피드", "댓글", "인증")
+      securitySchemeName = "Access"
+      protected = true
 
       request {
         pathParameter<Int>("commentId") { required = true }
@@ -178,7 +186,7 @@ fun Route.tradeFeedCommentRoutes() {
           body<ResponseDto.Error> {
             example(
               "예시",
-              ResponseDto.Error(ServerError.UnAuhtorized, "로그인이 필요합니다.")
+              ResponseDto.Error(ServerError.Unauthorized, "로그인이 필요합니다.")
             )
           }
         }

@@ -35,7 +35,7 @@ fun Route.userRouting() {
   // 이메일로 로그인
   post<UserRoutes.Login.EmailLogin>({
     description = "이메일로 로그인"
-    tags = listOf("Account")
+    tags = listOf("계정")
     request {
       body<EmailLoginReqeustDto>()
     }
@@ -71,7 +71,7 @@ fun Route.userRouting() {
   // 소셜 로그인
   post<UserRoutes.Login.SocialLogin>({
     description = "소셜 로그인"
-    tags = listOf("Account")
+    tags = listOf("계정")
     request {
       body<SocialLoginRequestDto>()
     }
@@ -103,7 +103,7 @@ fun Route.userRouting() {
   // 회원가입
   post<UserRoutes.Register>({
     description = "회원가입"
-    tags = listOf("Account")
+    tags = listOf("계정")
     request {
       body<UserRegisterRequestDto>()
     }
@@ -136,7 +136,8 @@ fun Route.userRouting() {
     // 자동 로그인
     post<UserRoutes.Login.Auto>({
       securitySchemeName = "Refresh"
-      tags = listOf("Account")
+      protected = true
+      tags = listOf("계정")
       request {
         headerParameter<String>("token") {
           description = "Bearer Token"
@@ -153,7 +154,7 @@ fun Route.userRouting() {
         HttpStatusCode.BadRequest to {
           description = "토큰이 유효하지 않습니다."
           body<ResponseDto.Error> {
-            example("토큰이 유효하지 않습니다.", ResponseDto.Error(ServerError.UnAuhtorized, "토큰이 유효하지 않습니다."))
+            example("토큰이 유효하지 않습니다.", ResponseDto.Error(ServerError.Unauthorized, "토큰이 유효하지 않습니다."))
           }
         }
 
@@ -173,7 +174,8 @@ fun Route.userRouting() {
     // 리프레쉬 토큰 재발급
     post<UserRoutes.RefreshToken>({
       securitySchemeName = "Refresh"
-      tags = listOf("Account")
+      protected = true
+      tags = listOf("계정")
       request {
         headerParameter<String>("token") {
           description = "Bearer Token"
@@ -190,7 +192,7 @@ fun Route.userRouting() {
         HttpStatusCode.BadRequest to {
           description = "토큰이 유효하지 않습니다."
           body<ResponseDto.Error> {
-            example("토큰이 유효하지 않습니다.", ResponseDto.Error(ServerError.UnAuhtorized, "토큰이 유효하지 않습니다."))
+            example("토큰이 유효하지 않습니다.", ResponseDto.Error(ServerError.Unauthorized, "토큰이 유효하지 않습니다."))
           }
         }
       }

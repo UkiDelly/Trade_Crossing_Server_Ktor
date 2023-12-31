@@ -88,6 +88,7 @@ fun Route.tradeFeedRouting() {
     // 새 게시물
     post<TradeFeedRoutes>({
       securitySchemeName = "Access"
+      protected = true
       description = "새 게시물 생성"
       tags = listOf("거래 피드", "인증")
       request { body<CreateTradeFeedRequestDto>() }
@@ -105,7 +106,7 @@ fun Route.tradeFeedRouting() {
           body<ResponseDto.Error> {
             example(
               "예시",
-              ResponseDto.Error(ServerError.UnAuhtorized, "인증이 필요합니다.")
+              ResponseDto.Error(ServerError.Unauthorized, "인증이 필요합니다.")
             )
           }
         }
@@ -120,6 +121,7 @@ fun Route.tradeFeedRouting() {
     // 좋아요
     post<TradeFeedRoutes.FeedId.Like>({
       securitySchemeName = "Access"
+      protected = true
       description = "좋아요"
       tags = listOf("거래 피드", "인증")
       request {
@@ -143,7 +145,7 @@ fun Route.tradeFeedRouting() {
           body<ResponseDto.Error> {
             example(
               "예시",
-              ResponseDto.Error(ServerError.UnAuhtorized, "인증이 필요합니다.")
+              ResponseDto.Error(ServerError.Unauthorized, "인증이 필요합니다.")
             )
           }
         }
@@ -158,6 +160,7 @@ fun Route.tradeFeedRouting() {
     // 수정
     patch<TradeFeedRoutes.FeedId>({
       securitySchemeName = "Access"
+      protected = true
       description = "게시글 수정"
       tags = listOf("거래 피드", "인증")
       request {
@@ -182,7 +185,7 @@ fun Route.tradeFeedRouting() {
           body<ResponseDto.Error> {
             example(
               "예시",
-              ResponseDto.Error(ServerError.UnAuhtorized, "인증이 필요합니다.")
+              ResponseDto.Error(ServerError.Unauthorized, "인증이 필요합니다.")
             )
           }
         }
@@ -197,6 +200,7 @@ fun Route.tradeFeedRouting() {
     // 삭제
     delete<TradeFeedRoutes.FeedId>({
       securitySchemeName = "Access"
+      protected = true
       description = "게시글 삭제"
       tags = listOf("거래 피드", "인증")
       request {
@@ -220,7 +224,7 @@ fun Route.tradeFeedRouting() {
           body<ResponseDto.Error> {
             example(
               "예시",
-              ResponseDto.Error(ServerError.UnAuhtorized, "인증이 필요합니다.")
+              ResponseDto.Error(ServerError.Unauthorized, "인증이 필요합니다.")
             )
           }
         }
