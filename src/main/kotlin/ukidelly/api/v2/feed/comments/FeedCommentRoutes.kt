@@ -10,7 +10,7 @@ class FeedCommentRoutes(
 ) {
 
   @Resource("{commentId}")
-  class CommentId(val commets: FeedCommentRoutes, val commentId: String) {
+  class CommentId(val commets: FeedCommentRoutes, val commentId: Int) {
 
     @Resource("reply")
     class Reply(val comment: CommentId)

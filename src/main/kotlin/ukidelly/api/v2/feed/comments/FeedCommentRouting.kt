@@ -32,14 +32,25 @@ fun Route.feedCommentRoutes() {
       val feedId = it.feed.feedId
       val userUUID = call.getUserId()
       val body = call.receive<CreateFeedCommentRequest>()
-
-      logger.info(body.toString())
-
+      feedService.addComment(feedId, userUUID, body)
+      call.respond(HttpStatusCode.Created)
     }
 
-    patch<FeedCommentRoutes.CommentId> {}
+    patch<FeedCommentRoutes.CommentId> {
+      val commentId = it.commentId
+      val userUUID = call.getUserId()
+      val body = call.receive<CreateFeedCommentRequest>()
+      feedService.updateComment(commentId, userUUID, body)
+      call.respond(HttpStatusCode.OK)
+    }
 
-    delete<FeedCommentRoutes.CommentId> {}
+    delete<FeedCommentRoutes.CommentId> {
+      val commentId = it.commentId
+      val userUUID = call.getUserId()
+      val body = call.receive<CreateFeedCommentRequest>()
+      feedService.updateComment(commentId, userUUID, body)
+      call.respond(HttpStatusCode.OK)
+    }
   }
 
 }

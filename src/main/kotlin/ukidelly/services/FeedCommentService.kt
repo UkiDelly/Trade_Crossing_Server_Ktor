@@ -1,8 +1,10 @@
 package ukidelly.services
 
 import org.koin.core.annotation.Single
+import ukidelly.dto.requests.CreateFeedCommentRequest
 import ukidelly.dto.responses.FeedCommentDto
 import ukidelly.repositories.FeedCommentRepository
+import java.util.*
 
 
 @Single
@@ -18,4 +20,10 @@ class FeedCommentService(private val feedCommentRepository: FeedCommentRepositor
     }
     return dtos
   }
+
+  suspend fun addComment(feedId: Int, userUUID: UUID, body: CreateFeedCommentRequest) =
+    feedCommentRepository.newComment(feedId, userUUID, body)
+
+  suspend fun updateComment(commentId: Int, userUUID: UUID, body: CreateFeedCommentRequest) =
+    feedCommentRepository.updateComment(commentId, userUUID, body)
 }
