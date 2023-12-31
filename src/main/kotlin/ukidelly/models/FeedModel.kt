@@ -3,6 +3,7 @@ package ukidelly.models
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import ukidelly.database.entity.FeedEntity
+import ukidelly.database.entity.FeedImageEntity
 import ukidelly.systems.models.DefaultProfile
 import java.time.LocalDateTime
 
@@ -12,7 +13,7 @@ data class Feed(
     val id: Int,
     val creator: CompactUser,
     val content: String,
-    val images: List<String>,
+    val images: List<FeedImage>,
     val likes: List<CompactUser>,
     @Contextual
     val createdAt: LocalDateTime,
@@ -23,10 +24,21 @@ data class Feed(
         id = feedEntity.id.value,
         creator = CompactUser(feedEntity.user),
         content = feedEntity.content,
-        images = feedEntity.images.map { it.image.url },
+        images = feedEntity.images.map { FeedImage(it) },
         likes = feedEntity.likes.map { CompactUser(it.user) },
         createdAt = LocalDateTime.parse(feedEntity.createdAt.toString()),
         updatedAt = LocalDateTime.parse(feedEntity.updatedAt.toString()),
+    )
+}
+
+@Serializable
+data class FeedImage(
+    val id: Int,
+    val url: String
+) {
+    constructor(feedImageEntity: FeedImageEntity) : this(
+        id = feedImageEntity.id.value,
+        url = feedImageEntity.image.url
     )
 }
 
@@ -38,7 +50,7 @@ data class FeedPreview(
     val creatorIsland: String,
     val defaultProfile: DefaultProfile,
     val content: String,
-    var imageUrl: List<String>,
+    var imageUrl: List<FeedImage>,
     var commentCount: Int,
     var likes: List<String>,
     @Contextual
@@ -52,7 +64,7 @@ data class FeedPreview(
         creatorIsland = entity.user.islandName,
         defaultProfile = entity.user.defaultProfile,
         content = entity.content,
-        imageUrl = entity.images.map { it.image.url },
+        imageUrl = entity.images.map { FeedImage(it) },
         commentCount = entity.comments.count().toInt(),
         likes = entity.likes.map { it.user.uuid.toString() },
         createdAt = LocalDateTime.parse(entity.createdAt.toString()),

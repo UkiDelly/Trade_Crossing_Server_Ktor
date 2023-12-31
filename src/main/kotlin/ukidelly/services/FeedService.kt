@@ -1,35 +1,65 @@
 package ukidelly.services
 
+import io.ktor.http.content.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import org.koin.core.annotation.Single
-import ukidelly.dto.responses.FeedCommentDto
-import ukidelly.dto.responses.FeedDto
-import ukidelly.models.FeedPreview
+import org.koin.java.KoinJavaComponent.inject
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import ukidelly.dto.responses.LatestFeedDto
+import ukidelly.models.Feed
+import ukidelly.modules.SupabaseServerClient
 import ukidelly.repositories.FeedRepository
+import java.util.*
 
 
 @Single
 class FeedService(private val feedRepository: FeedRepository) {
 
+  val logger: Logger = LoggerFactory.getLogger(FeedService::class.java)
+  private val supabaseClient by inject<SupabaseServerClient>(clazz = SupabaseServerClient::class.java)
 
-    suspend fun getLatestPosts(
-        page: Int,
-        size: Int
-    ): List<FeedPreview> {
-        return feedRepository.findLatestFeed(size, page)
 
-    }
+  suspend fun getLatestPosts(page: Int, size: Int): LatestFeedDto {
+    val (totalPage, feeds) = feedRepository.findLatestFeed(size, page)
+    return LatestFeedDto(page, size, totalPage, feeds)
+  }
 
-    suspend fun getFeedById(feedId: Int): FeedDto {
+  suspend fun getFeedById(feedId: Int): Feed = feedRepository.findFeedById(feedId)
 
-        val result = feedRepository.findFeedById(feedId)
-        val commentDtos = mutableListOf<FeedCommentDto>()
-        val comments = result.second
+  suspend fun addNewFeed(userUUID: UUID, images: List<PartData.FileItem>, content: String): Feed {
+    val imageUrls = mutableListOf<String>()
 
-        comments.forEach { parentComment ->
-            val childComments = comments.filter { it.parentComment == parentComment.id }
-            val commentDto = FeedCommentDto(parentComment, childComments)
-            commentDtos.add(commentDto)
+    runBlocking(Dispatchers.IO) {
+      images.map {
+        async {
+          val url = supabaseClient.uploadImage(it)
+          imageUrls.add(url)
         }
-        return FeedDto(result.first, commentDtos)
+      }.awaitAll()
     }
+
+    return feedRepository.addNewFeed(userUUID, content, imageUrls)
+  }
+
+  suspend fun updateFeed(
+    feedId: Int,
+    newImages: List<PartData.FileItem>,
+    oldImages: List<Int>,
+    content: String?
+  ): Feed {
+    if (newImages.isEmpty()) return feedRepository.updateFeed(feedId, content, emptyList(), oldImages)
+
+    val newImageUrls = runBlocking(Dispatchers.IO) {
+      newImages.map { async { supabaseClient.uploadImage(it) } }.awaitAll()
+    }
+
+    return feedRepository.updateFeed(feedId, content, newImageUrls, oldImages)
+  }
+
+  suspend fun deleteFeed(feedId: Int) = feedRepository.deleteFeed(feedId)
+
 }

@@ -6,34 +6,41 @@ import io.github.jan.supabase.storage.storage
 import io.ktor.http.content.*
 import io.ktor.server.config.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
 
 
 @Single
-class SupabaseServerClient(val config: ApplicationConfig) {
+class SupabaseServerClient(config: ApplicationConfig) {
 
     private val client = createSupabaseClient(
-        supabaseUrl = System.getenv("supabase_url") ?: config.property("supabaes.url").getString(),
-        supabaseKey = System.getenv("supabase_key") ?: config.property("supabaes.key").getString(),
-    ) {
-        install(Storage) {
-        }
-    }
+        supabaseUrl = System.getenv("supabase_url") ?: config.property("supabase.url").getString(),
+        supabaseKey = System.getenv("supabase_key") ?: config.property("supabase.key").getString(),
+    ) { install(Storage) }
 
-    private val bucket = "images"
+    private val bucketName = "images"
+    private val bucket = client.storage.from(bucketName)
 
-    suspend fun uploadImage(userId: String, file: PartData.FileItem): String {
+    private val logger = LoggerFactory.getLogger("Supabase Client")
+
+
+    suspend fun uploadImage(file: PartData.FileItem): String {
 
         val fileByteArray = file.streamProvider().readBytes()
-        val imagePath = "${userId}/${file.originalFileName!!}"
-
+        val imagePath = file.originalFileName!!
         withContext(Dispatchers.IO) {
-            client.storage.from(bucket)
-                .upload(path = imagePath, fileByteArray, upsert = true)
+            async { bucket.upload(path = imagePath, fileByteArray, upsert = false) }.await()
         }
-        return client.storage.from(bucket).publicUrl(imagePath)
+
+        return bucket.publicUrl(imagePath)
+    }
+
+    suspend fun deleteImage(imagePath: List<String>) {
+        withContext(Dispatchers.IO) {
+            bucket.delete(imagePath)
+        }
     }
 
     suspend fun listBuckets() {
@@ -41,6 +48,8 @@ class SupabaseServerClient(val config: ApplicationConfig) {
         withContext(Dispatchers.IO) {
             val logger = LoggerFactory.getLogger("Supabase Client")
             val buckets = client.storage.retrieveBuckets()
+
+            logger.debug("buckets: {}", buckets)
         }
     }
 }

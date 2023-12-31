@@ -7,9 +7,9 @@ import io.ktor.resources.*
 class FeedRoutes(val page: Int = 1, val size: Int = 10) {
 
     @Resource("{feedId}")
-    class FeedId(val parent: FeedRoutes = FeedRoutes(), val feedId: Int) {
+    class FeedId(val feedRoute: FeedRoutes = FeedRoutes(), val feedId: Int) {
         @Resource("like")
-        class Like(val parent: FeedId)
+        class Like(val feed: FeedId)
 
 
     }
@@ -17,15 +17,12 @@ class FeedRoutes(val page: Int = 1, val size: Int = 10) {
 
 
 @Resource("comments")
-class FeedCommentRoutes(val parent: FeedRoutes.FeedId) {
-
-    @Resource("new")
-    class New(val parent: FeedCommentRoutes)
+class FeedCommentRoutes(val feed: FeedRoutes.FeedId) {
 
     @Resource("{commentId}")
-    class CommentId(val parent: FeedCommentRoutes, val commentId: Int) {
+    class CommentId(val commentRoute: FeedCommentRoutes, val commentId: Int) {
 
         @Resource("reply")
-        class Reply(val parent: CommentId)
+        class Reply(val comment: CommentId)
     }
 }
