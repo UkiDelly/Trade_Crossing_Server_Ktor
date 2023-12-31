@@ -4,9 +4,10 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.resources.*
+import io.ktor.server.resources.patch
 import io.ktor.server.resources.post
 import io.ktor.server.response.*
-import io.ktor.server.routing.Route
+import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 import ukidelly.dto.requests.CreateFeedCommentRequest
@@ -49,6 +50,14 @@ fun Route.feedCommentRoutes() {
       val userUUID = call.getUserId()
       feedService.deleteComment(commentId, userUUID)
       call.respond(HttpStatusCode.OK)
+    }
+
+    post<FeedCommentRoutes.CommentId.Reply> {
+      val commentId = it.comment.commentId
+      val userUUID = call.getUserId()
+      val body = call.receive<CreateFeedCommentRequest>()
+      feedService.addComment(commentId, userUUID, body)
+      call.respond(HttpStatusCode.Created)
     }
   }
 
