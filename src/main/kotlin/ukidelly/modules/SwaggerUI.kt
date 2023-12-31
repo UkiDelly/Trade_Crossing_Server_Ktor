@@ -1,7 +1,12 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package ukidelly.modules
 
 import io.github.smiley4.ktorswaggerui.SwaggerUI
+import io.github.smiley4.ktorswaggerui.data.AuthScheme
+import io.github.smiley4.ktorswaggerui.data.AuthType
 import io.ktor.server.application.*
+import kotlinx.serialization.ExperimentalSerializationApi
 
 fun Application.configureSwaggerUI() {
   //routing {
@@ -22,8 +27,21 @@ fun Application.configureSwaggerUI() {
     }
 
     server {
-      url = "http://localhost:8080"
+      url = "http://localhost:8080/api/v1"
       description = "개발 서버"
     }
+
+    securityScheme("Access") {
+      type = AuthType.HTTP
+      scheme = AuthScheme.BEARER
+      bearerFormat = "jwt"
+    }
+
+    securityScheme("Refresh") {
+      type = AuthType.HTTP
+      scheme = AuthScheme.BEARER
+      bearerFormat = "jwt"
+    }
+
   }
 }
