@@ -1,13 +1,13 @@
 package ukidelly.repositories
 
-import org.jetbrains.exposed.dao.with
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.select
 import org.koin.core.annotation.Single
 import org.slf4j.LoggerFactory
 import ukidelly.database.DataBaseFactory.dbQuery
 import ukidelly.database.entity.FeedCommentsEntity
+import ukidelly.database.models.user.Users
 import ukidelly.database.tables.FeedComments
-import ukidelly.dto.requests.Pagination
 import ukidelly.models.FeedComment
 
 
@@ -15,17 +15,17 @@ import ukidelly.models.FeedComment
 class FeedCommentRepository {
 
   private val logger = LoggerFactory.getLogger(this::class.java)
-  suspend fun findAll(feedId: Int, pagination: Pagination): List<FeedComment> {
-
-    val offset = ((pagination.page - 1) * pagination.size).toLong()
+  suspend fun findAll(feedId: Int): List<FeedComment> {
 
     return dbQuery {
-      FeedCommentsEntity.find { FeedComments.feedId eq feedId }
-        .with(FeedCommentsEntity::parent)
-        .limit(pagination.size, offset)
+      FeedComments.leftJoin(Users)
+        .slice(FeedComments.columns + Users.userName + Users.islandName + Users.defaultProfile)
+        .select { FeedComments.feedId eq feedId }
         .orderBy(FeedComments.createdAt to SortOrder.DESC)
-        .map { it.toFeedComment() }
+        .map {
+          logger.info(it.toString())
+          FeedCommentsEntity.wrapRow(it).toFeedComment()
+        }
     }
   }
-
 }

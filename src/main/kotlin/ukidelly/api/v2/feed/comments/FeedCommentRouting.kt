@@ -10,7 +10,6 @@ import io.ktor.server.routing.Route
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 import ukidelly.dto.requests.CreateFeedCommentRequest
-import ukidelly.dto.requests.Pagination
 import ukidelly.modules.getUserId
 import ukidelly.modules.withAuth
 import ukidelly.services.FeedCommentService
@@ -23,8 +22,7 @@ fun Route.feedCommentRoutes() {
 
   get<FeedCommentRoutes> {
     val feedId = it.feed.feedId
-    val pageination = Pagination(it.page, it.size)
-    val comments = feedService.getFeedComments(feedId, pageination)
+    val comments = feedService.getFeedComments(feedId)
     call.respond(HttpStatusCode.OK, comments)
   }
 
@@ -34,6 +32,8 @@ fun Route.feedCommentRoutes() {
       val feedId = it.feed.feedId
       val userUUID = call.getUserId()
       val body = call.receive<CreateFeedCommentRequest>()
+
+      logger.info(body.toString())
 
     }
 

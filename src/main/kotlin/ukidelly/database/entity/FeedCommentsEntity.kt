@@ -13,7 +13,7 @@ class FeedCommentsEntity(id: EntityID<Int>) : IntEntity(id) {
 
   var feed by FeedEntity referencedOn FeedComments.feedId
   var content by FeedComments.content
-  var parent by FeedCommentsEntity optionalReferencedOn FeedComments.parentId
+  var parent by FeedComments.parentId
   var user by UserEntity referencedOn FeedComments.userId
   var createdAt by FeedComments.createdAt
   var updatedAt by FeedComments.updatedAt
@@ -23,7 +23,7 @@ class FeedCommentsEntity(id: EntityID<Int>) : IntEntity(id) {
     id = id.value,
     content = content,
     creator = CompactUser(user),
-    parentComment = parent?.id?.value,
+    parentComment = parent?.value,
     createdAt = createdAt,
     updatedAt = updatedAt
   )
