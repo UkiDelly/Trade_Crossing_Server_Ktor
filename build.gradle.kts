@@ -17,6 +17,12 @@ application {
   applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
+java {
+  sourceCompatibility = JavaVersion.VERSION_17
+  targetCompatibility = JavaVersion.VERSION_17
+}
+
+
 repositories {
   mavenCentral()
 }
@@ -81,22 +87,17 @@ dependencies {
   implementation("io.ktor:ktor-server-websockets:$ktor_version")
 
   // test
-  testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
-  testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.6")
-  testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
-  testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
-  testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.6")
-  testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
-
-
-  //    implementation("org.litote.kmongo:kmongo:4.8.0")
-  //    implementation("io.ktor:ktor-serialization-jackson:2.3.1-eap-678")
-  //    implementation("io.ktor:ktor-serialization-jackson-jvm:2.3.1-eap-676")
-  //    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
+  //testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
+  //testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.6")
+  //testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
+  //testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+  //testImplementation("io.ktor:ktor-server-test-host-jvm:2.3.6")
+  //testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
 
 }
 
-//test
-//tasks.withType<Test> {
-//    useJUnitPlatform()
-//}
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+  kotlinOptions {
+    jvmTarget = "17"
+  }
+}
