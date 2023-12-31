@@ -2,7 +2,9 @@
 
 ---
 
-이 서버는 Trade Crossing 앱 프로젝트의 메인 서버이며, `Kotlin`언어와 `Ktor` 프레임워크로 제작되었습니다.
+> 기획 문서: https://daehyeonsong.notion.site/Trade-Crossing-f30972e680ed4fbebe0340b956237e0c?pvs=4
+
+이 서버는 Trade Crossing 프로젝트의 메인 서버이며, `Kotlin`언어와 `Ktor` 프레임워크로 제작되었습니다.
 
 ## 특징
 
