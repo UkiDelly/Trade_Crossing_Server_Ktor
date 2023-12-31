@@ -5,7 +5,11 @@ import ukidelly.api.v2.feed.FeedRoutes
 
 
 @Resource("comments")
-class FeedCommentRoutes(val feed: FeedRoutes.FeedId) {
+class FeedCommentRoutes(
+  val feed: FeedRoutes.FeedId,
+  val page: Int = 1,
+  val size: Int = 10,
+) {
 
   @Resource("{commentId}")
   class CommentId(val commets: FeedCommentRoutes, val commentId: String) {
