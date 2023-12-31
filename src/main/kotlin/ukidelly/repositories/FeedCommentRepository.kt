@@ -53,4 +53,11 @@ class FeedCommentRepository {
       feedEntity.content = body.content
     }
   }
+
+  suspend fun deleteComment(commentId: Int, userUUID: UUID) = dbQuery {
+    FeedCommentsEntity.find { FeedComments.id eq commentId }.firstOrNull()?.let {
+      if (it.user.uuid != userUUID) throw ForbiddenException()
+      it.delete()
+    } ?: throw NotFoundException("댓글을 찾을 수 없습니다.")
+  }
 }

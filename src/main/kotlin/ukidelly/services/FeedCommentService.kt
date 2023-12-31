@@ -26,4 +26,6 @@ class FeedCommentService(private val feedCommentRepository: FeedCommentRepositor
 
   suspend fun updateComment(commentId: Int, userUUID: UUID, body: CreateFeedCommentRequest) =
     feedCommentRepository.updateComment(commentId, userUUID, body)
+
+  suspend fun deleteComment(commentId: Int, userUUID: UUID) = feedCommentRepository.deleteComment(commentId, userUUID)
 }

@@ -47,8 +47,7 @@ fun Route.feedCommentRoutes() {
     delete<FeedCommentRoutes.CommentId> {
       val commentId = it.commentId
       val userUUID = call.getUserId()
-      val body = call.receive<CreateFeedCommentRequest>()
-      feedService.updateComment(commentId, userUUID, body)
+      feedService.deleteComment(commentId, userUUID)
       call.respond(HttpStatusCode.OK)
     }
   }
